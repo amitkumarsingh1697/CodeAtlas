@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { indexRepository, openDb, search } from '@nexora/codeatlas-core';
 import { join } from 'node:path';
-import { BRAIN_USAGE, SCIP_USAGE, scipFlags, writeBrain } from './brain-command';
+import { BRAIN_USAGE, SCIP_USAGE, writeBrain } from './brain-command';
+import { INDEX_USAGE, limitNotice, parseIndexArgs } from './index-command';
 import { fileURLToPath } from 'node:url';
 import { loadServiceConfig } from './config';
 import { relaunchWithLargerHeap } from './heap';
@@ -34,15 +35,15 @@ async function main(): Promise<void> {
       return;
     }
     case 'index': {
-      const scip = scipFlags(args);
-      const root = args[0];
-      if (!root) throw new Error(`usage: codeatlas index <path> ${SCIP_USAGE}`);
+      const { root, scip, maxFiles } = parseIndexArgs(args);
       const db = openDb(join(cfg.home, 'codeatlas.db'));
       const report = indexRepository(db, root, {
         onProgress: (m) => process.stderr.write(`… ${m}\n`),
         scip,
+        ...(maxFiles === undefined ? {} : { limits: { maxFiles } }),
       });
       process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+      process.stderr.write(limitNotice(report.fileLimit));
       return;
     }
     case 'brain': {
@@ -60,7 +61,7 @@ async function main(): Promise<void> {
     }
     default:
       process.stdout.write(
-        `usage: codeatlas <serve|index <path>|brain <path> ${BRAIN_USAGE}|search <repoId> <query>>\n  index and brain also take ${SCIP_USAGE}\n`,
+        `usage: codeatlas <serve|${INDEX_USAGE}|brain <path> ${BRAIN_USAGE}|search <repoId> <query>>\n  brain also takes ${SCIP_USAGE}\n`,
       );
       process.exitCode = cmd ? 1 : 0;
   }

@@ -7,7 +7,7 @@ This repository was extracted from the NEXORA monorepo on 2026-11-14 and holds o
 | **CodeAtlas** (Nexora Engineering, "Architecture Brain" in the spec) | Local-first code intelligence: local service, web UI, indexer | `products/codeatlas/*` |
 | **ArchLens**                                                         | Claude Code skill for evidence-labelled architecture work     | `skills/archlens/`     |
 
-**Source of truth:** [documentation/product/MASTER_SPECIFICATION.md](documentation/product/MASTER_SPECIFICATION.md). It still holds NEXORA's CVForge sections; only §5 (Architecture Brain) and the shared sections apply here. When this file and the specification differ, the specification wins, unless an accepted ADR records the deviation and the reason for it.
+**Source of truth:** the strategy and delivery package in [docs/strategy-and-delivery/](docs/strategy-and-delivery/) (documents 00 to 23), per [ADR 0024](documentation/architecture/adr/0024-strategy-package-is-the-product-baseline.md). How it resolves conflicts with the older [MASTER_SPECIFICATION.md](documentation/product/MASTER_SPECIFICATION.md) is recorded in [docs/audit/DOCUMENTATION_RECONCILIATION.md](docs/audit/DOCUMENTATION_RECONCILIATION.md). The master specification stays as the record of what was built before 2026-11-14 (only its §5 and shared sections apply here). When this file and the package differ, the package wins, unless an accepted ADR records the deviation and the reason for it. Read [docs/audit/IMPLEMENTATION_ROADMAP.md](docs/audit/IMPLEMENTATION_ROADMAP.md) before planning a sprint.
 
 ## 1. Primary principle
 
@@ -98,7 +98,7 @@ Read `documentation/AI_ENGINEERING_RULES.md` before touching any code path that 
 - Never log passwords, tokens, cookies or repository content. Log ids and counts only.
 - Do not overwrite user files. Make no destructive git operations without explicit approval.
 
-## 11. Founder rules (verbatim intent from the spec, §18)
+## 11. Founder rules (verbatim intent from the master specification, §18; still in force)
 
 - Do not commit or push unless explicitly asked.
 - Do not deploy publicly, buy domains, or create paid resources without authorisation.

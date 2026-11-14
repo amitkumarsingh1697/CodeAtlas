@@ -4,25 +4,10 @@ Honest list of what does not work, or was not verified, in the current build.
 
 ## Verification gaps
 
-- **No real model was exercised.** Ollama was not installed in the build environment. AI paths (CVForge phrasing, CodeAtlas chat, model patches) are tested with fake providers only; quality with real models is unmeasured.
-- **Accessibility is checked automatically only.** axe scans cover the screens the E2E journeys reach; there has been no manual keyboard or screen-reader audit, and the extension popup is not scanned.
-- **Extension toolbar click is simulated in E2E.** Playwright opens the popup page directly and stubs the active tab; manual testing in Chrome/Edge is still needed, especially on live LinkedIn/Naukri pages (extraction selectors were written against public page structures and a fixture, not verified on live logged-in pages).
+- **No real model was exercised.** Ollama was not installed in the build environment. AI paths (CodeAtlas chat and model patches) are tested with fake providers only; quality with real models is unmeasured.
+- **Accessibility is checked automatically only.** axe scans cover the screens the E2E journeys reach; there has been no manual keyboard or screen-reader audit.
 - **The ArchLens architecture brain has not been produced in a live Claude Code session.** The renderer, template and model format are tested; the skill's instructions for building a model from a repository link are not.
 - **Docker compose file validated (`docker compose config`) but not started**: no Docker daemon in the build environment. Postgres was run natively.
-
-## CVForge
-
-- English resumes and job descriptions only; skill taxonomy is a curated list, not exhaustive.
-- Scanned (image-only) PDFs are not supported (no OCR).
-- Complex layouts (multiple columns, tables, text boxes) reduce parse confidence; the user must review the confirm screen.
-- Two export templates only. The template is the only stored formatting choice besides section order; fonts, margins and spacing are fixed per template.
-- Job comparison matches requirements by skill-taxonomy concept. Responsibilities without a recognised skill are not compared across jobs.
-- Word and PDF documents that take longer than 20 seconds or more than 256 MB of memory to parse are refused as too complex.
-- Single-instance deployment: in-memory rate limiter and local-disk storage.
-- Email is written to an outbox folder unless SMTP is configured. SMTP delivery is tested against a local test server only, not a real provider. Email confirmation is enforced only when `REQUIRE_EMAIL_VERIFICATION=true`. There is no CAPTCHA or other bot protection, and no way to change the account's email address yet.
-- No organisations/teams yet beyond the personal org created at signup.
-- Scores are heuristic and explainable, not predictions of ATS outcomes or hiring decisions.
-- PDF export needs fonts metric-compatible with the templates' Calibri and Arial (`fonts-crosextra-carlito`, `fonts-liberation` on Debian/Ubuntu). Without them LibreOffice substitutes other fonts, lines wrap differently, and re-parsing the exported PDF can split one job into two entries (reproduced 2026-11-03 with only DejaVu fonts). Making the parser robust to wrapping is a follow-up.
 
 ## CodeAtlas
 

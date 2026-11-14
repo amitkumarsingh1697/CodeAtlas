@@ -38,6 +38,7 @@ export function createProvider(config: AiConfig): ModelProvider {
       return new OllamaProvider({
         baseUrl: config.OLLAMA_BASE_URL,
         model: config.OLLAMA_MODEL,
+        userConsentedToRemote: config.AI_REMOTE_CONSENT === 'true',
         contextWindowTokens: config.AI_CONTEXT_TOKENS,
         defaultTimeoutMs: config.AI_TIMEOUT_MS,
       });

@@ -477,6 +477,34 @@ describe('cross-file resolution', () => {
     expect(mapping(r, 'CustomerRepository')).toMatchObject({ table: 'shop_customers' });
   });
 
+  it('links a plain Spring Data Repository<T, ID> to its table (JV-008, PetClinic VetRepository)', () => {
+    const entity =
+      'package vet;\nimport jakarta.persistence.*;\n@Entity\n@Table(name = "vets")\npublic class Vet {\n  @Id private Integer id;\n}\n';
+    const r = resolveOrm(
+      read({
+        'vet/Vet.java': entity,
+        'vet/VetRepository.java':
+          'package vet;\nimport org.springframework.data.repository.Repository;\npublic interface VetRepository extends Repository<Vet, Integer> {\n  java.util.Collection<Vet> findAll();\n}\n',
+        'vet/VetStarRepository.java':
+          'package vet;\nimport org.springframework.data.repository.*;\npublic interface VetStarRepository extends Repository<Vet, Integer> {}\n',
+      }),
+    );
+    expect(mapping(r, 'VetRepository')).toMatchObject({ table: 'vets' });
+    expect(mapping(r, 'VetStarRepository')).toMatchObject({ table: 'vets' });
+  });
+
+  it('does not treat a home-made Repository<T> interface as Spring Data', () => {
+    const r = resolveOrm(
+      read({
+        'vet/Vet.java':
+          'package vet;\nimport jakarta.persistence.*;\n@Entity\n@Table(name = "vets")\npublic class Vet {\n  @Id private Integer id;\n}\n',
+        'vet/VetStore.java':
+          'package vet;\nimport app.common.Repository;\npublic interface VetStore extends Repository<Vet> {}\n',
+      }),
+    );
+    expect(mapping(r, 'VetStore')).toBeUndefined();
+  });
+
   it('reads a unidirectional JPA @OneToMany @JoinColumn as a key on the target table', () => {
     const r = resolveOrm(
       read({

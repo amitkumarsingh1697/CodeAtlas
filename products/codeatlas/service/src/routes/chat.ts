@@ -7,6 +7,7 @@ import {
   recordEvent,
   retrieve,
 } from '@nexora/codeatlas-core';
+import { AI_DATA_SENT, aiEnabled, aiEndpoint, switchable } from '../ai-switch';
 import { HttpError } from '../http';
 import type { ServiceContext } from '../server';
 import { repoOr404, track } from '../server';
@@ -16,12 +17,18 @@ import { repoOr404, track } from '../server';
  * only counts (sources, citations) and the confidence label; feedback keeps the rating and the
  * optional note the user types.
  * The provider defaults to local Ollama; a remote provider is refused unless
- * the user explicitly consented (AI_REMOTE_CONSENT=true).
+ * the user explicitly consented (AI_REMOTE_CONSENT=true). AI is on by default and the
+ * Settings switch turns it off for every call (ADR 0025).
  */
 export function chatRoutes(provider?: ModelProvider) {
   return (ctx: ServiceContext): void => {
-    const p = provider ?? createProvider(ctx.cfg.ai);
-    ctx.router.add('GET', '/api/ai/status', async () => ({ capabilities: await p.capabilities() }));
+    const p = switchable(ctx.db, provider ?? createProvider(ctx.cfg.ai));
+    ctx.router.add('GET', '/api/ai/status', async () => ({
+      capabilities: await p.capabilities(),
+      enabled: aiEnabled(ctx.db),
+      endpoint: aiEndpoint(ctx.cfg.ai),
+      dataSent: AI_DATA_SENT,
+    }));
     ctx.router.add('POST', '/api/repos/:id/chat', async (req) => {
       const repo = repoOr404(ctx, req.params.id);
       const { question } = z

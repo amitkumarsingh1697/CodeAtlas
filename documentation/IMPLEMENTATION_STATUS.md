@@ -7,6 +7,19 @@ This is the single tracker required by spec §19.
 
 ## Last evidence run
 
+**Date:** 2026-11-14, in the build container, for commercial Sprint 0.
+
+| Command                                   | Result                                                                                                                                           |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `pnpm check` (typecheck, lint, tests)     | pass: 654 tests (2026-11-14)                                                                                                                     |
+| `pnpm format:check`                       | clean (2026-11-14)                                                                                                                               |
+| `pnpm audit --prod`                       | no known vulnerabilities (2026-11-14)                                                                                                            |
+| `pnpm --filter @nexora/codeatlas-web e2e` | 1 journey passed (2026-11-14)                                                                                                                    |
+| `cli index` on Spring PetClinic           | 260 code symbols (6,995 SVG/XML elements counted separately); 98 analysed files in both blocks; 3 of 3 Spring Data repositories linked to tables |
+| `cli index` on Twenty (default limit)     | stderr and summary warn that only 20,000 of 44,522 files were read; `fileLimit.filesBeyondLimit` 23,730                                          |
+
+## Previous evidence run
+
 **Date:** 2026-11-09, in the build container, for the universal language and file-type work (LANG-01 to LANG-08).
 
 **Environment:**
@@ -59,13 +72,14 @@ Counts are taken from REQUIREMENTS_TRACEABILITY.md.
 
 ## Sprint status
 
-| Sprint                                            | Status              | Evidence                                                                                                                                           |
-| ------------------------------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Baseline (spec phases 0–11, built 2026-11-02)     | Built               | Phase reports in the project thread; tests above                                                                                                   |
-| Sprint 0: governance and research                 | **Done** 2026-11-03 | The 10 governance files exist; 12 sourced research entries; every spec requirement has an ID and status; ArchLens check passes; `pnpm check` green |
-| Sprint 1: spec compliance and security findings   | **Done** 2026-11-03 | All 8 items; evidence below and in REQUIREMENTS_TRACEABILITY                                                                                       |
-| Sprint 2: product surface and robustness          | **Done** 2026-11-03 | All 7 items; evidence below, in REQUIREMENTS_TRACEABILITY and in `reports/SPRINT_2_REPORT.md`                                                      |
-| Sprint 3: CodeAtlas depth, plus CVForge hardening | **Done** 2026-11-04 | All 7 items plus PDF isolation, optional SMTP and email confirmation; evidence below and in `reports/SPRINT_3_REPORT.md`                           |
+| Sprint                                            | Status              | Evidence                                                                                                                                                                      |
+| ------------------------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Baseline (spec phases 0–11, built 2026-11-02)     | Built               | Phase reports in the project thread; tests above                                                                                                                              |
+| Sprint 0: governance and research                 | **Done** 2026-11-03 | The 10 governance files exist; 12 sourced research entries; every spec requirement has an ID and status; ArchLens check passes; `pnpm check` green                            |
+| Sprint 1: spec compliance and security findings   | **Done** 2026-11-03 | All 8 items; evidence below and in REQUIREMENTS_TRACEABILITY                                                                                                                  |
+| Sprint 2: product surface and robustness          | **Done** 2026-11-03 | All 7 items; evidence below, in REQUIREMENTS_TRACEABILITY and in `reports/SPRINT_2_REPORT.md`                                                                                 |
+| Sprint 3: CodeAtlas depth, plus CVForge hardening | **Done** 2026-11-04 | All 7 items plus PDF isolation, optional SMTP and email confirmation; evidence below and in `reports/SPRINT_3_REPORT.md`                                                      |
+| Commercial Sprint 0: truth and security fixes     | **Done** 2026-11-14 | SEC-001, SEC-002, ACC-007, ACC-009, JV-008, DOC-001; `pnpm check` 654 tests and the E2E journey pass; see SPRINT_PLAN and `docs/audit/CAPABILITY_MATRIX.md` §Sprint 0 updates |
 
 ## Sprint 1 items
 

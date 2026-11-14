@@ -240,7 +240,13 @@ function Feedback({ repoId, a }: { repoId: number; a: Answer }) {
 }
 
 export function Ask({ repoId }: { repoId: number }) {
-  const caps = useAsync(() => api<{ capabilities: Caps }>('/api/ai/status'), []);
+  const caps = useAsync(
+    () =>
+      api<{ capabilities: Caps; enabled?: boolean; endpoint?: string | null; dataSent?: string }>(
+        '/api/ai/status',
+      ),
+    [],
+  );
   const [q, setQ] = useState('');
   const [turns, setTurns] = useState<Turn[]>([]);
   const [busy, setBusy] = useState(false);
@@ -257,6 +263,11 @@ export function Ask({ repoId }: { repoId: number }) {
                 {c.local
                   ? 'runs on this machine; your code is not sent anywhere.'
                   : 'remote provider you explicitly enabled.'}
+              </>
+            ) : caps.data?.enabled === false ? (
+              <>
+                AI is turned off in Settings. You will get the relevant code and relationships,
+                without an explanation.
               </>
             ) : (
               <>
@@ -276,6 +287,12 @@ export function Ask({ repoId }: { repoId: number }) {
                 )}
               </>
             )}
+          </p>
+        )}
+        {c?.available && caps.data?.dataSent && (
+          <p className="mt-1 text-xs text-muted" data-testid="ai-data-notice">
+            Sent to {caps.data.endpoint ?? c.provider} with each question: {caps.data.dataSent} You
+            can turn AI off in Settings.
           </p>
         )}
         <p className="mt-1 text-xs text-muted">

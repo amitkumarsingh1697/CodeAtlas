@@ -66,6 +66,19 @@ export function Overview({ repoId }: { repoId: number }) {
         </Empty>
       ) : (
         <>
+          {c.fileLimit?.reached && (
+            <div
+              role="alert"
+              data-testid="file-limit-warning"
+              className="rounded-lg border border-danger/30 bg-danger/5 px-3 py-2 text-sm text-danger"
+            >
+              <strong>Incomplete index.</strong> The {c.fileLimit.maxFiles?.toLocaleString('en-US')}
+              -file limit stopped this run: only {c.fileLimit.filesRead.toLocaleString(
+                'en-US',
+              )} of {c.fileLimit.filesInRepository.toLocaleString('en-US')} files in the repository
+              were read. Coverage figures describe the files read, not the whole repository.
+            </div>
+          )}
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {c.inventory ? (
               <Stat
@@ -80,7 +93,19 @@ export function Overview({ repoId }: { repoId: number }) {
                 hint="TypeScript/JavaScript files analysed structurally / all files discovered"
               />
             )}
-            <Stat label="Symbols" value={c.symbols} />
+            {c.symbolsByCategory ? (
+              <Stat
+                label="Code symbols"
+                value={c.symbols.toLocaleString('en-US')}
+                hint={`Declarations in code. Not counted: ${c.symbolsByCategory.markup.toLocaleString('en-US')} markup elements, ${c.symbolsByCategory.configuration.toLocaleString('en-US')} configuration and build entries, ${c.symbolsByCategory.documentation.toLocaleString('en-US')} document sections`}
+              />
+            ) : (
+              <Stat
+                label="Symbols"
+                value={c.symbols}
+                hint="TypeScript/JavaScript only (index made by an older version)"
+              />
+            )}
             <Stat label="Routes" value={c.routes} />
             <Stat
               label="In-repo call resolution"

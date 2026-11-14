@@ -177,10 +177,24 @@ The founder asked for full analysis of every language, file, method, function an
 **Excluded from L7:** applying Liquibase index, data-type and custom changes to the schema; Hibernate `hbm.xml` tables; a Gradle model beyond patterns; measuring the 3D view on a real graphics card.
 ---
 
+## Commercial roadmap Sprint 0: truth and security fixes
+
+The audit roadmap ([docs/audit/IMPLEMENTATION_ROADMAP.md](../docs/audit/IMPLEMENTATION_ROADMAP.md)) numbers its sprints from 0 again. Its IDs (SEC-, ACC-, JV-, DOC-) are separate from the S0 to S3 and L1 to L7 sprints above.
+
+| ID      | Item                                                                  | Acceptance criteria                                                                                                                                             |
+| ------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SEC-001 | Consent gate for a remote Ollama host                                 | A non-loopback `OLLAMA_BASE_URL` is refused without `AI_REMOTE_CONSENT=true`, and status makes no request to it.                                                |
+| SEC-002 | AI on by default, with an off switch and a notice                     | Settings turns AI off and on; when off, chat makes no model call; Ask and Settings show the endpoint and what is sent (ADR 0029).                               |
+| ACC-007 | Code symbols separate from markup, document and configuration entries | `symbols` counts code declarations from every analyser; `symbolsByCategory` gives the rest; `files.structurallyAnalysed` equals `inventory.analysed`.           |
+| ACC-009 | File-count limit visible                                              | The report has `fileLimit` (files read against files in the repository); the summary, limitations, CLI and Overview warn when it applied; `--max-files n\|all`. |
+| JV-008  | Spring Data `Repository<T, ID>`                                       | A repository extending the bare `Repository` interface, imported from Spring Data, links to its table; a home-made `Repository<T>` does not.                    |
+| DOC-001 | Documentation reconciled                                              | ADRs 0024, 0029, 0030, 0031; `CLAUDE.md` names the package as the source of truth; no CVForge content in the limitations, risk register or threat model.        |
+
+**Excluded from Sprint 0:** route extraction (Sprint 2), the report (Sprint 1, private repository per ADR 0030), an egress test (Sprint 5).
+
 ## Blocked or external track (not sprint-scheduled)
 
-| Item                                                                 | Blocker                                       | Owner                                            |
-| -------------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------ |
-| Real-model evaluation (CVForge phrasing, CodeAtlas chat and patches) | Ollama not installed in the build environment | Founder's machine, or an environment with Ollama |
-| Live LinkedIn / Naukri / career-site verification                    | Needs a real browser session on live sites    | Founder (manual checklist in RELEASE_READINESS)  |
-| Legal review of privacy notice                                       | External                                      | Founder                                          |
+| Item                                                                  | Blocker                                       | Owner                                            |
+| --------------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------ |
+| Real-model evaluation (CodeAtlas chat and patches)                    | Ollama not installed in the build environment | Founder's machine, or an environment with Ollama |
+| Legal review of the privacy notice and the open-core split (ADR 0030) | External                                      | Founder                                          |

@@ -50,6 +50,7 @@ import {
   type Db,
 } from '@nexora/codeatlas-core';
 import { createLogger } from '@nexora/logging';
+import { setAiEnabled } from './ai-switch';
 import type { ServiceConfig } from './config';
 import {
   checkRequest,
@@ -241,6 +242,11 @@ function registerCoreRoutes(ctx: ServiceContext): void {
     firstRun: getSetting(ctx.db, 'welcome_dismissed') !== 'true' && listRepos(ctx.db).length === 0,
     analytics: { storedLocally: true, transmitted: false },
   }));
+  r.add('POST', '/api/settings/ai', (req) => {
+    const { enabled } = z.strictObject({ enabled: z.boolean() }).parse(req.body);
+    setAiEnabled(ctx.db, enabled);
+    return { enabled };
+  });
   r.add('POST', '/api/settings/welcome', () => {
     setSetting(ctx.db, 'welcome_dismissed', 'true');
     return { ok: true };

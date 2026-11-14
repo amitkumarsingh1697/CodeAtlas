@@ -36,6 +36,7 @@ import {
   type InventorySummary,
 } from '@nexora/languages';
 import { readGitHistory } from './git';
+import { countSymbolsByCategory, type SymbolCategory } from './symbol-category';
 import { detectFrameworks, findManifests, type Framework, type Manifest } from './manifests';
 import { GraphBuilder, splitTerms, type ChunkRec, type Confidence, type NodeRef } from './model';
 import {
@@ -74,7 +75,9 @@ export interface CoverageReport {
   frameworks: Framework[];
   files: {
     discovered: number;
+    /** Files read, by language (the same languages as the inventory). */
     byLang: Record<string, number>;
+    /** Files analysed fully or partially by any analyser; equals `inventory.analysed`. */
     structurallyAnalysed: number;
     parseFailures: { path: string; error: string }[];
     skipped: Record<string, number>;
@@ -82,7 +85,18 @@ export interface CoverageReport {
     textOnlyByExtension: Record<string, number>;
   };
   packages: number;
+  /** Code declarations from every analyser; markup, document and configuration entries excluded. */
   symbols: number;
+  /** All symbol nodes by category, so `symbols` is never mistaken for every stored entry (ACC-007). */
+  symbolsByCategory: Record<SymbolCategory, number>;
+  /** The file-count limit, and whether it stopped the run before every file was read (ACC-009). */
+  fileLimit: {
+    maxFiles: number | null;
+    filesRead: number;
+    filesInRepository: number;
+    filesBeyondLimit: number;
+    reached: boolean;
+  };
   routes: number;
   docs: number;
   /** Language adapters that ran, and how many files each analysed structurally (AB-5.3-06). */
@@ -326,11 +340,9 @@ function buildAndPersist(
       data: { dir: '' },
     });
 
-  const byLang: Record<string, number> = {};
   const textOnly: Record<string, number> = {};
   for (const f of disc.files) {
     const text = texts.get(f.path);
-    byLang[f.lang] = (byLang[f.lang] ?? 0) + 1;
     const mod = moduleOf(f.path);
     const fileRef = graph.addNode({
       kind: 'file',
@@ -687,6 +699,21 @@ function buildAndPersist(
       `${(skipped.too_large ?? 0) + (skipped.limit ?? 0)} files were skipped by size or count limits.`,
     );
 
+  const symbolsByCategory = countSymbolsByCategory(graph.nodes.values());
+  const beyond = skipped.limit ?? 0;
+  const fileLimit = {
+    maxFiles: Number.isFinite(limits.maxFiles) ? limits.maxFiles : null,
+    filesRead: disc.files.length,
+    filesInRepository: inventory.total,
+    filesBeyondLimit: beyond,
+    reached: beyond > 0,
+  };
+  const fmtN = (n: number) => n.toLocaleString('en-US');
+  const limitWarning = beyond
+    ? `Warning: the ${fmtN(limits.maxFiles)}-file limit stopped this run. Only ${fmtN(disc.files.length)} of ${fmtN(inventory.total)} files in the repository were read, so the coverage figures below describe the files read, not the whole repository.`
+    : '';
+  if (limitWarning) limitations.unshift(limitWarning);
+
   const report: CoverageReport = {
     repoId: repo.id,
     root: repo.root,
@@ -702,8 +729,12 @@ function buildAndPersist(
     },
     files: {
       discovered: disc.files.length,
-      byLang,
-      structurallyAnalysed: tsStats.filesParsed,
+      byLang: Object.fromEntries(
+        inventory.languages
+          .map((l) => [l.language, l.files - l.counts.excluded - l.counts.binary] as const)
+          .filter(([, n]) => n > 0),
+      ),
+      structurallyAnalysed: inventory.analysed,
       parseFailures: tsStats.filesFailed.slice(0, 100),
       skipped,
       skippedSecretPaths: disc.skipped
@@ -712,7 +743,11 @@ function buildAndPersist(
         .slice(0, 50),
       textOnlyByExtension: textOnly,
     },
-    inventory: { ...inventory, unlisted: disc.unlisted, summary: coverageSentence(inventory) },
+    inventory: {
+      ...inventory,
+      unlisted: disc.unlisted,
+      summary: (limitWarning ? `${limitWarning} ` : '') + coverageSentence(inventory),
+    },
     otherAnalysis,
     ...(scip ? { scip: scip.report } : {}),
     database: {
@@ -740,7 +775,9 @@ function buildAndPersist(
     adapters: tsStats.coverage,
     unsupportedLanguages,
     packages: packages.length,
-    symbols: tsStats.symbols,
+    symbols: symbolsByCategory.code,
+    symbolsByCategory,
+    fileLimit,
     routes: tsStats.routes,
     docs,
     imports: tsStats.imports,

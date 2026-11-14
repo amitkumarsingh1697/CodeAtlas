@@ -158,3 +158,18 @@ Statuses follow the master prompt (Phase 1 §B):
 | **Total**                 | **84** |
 
 The pattern is clear: **the indexing engine and evidence model are strong and well tested; the commercial layer on top of it (routes for the two target frameworks, an assessment report, impact with evidence, packaging and an egress proof) is mostly missing.**
+
+## Sprint 0 updates (2026-11-14)
+
+The rows above record the audit as it was. These rows changed in commercial Sprint 0; the evidence is in `documentation/IMPLEMENTATION_STATUS.md` (last evidence run).
+
+| Capability                     | Was                       | Now                       | Evidence                                                                                                                                                                                                              |
+| ------------------------------ | ------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Remote model consent gate      | Partial                   | Implemented, under-tested | Ollama now applies the same loopback check and `AI_REMOTE_CONSENT` gate as the OpenAI-compatible provider (`packages/ai/src/providers/loopback.ts`); `ai.test.ts`. Not yet tried against a real remote Ollama.        |
+| AI off by default              | Partial                   | Changed by decision       | AI stays on by default (D-6, ADR 0029) with an off switch in Settings, and Ask and Settings show the endpoint and what is sent; `chat.test.ts`, E2E Settings step.                                                    |
+| Symbol counts are meaningful   | Partial                   | Verified                  | `symbols` counts code declarations from every analyser; `symbolsByCategory` gives markup, documentation and configuration entries. PetClinic: 260 code symbols, 6,995 markup elements. `report-counts.test.ts`.       |
+| Consistent run summary         | Partial                   | Verified                  | `files.structurallyAnalysed` equals `inventory.analysed`, and `files.byLang` uses inventory languages. PetClinic: 98 in both, Java listed as Java.                                                                    |
+| File size and count limits     | Implemented, under-tested | Implemented, tested       | `fileLimit` in the report, a warning first in the summary and limitations, a CLI notice, an Overview banner, and `cli index --max-files n\|all`; `report-counts.test.ts`, `index-command.test.ts` (one real CLI run). |
+| Spring Data repository → table | Partial                   | Verified                  | A bare `Repository<T, ID>` imported from Spring Data is read (`jvm.ts`); a home-made `Repository<T>` is not; `orm.test.ts`. PetClinic: 3 of 3 repositories linked.                                                    |
+
+The roadmap estimated about 1,100 code symbols for PetClinic (7,402 minus the SVG elements). The measured figure is 260, because the remainder were configuration keys and other entries, not code: 47 classes, 3 interfaces, 6 constructors and 189 methods in Java, plus 15 declarations in other languages.

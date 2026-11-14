@@ -4,3 +4,4 @@ export * from './providers/ollama';
 export * from './providers/openai-compatible';
 export * from './providers/unavailable';
 export * from './registry';
+export * from './providers/loopback';

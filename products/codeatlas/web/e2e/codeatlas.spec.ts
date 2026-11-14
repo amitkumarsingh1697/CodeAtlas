@@ -296,6 +296,13 @@ test('index a repository, explore it, ask a question, and take a bug through rev
     await expect(page.getByText('Should mention the route')).toBeVisible();
     await expect(page.getByText('1 approved / 1 rejected')).toBeVisible();
     await expectAccessible(page, 'settings');
+    // AI is on by default and one click turns it off (SEC-002, ADR 0025).
+    await expect(page.getByText('AI assistance is on')).toBeVisible();
+    await page.getByRole('button', { name: 'Turn AI off' }).click();
+    await expect(page.getByText('AI assistance is off')).toBeVisible();
+    await expect(page.getByText('Nothing is sent to any model.', { exact: false })).toBeVisible();
+    await page.getByRole('button', { name: 'Turn AI on' }).click();
+    await expect(page.getByText('AI assistance is on')).toBeVisible();
     const del = page.getByRole('button', { name: 'Delete all local data' });
     await expect(del).toBeDisabled();
     await page.getByLabel('Type DELETE to confirm').fill('DELETE');

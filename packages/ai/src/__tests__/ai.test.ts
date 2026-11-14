@@ -6,6 +6,7 @@ import {
   OllamaProvider,
   OpenAiCompatibleProvider,
   extractJson,
+  isLoopbackUrl,
   generateStructured,
   type GenerateRequest,
   type ModelProvider,
@@ -143,6 +144,49 @@ describe('remote consent', () => {
     });
     expect((await p.capabilities()).available).toBe(false);
     await expect(p.generate({ messages: [] })).rejects.toMatchObject({ kind: 'consent_required' });
+  });
+  it('blocks a remote Ollama host without consent and never calls it', async () => {
+    const calls: string[] = [];
+    const fetchImpl = (async (url: string) => {
+      calls.push(String(url));
+      return new Response('{}');
+    }) as unknown as typeof fetch;
+    const p = new OllamaProvider({ baseUrl: 'https://ollama.example.com', fetchImpl });
+    expect(p.local).toBe(false);
+    const caps = await p.capabilities();
+    expect(caps).toMatchObject({ available: false, local: false });
+    await expect(p.generate({ messages: [] })).rejects.toMatchObject({ kind: 'consent_required' });
+    expect(calls).toEqual([]);
+  });
+  it('allows a remote Ollama host once the user consented', async () => {
+    const fetchImpl = (async () =>
+      new Response(
+        JSON.stringify({ model: 'm', message: { role: 'assistant', content: 'ok' } }),
+      )) as unknown as typeof fetch;
+    const p = new OllamaProvider({
+      baseUrl: 'https://ollama.example.com',
+      model: 'm',
+      userConsentedToRemote: true,
+      fetchImpl,
+    });
+    await expect(p.generate({ messages: [] })).resolves.toMatchObject({ text: 'ok' });
+  });
+  it('treats loopback addresses as local', () => {
+    for (const url of [
+      'http://127.0.0.1:11434',
+      'http://localhost:11434',
+      'http://127.1.2.3',
+      'http://[::1]:11434/',
+    ])
+      expect(isLoopbackUrl(url), url).toBe(true);
+    for (const url of [
+      'https://ollama.example.com',
+      'http://localhost.example.com',
+      'http://10.0.0.5:11434',
+      'http://0.0.0.0:11434',
+      'not a url',
+    ])
+      expect(isLoopbackUrl(url), url).toBe(false);
   });
   it('disabled provider throws unavailable', async () => {
     await expect(new DisabledProvider().generate()).rejects.toMatchObject({ kind: 'unavailable' });
