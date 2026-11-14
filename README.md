@@ -1,6 +1,6 @@
 # CodeAtlas
 
-**Understand every layer. See how everything connects.**
+**Software architecture intelligence. Understand, analyse, change with confidence.**
 
 This repository holds two things that share one engine:
 
