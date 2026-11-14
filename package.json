@@ -1,9 +1,9 @@
 {
-  "name": "nexora",
+  "name": "codeatlas",
   "private": true,
   "version": "0.1.0",
   "license": "Apache-2.0",
-  "description": "NEXORA monorepo: CVForge (Resume Intelligence) and CodeAtlas (Architecture Brain)",
+  "description": "CodeAtlas (local-first architecture intelligence) and the ArchLens Claude skill, extracted from the NEXORA monorepo",
   "type": "module",
   "packageManager": "pnpm@10.28.0",
   "engines": {
@@ -30,9 +30,7 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "esbuild",
-      "sharp"
+      "esbuild"
     ]
   }
 }

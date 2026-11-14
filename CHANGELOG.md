@@ -4,6 +4,10 @@ All notable changes to this repository. Format: [Keep a Changelog](https://keepa
 
 ## [Unreleased] — 0.1.0
 
+### Repository
+
+- Extracted from the NEXORA monorepo on 2026-11-14 with the git history of the CodeAtlas, ArchLens and shared-package paths. CVForge, its database setup and its screenshots were removed; root configuration, CI, docker compose, README, CLAUDE.md, CONTRIBUTING and SECURITY now cover CodeAtlas and ArchLens only. The ArchLens bundle was rebuilt, because the NEXORA build had picked up `source-map-support` through a CVForge dependency hoisted into the workspace.
+
 ### Added
 
 - Monorepo foundation: pnpm workspace, strict TypeScript, ESLint, Prettier, vitest; shared `ai`, `logging`, `validation` packages.

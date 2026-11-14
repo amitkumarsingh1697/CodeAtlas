@@ -6,11 +6,11 @@ Please do not open a public issue for a security problem.
 
 Report it privately through GitHub: open the repository's **Security** tab and choose **Report a vulnerability**. If that option is not shown, open an issue that says only that you have a security report and asks the maintainer for a private channel, without any details.
 
-Include what you found, how to reproduce it, and which product it affects (CVForge web app, CVForge extension, CodeAtlas, or ArchLens).
+Include what you found, how to reproduce it, and which product it affects (CodeAtlas or ArchLens).
 
 ## Supported versions
 
-NEXORA has not had a tagged release yet. Fixes go to the `main` branch.
+This repository has not had a tagged release yet. Fixes go to the `main` branch.
 
 ## Scope and design
 

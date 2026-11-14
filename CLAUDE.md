@@ -1,14 +1,13 @@
-# CLAUDE.md: Nexora engineering governance
+# CLAUDE.md: CodeAtlas engineering governance
 
-Nexora is the umbrella brand. This monorepo contains:
+This repository was extracted from the NEXORA monorepo on 2026-11-14 and holds only CodeAtlas and ArchLens. It contains:
 
 | Name                                                                 | What it is                                                    | Code                   |
 | -------------------------------------------------------------------- | ------------------------------------------------------------- | ---------------------- |
-| **CVForge** (Nexora Career, "Resume Intelligence" in the spec)       | Resume intelligence: web app, MV3 extension, Postgres backend | `products/cvforge/*`   |
 | **CodeAtlas** (Nexora Engineering, "Architecture Brain" in the spec) | Local-first code intelligence: local service, web UI, indexer | `products/codeatlas/*` |
 | **ArchLens**                                                         | Claude Code skill for evidence-labelled architecture work     | `skills/archlens/`     |
 
-**Source of truth:** [documentation/product/MASTER_SPECIFICATION.md](documentation/product/MASTER_SPECIFICATION.md). When this file and the specification differ, the specification wins, unless an accepted ADR records the deviation and the reason for it.
+**Source of truth:** [documentation/product/MASTER_SPECIFICATION.md](documentation/product/MASTER_SPECIFICATION.md). It still holds NEXORA's CVForge sections; only §5 (Architecture Brain) and the shared sections apply here. When this file and the specification differ, the specification wins, unless an accepted ADR records the deviation and the reason for it.
 
 ## 1. Primary principle
 
@@ -69,14 +68,10 @@ Mocks and fakes belong only in tests or in clearly labelled demo environments. I
 
 ```bash
 pnpm install
-sudo service postgresql start          # or: docker compose -f infrastructure/local-development/docker-compose.yml up -d
-pnpm --filter @nexora/cvforge-backend db:migrate
 pnpm check                             # typecheck + lint + unit/integration tests
 pnpm format:check
-pnpm --filter @nexora/cvforge-web e2e
 pnpm --filter @nexora/codeatlas-web build && pnpm --filter @nexora/codeatlas-web e2e
 pnpm audit --prod
-pnpm --filter @nexora/cvforge-web dev          # http://localhost:3000
 pnpm --filter @nexora/codeatlas-service start  # http://127.0.0.1:4317/#token=…
 ```
 
@@ -85,7 +80,7 @@ Gotcha: `pkill -f <pattern>` also matches its own shell command line. Use a brac
 ## 8. Architecture rules
 
 - Products never import each other. Shared code goes in `packages/*` only.
-- Domain logic lives in `products/*/core` (pure). Persistence and policy live in services (`cvforge/backend`, `codeatlas/core` store and workflow). UI and route handlers stay thin. No SQL in UI components.
+- Domain logic lives in `products/*/core` (pure). Persistence and policy live in services (`codeatlas/core` store and workflow). UI and route handlers stay thin. No SQL in UI components.
 - Before adding a dependency, check whether an existing one already solves the problem, then check its maintenance, licence, compatibility, security and size. Pin exact versions and record the reason.
 - No microservices, queues, vector databases, graph databases or agent frameworks without a demonstrated requirement and an ADR.
 
@@ -100,7 +95,7 @@ Read `documentation/AI_ENGINEERING_RULES.md` before touching any code path that 
 ## 10. Security
 
 - Validate every input at the boundary (zod). Enforce authorisation server-side, or in the trusted local service, never only in the UI.
-- Never log passwords, tokens, cookies or resume or job content. Log ids and counts only.
+- Never log passwords, tokens, cookies or repository content. Log ids and counts only.
 - Do not overwrite user files. Make no destructive git operations without explicit approval.
 
 ## 11. Founder rules (verbatim intent from the spec, §18)

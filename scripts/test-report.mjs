@@ -25,9 +25,6 @@ const PACKAGES = [
   'packages/orm',
   'packages/scip',
   'packages/brain',
-  'products/cvforge/core',
-  'products/cvforge/backend',
-  'products/cvforge/extension',
   'products/codeatlas/core',
   'products/codeatlas/service',
 ];
