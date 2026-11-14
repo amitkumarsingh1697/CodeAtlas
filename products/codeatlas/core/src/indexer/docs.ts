@@ -92,6 +92,7 @@ export function indexMarkdown(
     });
     const src: NodeRef = parent ? { kind: 'symbol', key: parent.key } : { kind: 'file', key: path };
     graph.addEdge({
+      method: 'docs.section-nesting',
       kind: 'contains',
       src,
       dst: { kind: 'symbol', key },
@@ -123,6 +124,7 @@ export function indexMarkdown(
       if (asPath && !seen.has(asPath)) {
         seen.add(asPath);
         graph.addEdge({
+          method: 'docs.path-mention',
           kind: 'mentions',
           src: doc,
           dst: { kind: 'file', key: asPath },
@@ -139,6 +141,7 @@ export function indexMarkdown(
       if (keys && keys.length === 1 && !seen.has(keys[0] as string)) {
         seen.add(keys[0] as string);
         graph.addEdge({
+          method: 'docs.identifier-mention',
           kind: 'mentions',
           src: doc,
           dst: { kind: 'symbol', key: keys[0] as string },

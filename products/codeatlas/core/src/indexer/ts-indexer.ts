@@ -735,6 +735,7 @@ export function indexTypeScript(
     if (keys && keys.size === 1) {
       const [key] = keys as Set<string> & { size: 1 };
       graph.addEdge({
+        method: 'typescript.unique-name-fallback',
         kind: c.kind,
         src: c.owner,
         dst: { kind: 'symbol', key: key as string },
@@ -767,6 +768,7 @@ export function indexTypeScript(
       !isTestPath(e.dst.key)
     ) {
       graph.addEdge({
+        method: 'typescript.test-imports',
         kind: 'tests',
         src: e.src,
         dst: e.dst,
@@ -829,6 +831,7 @@ function collectDeclarations(
         },
       });
       ctx.graph.addEdge({
+        method: 'typescript.declaration-nesting',
         kind: 'contains',
         src: parent ? { kind: 'symbol', key: symbolKey(path, parent.qname) } : fileRef,
         dst: { kind: 'symbol', key },
@@ -938,6 +941,7 @@ function collectImports(
       const target = rel(ctx, res.resolvedFileName);
       if (target) {
         ctx.graph.addEdge({
+          method: 'typescript.import-resolved',
           kind: 'imports',
           src: fileRef,
           dst: { kind: 'file', key: target },
@@ -959,6 +963,7 @@ function collectImports(
         data: { installed: true },
       });
       ctx.graph.addEdge({
+        method: 'typescript.import-package',
         kind: 'imports',
         src: fileRef,
         dst: ext,
@@ -976,6 +981,7 @@ function collectImports(
       if (ctx.repoFiles.has(candidate)) {
         // Non-code asset (css, svg, json...) that exists on disk.
         ctx.graph.addEdge({
+          method: 'typescript.import-asset',
           kind: 'imports',
           src: fileRef,
           dst: { kind: 'file', key: candidate },
@@ -1000,6 +1006,7 @@ function collectImports(
     if (spec.startsWith('node:') || isBuiltinModule(spec)) {
       const name = spec.startsWith('node:') ? spec : `node:${spec}`;
       ctx.graph.addEdge({
+        method: 'typescript.import-builtin',
         kind: 'imports',
         src: fileRef,
         dst: ctx.graph.addNode({ kind: 'external', key: name, name, data: { builtin: true } }),
@@ -1015,6 +1022,7 @@ function collectImports(
     const pkg = packageNameOfSpecifier(spec);
     if (/^[@a-z0-9]/i.test(pkg) && !pkg.startsWith('@/') && !pkg.startsWith('~')) {
       ctx.graph.addEdge({
+        method: 'typescript.import-uninstalled-package',
         kind: 'imports',
         src: fileRef,
         dst: ctx.graph.addNode({
@@ -1164,6 +1172,7 @@ function collectNextRoutes(ctx: Ctx, sf: ts.SourceFile, path: string): void {
       data: { method, path: r.path, framework: r.kind === 'pages-api' ? 'next-pages' : 'next-app' },
     });
     ctx.graph.addEdge({
+      method: 'typescript.next-route',
       kind: 'handled_by',
       src: route,
       dst: { kind: 'symbol', key: symbolKey(path, handler) },
@@ -1266,6 +1275,7 @@ function collectReferences(
     const t = resolve(nameNode);
     if (t.type === 'symbol') {
       ctx.graph.addEdge({
+        method: 'typescript.checker-call',
         kind,
         src: owner,
         dst: { kind: 'symbol', key: t.key },
@@ -1322,6 +1332,7 @@ function collectReferences(
     }
     if (!dst) return;
     ctx.graph.addEdge({
+      method: 'typescript.component-render',
       kind: 'renders',
       src: ownerOf(node),
       dst,
@@ -1364,6 +1375,7 @@ function collectReferences(
         const t = resolve(ts.isPropertyAccessExpression(tag) ? tag.name : tag);
         if (t.type === 'symbol')
           ctx.graph.addEdge({
+            method: 'typescript.jsx-render',
             kind: 'renders',
             src: ownerOf(node),
             dst: { kind: 'symbol', key: t.key },
@@ -1384,6 +1396,7 @@ function collectReferences(
           const src: NodeRef = { kind: 'symbol', key: symbolKey(path, d.qname) };
           if (target.type === 'symbol')
             ctx.graph.addEdge({
+              method: 'typescript.checker-heritage',
               kind,
               src,
               dst: { kind: 'symbol', key: target.key },
@@ -1393,6 +1406,7 @@ function collectReferences(
             });
           else if (target.type === 'external')
             ctx.graph.addEdge({
+              method: 'typescript.checker-heritage',
               kind,
               src,
               dst: ctx.graph.addNode({ kind: 'external', key: target.pkg, name: target.pkg }),
@@ -1465,6 +1479,7 @@ function detectExpressRoute(
       : resolve(ts.isPropertyAccessExpression(handler) ? handler.name : handler);
     if (t && t.type === 'symbol' && t.key)
       ctx.graph.addEdge({
+        method: 'typescript.express-route-handler',
         kind: 'handled_by',
         src: route,
         dst: { kind: 'symbol', key: t.key },
@@ -1476,6 +1491,7 @@ function detectExpressRoute(
     else if (!t) {
       const owner = ownerOf(node);
       ctx.graph.addEdge({
+        method: 'typescript.express-inline-handler',
         kind: 'handled_by',
         src: route,
         dst: owner,

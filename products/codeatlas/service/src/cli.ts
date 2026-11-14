@@ -3,6 +3,7 @@ import { indexRepository, openDb, search } from '@nexora/codeatlas-core';
 import { join } from 'node:path';
 import { BRAIN_USAGE, SCIP_USAGE, writeBrain } from './brain-command';
 import { INDEX_USAGE, limitNotice, parseIndexArgs } from './index-command';
+import { ASSESSMENT_USAGE, writeAssessment } from './assessment-command';
 import { fileURLToPath } from 'node:url';
 import { loadServiceConfig } from './config';
 import { relaunchWithLargerHeap } from './heap';
@@ -17,7 +18,7 @@ const cfg = loadServiceConfig(process.env, {
 });
 
 async function main(): Promise<void> {
-  if (cmd === 'index' || cmd === 'brain') {
+  if (cmd === 'index' || cmd === 'brain' || cmd === 'assessment') {
     const code = relaunchWithLargerHeap(process.argv[1]!, process.argv.slice(2));
     if (code !== null) process.exit(code);
   }
@@ -52,6 +53,11 @@ async function main(): Promise<void> {
       writeBrain(db, args, (t) => process.stdout.write(t));
       return;
     }
+    case 'assessment': {
+      const db = openDb(join(cfg.home, 'codeatlas.db'));
+      writeAssessment(db, args, (t) => process.stdout.write(t));
+      return;
+    }
     case 'search': {
       const [repoId, ...q] = args;
       const db = openDb(join(cfg.home, 'codeatlas.db'));
@@ -61,7 +67,7 @@ async function main(): Promise<void> {
     }
     default:
       process.stdout.write(
-        `usage: codeatlas <serve|${INDEX_USAGE}|brain <path> ${BRAIN_USAGE}|search <repoId> <query>>\n  brain also takes ${SCIP_USAGE}\n`,
+        `usage: codeatlas <serve|${INDEX_USAGE}|${ASSESSMENT_USAGE}|brain <path> ${BRAIN_USAGE}|search <repoId> <query>>\n  brain also takes ${SCIP_USAGE}\n`,
       );
       process.exitCode = cmd ? 1 : 0;
   }

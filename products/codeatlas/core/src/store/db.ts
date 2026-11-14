@@ -8,7 +8,7 @@ import { DatabaseSync } from 'node:sqlite';
  */
 export type Db = DatabaseSync;
 
-const SCHEMA_VERSION = 8;
+export const SCHEMA_VERSION = 9;
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -31,7 +31,13 @@ CREATE TABLE IF NOT EXISTS index_runs (
   status TEXT NOT NULL CHECK (status IN ('running','succeeded','failed')),
   error TEXT,
   coverage TEXT,
-  duration_ms INTEGER
+  duration_ms INTEGER,
+  -- Run metadata (REP-001, schema v9): engine and schema versions, scan policy hash, and the
+  -- full metadata as JSON (analysers, rule catalogue hash, compiler version, environment).
+  engine_version TEXT,
+  schema_version INTEGER,
+  scan_policy_hash TEXT,
+  metadata TEXT
 );
 
 -- Generic graph: files, symbols, modules (packages), external packages, routes, docs, entrypoints,
@@ -64,7 +70,11 @@ CREATE TABLE IF NOT EXISTS edges (
   confidence TEXT NOT NULL CHECK (confidence IN ('observed','inferred','unknown')),
   evidence_path TEXT,
   evidence_line INTEGER,
-  detail TEXT
+  detail TEXT,
+  -- The rule that produced the link and its adapter (GRAPH-001, rules.ts). NULL only on rows
+  -- written before schema v9; re-indexing fills them.
+  method TEXT,
+  adapter TEXT
 );
 CREATE INDEX IF NOT EXISTS edges_src ON edges(src, kind);
 CREATE INDEX IF NOT EXISTS edges_dst ON edges(dst, kind);
@@ -233,6 +243,16 @@ export function openDb(file: string): Db {
   const cols = db.prepare('PRAGMA table_info(file_inventory)').all() as { name: string }[];
   if (!cols.some((c) => c.name === 'resolution'))
     db.exec('ALTER TABLE file_inventory ADD COLUMN resolution TEXT');
+  // v8 -> v9: edges gain `method` and `adapter` (GRAPH-001).
+  const edgeCols = db.prepare('PRAGMA table_info(edges)').all() as { name: string }[];
+  if (!edgeCols.some((c) => c.name === 'method'))
+    db.exec('ALTER TABLE edges ADD COLUMN method TEXT; ALTER TABLE edges ADD COLUMN adapter TEXT;');
+  // v8 -> v9: index runs gain run metadata (REP-001).
+  const runCols = db.prepare('PRAGMA table_info(index_runs)').all() as { name: string }[];
+  if (!runCols.some((c) => c.name === 'metadata'))
+    db.exec(
+      'ALTER TABLE index_runs ADD COLUMN engine_version TEXT; ALTER TABLE index_runs ADD COLUMN schema_version INTEGER; ALTER TABLE index_runs ADD COLUMN scan_policy_hash TEXT; ALTER TABLE index_runs ADD COLUMN metadata TEXT;',
+    );
   db.prepare(
     "INSERT INTO meta (key, value) VALUES ('schema_version', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
   ).run(String(SCHEMA_VERSION));

@@ -472,6 +472,7 @@ export function addSchema(
   }
   for (const fk of parsed.foreignKeys) {
     graph.addEdge({
+      method: 'schema.foreign-key',
       kind: 'references',
       src: { kind: 'table', key: `table:${tableKey(fk.table)}` },
       dst: { kind: 'table', key: `table:${tableKey(fk.refTable)}` },
@@ -669,6 +670,7 @@ export class SchemaDetector {
       const table = arg && this.tableOf(arg, checker);
       if (!table) return;
       this.useEdge(
+        'schema.drizzle-query',
         write ? 'writes_table' : 'reads_table',
         table,
         ownerOf(),
@@ -698,6 +700,7 @@ export class SchemaDetector {
       if (!SQL_START.test(text)) return;
       for (const u of sqlTableUses(text))
         this.useEdge(
+          'schema.sql-string',
           u.write ? 'writes_table' : 'reads_table',
           u.table,
           ownerOf(),
@@ -720,6 +723,7 @@ export class SchemaDetector {
     const write = /^(create|update|upsert|delete)/.test(op);
     if (!read && !write) return;
     this.useEdge(
+      'schema.prisma-client',
       write ? 'writes_table' : 'reads_table',
       model.name.text,
       owner,
@@ -731,6 +735,7 @@ export class SchemaDetector {
   }
 
   private useEdge(
+    method: 'schema.drizzle-query' | 'schema.sql-string' | 'schema.prisma-client',
     kind: 'reads_table' | 'writes_table',
     table: string,
     owner: NodeRef,
@@ -740,6 +745,7 @@ export class SchemaDetector {
     detail: string,
   ): void {
     this.graph.addEdge({
+      method: method,
       kind,
       src: owner,
       dst: { kind: 'table', key: `table:${tableKey(table)}` },

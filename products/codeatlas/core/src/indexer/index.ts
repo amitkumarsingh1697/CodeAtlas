@@ -37,6 +37,9 @@ import {
 } from '@nexora/languages';
 import { readGitHistory } from './git';
 import { countSymbolsByCategory, type SymbolCategory } from './symbol-category';
+import { adapterOf } from './rules';
+import { runMetadata } from '../assessment/run-metadata';
+import type { RunMetadata } from '../assessment/model';
 import { detectFrameworks, findManifests, type Framework, type Manifest } from './manifests';
 import { GraphBuilder, splitTerms, type ChunkRec, type Confidence, type NodeRef } from './model';
 import {
@@ -129,6 +132,8 @@ export interface CoverageReport {
     unlisted: UnlistedPaths[];
     summary: string;
   };
+  /** What produced this index and under which scan policy (REP-001). Set once the run finishes. */
+  run?: RunMetadata;
   /** Declarations, imports and file links found by the non-TypeScript analysers. */
   otherAnalysis: AnalyseStats;
   /** SCIP indexes read or produced for this run (absent when none was asked for). */
@@ -267,6 +272,18 @@ export function indexRepository(
     .prepare("INSERT INTO index_runs (repo_id, started_at, status) VALUES (?, ?, 'running')")
     .run(repo.id, now().toISOString());
   const runId = Number(run.lastInsertRowid);
+  const limits = { ...LIMITS, ...opts.limits };
+  const adapters = opts.adapters ?? DEFAULT_ADAPTERS;
+  const meta = runMetadata({
+    limits,
+    adapters: adapters.map((a) => a.id),
+    incremental: !opts.full,
+    scipFiles: opts.scip?.files?.length ?? 0,
+    runIndexers: opts.scip?.run ?? false,
+  });
+  db.prepare(
+    'UPDATE index_runs SET engine_version = ?, schema_version = ?, scan_policy_hash = ?, metadata = ? WHERE id = ?',
+  ).run(meta.engineVersion, meta.schemaVersion, meta.scanPolicyHash, JSON.stringify(meta), runId);
   try {
     const report = buildAndPersist(
       db,
@@ -274,11 +291,12 @@ export function indexRepository(
       progress,
       now,
       started,
-      opts.adapters ?? DEFAULT_ADAPTERS,
+      adapters,
       !opts.full,
       opts.scip,
-      { ...LIMITS, ...opts.limits },
+      limits,
     );
+    report.run = meta;
     db.prepare(
       "UPDATE index_runs SET status = 'succeeded', finished_at = ?, coverage = ?, duration_ms = ? WHERE id = ?",
     ).run(now().toISOString(), JSON.stringify(report), report.durationMs, runId);
@@ -363,6 +381,7 @@ function buildAndPersist(
       },
     });
     graph.addEdge({
+      method: 'core.module-contains-file',
       kind: 'contains',
       src: { kind: 'module', key: mod },
       dst: fileRef,
@@ -498,6 +517,7 @@ function buildAndPersist(
       });
       if (paths.has(file))
         graph.addEdge({
+          method: 'manifest.package-entry-point',
           kind: 'starts_at',
           src: ep,
           dst: { kind: 'file', key: file },
@@ -893,7 +913,7 @@ function persist(
       ids.set(id, Number(r.lastInsertRowid));
     }
     const insEdge = db.prepare(
-      'INSERT INTO edges (repo_id, src, dst, kind, confidence, evidence_path, evidence_line, detail) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO edges (repo_id, src, dst, kind, confidence, evidence_path, evidence_line, detail, method, adapter) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
     );
     const idOf = (ref: NodeRef) => ids.get(GraphBuilder.id(ref));
     for (const e of graph.edges) {
@@ -910,6 +930,8 @@ function persist(
         e.evidencePath ?? null,
         e.evidenceLine ?? null,
         e.count > 1 ? `${e.detail ? `${e.detail}; ` : ''}${e.count} sites` : (e.detail ?? null),
+        e.method,
+        adapterOf(e.method),
       );
     }
     const insUnres = db.prepare(

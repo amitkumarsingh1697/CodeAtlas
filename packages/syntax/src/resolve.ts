@@ -47,7 +47,22 @@ export interface CallLink {
   kind: 'calls' | 'instantiates';
   confidence: 'observed' | 'inferred' | 'unresolved';
   detail: string;
+  /** Which resolution rule decided the link (see the rule catalogue), or why none could. */
+  rule: CallRule;
 }
+
+/** The call resolution rules, in the order they are tried. */
+export type CallRule =
+  | 'new-class'
+  | 'receiver-type'
+  | 'self-member'
+  | 'local-function'
+  | 'imported-name'
+  | 'same-package'
+  | 'module-import'
+  | 'class-member'
+  | 'unique-name'
+  | 'unresolved';
 
 /** Languages where a bare call inside a class body can name a member of that class. */
 const IMPLICIT_MEMBER = new Set([
@@ -328,6 +343,7 @@ export function resolveCalls(files: ResolveFile[]): CallLink[] {
         target: DeclRef | undefined,
         confidence: CallLink['confidence'],
         detail: string,
+        rule: CallRule = 'unresolved',
       ): CallLink => {
         const isClass = target ? CLASSLIKE.has(decl(target).kind) : false;
         return {
@@ -343,6 +359,7 @@ export function resolveCalls(files: ResolveFile[]): CallLink[] {
               : 'calls',
           confidence: target ? confidence : 'unresolved',
           detail,
+          rule: target ? rule : 'unresolved',
         };
       };
       const recv = c.receiver?.replace(/^[@$]/, '').trim();
@@ -363,6 +380,7 @@ export function resolveCalls(files: ResolveFile[]): CallLink[] {
                 hit,
                 hit.file === f.path ? 'observed' : 'inferred',
                 hit.file === f.path ? 'class declared in this file' : describe(hit, c.name),
+                'new-class',
               )
             : link(undefined, 'unresolved', `no repository class named ${c.name}`),
         );
@@ -383,6 +401,7 @@ export function resolveCalls(files: ResolveFile[]): CallLink[] {
                   found.ref,
                   'inferred',
                   `${c.receiver} is ${t.declared ? 'declared as' : 'assigned a new'} ${t.type} (${t.via})${found.from !== decl(cls).name ? `; ${c.name} is inherited from ${found.from}` : ''}`,
+                  'receiver-type',
                 ),
               );
             } else
@@ -421,6 +440,7 @@ export function resolveCalls(files: ResolveFile[]): CallLink[] {
               hit.file === f.path
                 ? `member of ${owner}`
                 : `member of ${owner} declared in ${hit.file}`,
+              'self-member',
             ),
           );
           continue;
@@ -448,20 +468,27 @@ export function resolveCalls(files: ResolveFile[]): CallLink[] {
         );
         const hitLocal = best(local);
         if (hitLocal) {
-          out.push(link(hitLocal, 'observed', 'declared in this file'));
+          out.push(link(hitLocal, 'observed', 'declared in this file', 'local-function'));
           continue;
         }
         const imported = viaImport(c.name);
         if (imported) {
           const via = importedNames.get(c.name);
           out.push(
-            link(imported, 'inferred', `resolved through the import at line ${via?.line ?? '?'}`),
+            link(
+              imported,
+              'inferred',
+              `resolved through the import at line ${via?.line ?? '?'}`,
+              'imported-name',
+            ),
           );
           continue;
         }
         const pkg = best(callableOrClass(sameDir(byName.get(`${L}\0${c.name}`), f.path)));
         if (pkg && SAME_PACKAGE.has(L)) {
-          out.push(link(pkg, 'inferred', `declared in the same package (${pkg.file})`));
+          out.push(
+            link(pkg, 'inferred', `declared in the same package (${pkg.file})`, 'same-package'),
+          );
           continue;
         }
       } else {
@@ -478,7 +505,14 @@ export function resolveCalls(files: ResolveFile[]): CallLink[] {
               ? best(named.filter((r) => dirOf(r.file) === dirOf(mod.file)))
               : undefined);
           if (hit) {
-            out.push(link(hit, 'inferred', `resolved through the import at line ${mod.line}`));
+            out.push(
+              link(
+                hit,
+                'inferred',
+                `resolved through the import at line ${mod.line}`,
+                'module-import',
+              ),
+            );
             continue;
           }
         }
@@ -493,6 +527,7 @@ export function resolveCalls(files: ResolveFile[]): CallLink[] {
                 hit,
                 hit.file === f.path ? 'observed' : 'inferred',
                 `member of ${clsName}${hit.file === f.path ? '' : ` declared in ${hit.file}`}`,
+                'class-member',
               ),
             );
             continue;
@@ -580,6 +615,7 @@ export function resolveCalls(files: ResolveFile[]): CallLink[] {
             recv === undefined || isMember(reachable[0]!)
               ? `the only declaration named ${c.name} in the repository that this call can reach; the receiver's type was not checked`
               : `${c.name} in the module ${lastSegment(recv)} (${reachable[0]!.file})`,
+            'unique-name',
           ),
         );
         continue;
@@ -642,7 +678,10 @@ export interface BaseLink {
   kind: 'extends' | 'implements';
   confidence: 'observed' | 'inferred' | 'unresolved';
   detail: string;
+  rule: BaseRule;
 }
+
+export type BaseRule = 'same-file' | 'imported-name' | 'same-folder' | 'unique-name' | 'unresolved';
 
 const INTERFACE_KINDS = new Set(['interface', 'trait']);
 
@@ -691,20 +730,25 @@ export function resolveBases(files: ResolveFile[]): BaseLink[] {
         let target: DeclRef | undefined;
         let confidence: BaseLink['confidence'] = 'inferred';
         let detail: string;
+        let rule: BaseRule = 'unresolved';
         const here = cands.filter((r) => r.file === f.path);
         if (here.length) {
           target = here[0];
           confidence = 'observed';
           detail = 'declared in this file';
+          rule = 'same-file';
         } else if (via && cands.some((r) => r.file === via.file)) {
           target = cands.find((r) => r.file === via.file);
           detail = `resolved through the import at line ${via.line}`;
+          rule = 'imported-name';
         } else if (one(cands.filter((r) => dirOf(r.file) === dirOf(f.path)))) {
           target = one(cands.filter((r) => dirOf(r.file) === dirOf(f.path)));
           detail = `declared in the same folder (${target!.file})`;
+          rule = 'same-folder';
         } else if (one(cands)) {
           target = one(cands);
           detail = `the only declaration named ${bare} in the repository`;
+          rule = 'unique-name';
         } else {
           confidence = 'unresolved';
           detail = cands.length
@@ -725,6 +769,7 @@ export function resolveBases(files: ResolveFile[]): BaseLink[] {
           kind: t && INTERFACE_KINDS.has(t.kind) && INTERFACE_KINDS.has(d.kind) ? 'extends' : kind,
           confidence,
           detail,
+          rule,
         });
       }
     });
