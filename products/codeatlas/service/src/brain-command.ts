@@ -32,7 +32,7 @@ export function scipFlags(a: string[]): { files: string[]; run: boolean } {
   return { files, run };
 }
 
-function takeFlag(a: string[], name: string): string | undefined {
+export function takeFlag(a: string[], name: string): string | undefined {
   const i = a.indexOf(name);
   if (i < 0) return undefined;
   const v = a[i + 1];

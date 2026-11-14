@@ -53,7 +53,28 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export function Settings() {
   const info = useAsync(() => api<SettingsInfo>('/api/settings'), []);
-  const caps = useAsync(() => api<{ capabilities: Caps }>('/api/ai/status'), []);
+  const [aiTick, setAiTick] = useState(0);
+  const caps = useAsync(
+    () =>
+      api<{ capabilities: Caps; enabled: boolean; endpoint: string | null; dataSent: string }>(
+        '/api/ai/status',
+      ),
+    [aiTick],
+  );
+  const [aiBusy, setAiBusy] = useState(false);
+  const [aiError, setAiError] = useState<unknown>(null);
+  const toggleAi = async (enabled: boolean) => {
+    setAiBusy(true);
+    setAiError(null);
+    try {
+      await api('/api/settings/ai', { method: 'POST', body: { enabled } });
+      setAiTick((n) => n + 1);
+    } catch (e) {
+      setAiError(e);
+    } finally {
+      setAiBusy(false);
+    }
+  };
   const stats = useAsync(() => api<Summary>('/api/analytics'), []);
   const [confirm, setConfirm] = useState('');
   const [result, setResult] = useState<string | null>(null);
@@ -72,6 +93,29 @@ export function Settings() {
 
       <Card title="AI provider">
         {caps.loading && !c ? <Spinner /> : <ErrorBox error={caps.error} />}
+        <ErrorBox error={aiError} />
+        {caps.data && (
+          <div className="mb-3 space-y-2">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-sm font-semibold">
+                AI assistance is {caps.data.enabled ? 'on' : 'off'}
+              </span>
+              <Button
+                small
+                variant={caps.data.enabled ? 'secondary' : 'primary'}
+                disabled={aiBusy}
+                onClick={() => void toggleAi(!caps.data!.enabled)}
+              >
+                {caps.data.enabled ? 'Turn AI off' : 'Turn AI on'}
+              </Button>
+            </div>
+            <p className="text-sm text-muted">
+              {caps.data.enabled
+                ? `When a model is available, each question sends this to ${caps.data.endpoint ?? 'the configured provider'}: ${caps.data.dataSent}`
+                : 'Nothing is sent to any model. Ask returns the relevant code and relationships without an explanation.'}
+            </p>
+          </div>
+        )}
         {c && (
           <dl className="divide-y divide-line">
             <Row label="Provider" value={c.provider} />

@@ -93,6 +93,45 @@ describe('module documentation over HTTP (S3-5)', () => {
   });
 });
 
+describe('AI on/off switch (SEC-002)', () => {
+  it('is on by default, says where data goes, and turns every model call off', async () => {
+    const s = await withModel.api<{
+      enabled: boolean;
+      endpoint: string | null;
+      dataSent: string;
+      capabilities: { available: boolean };
+    }>('/api/ai/status');
+    expect(s.body.enabled).toBe(true);
+    expect(s.body.capabilities.available).toBe(true);
+    expect(s.body.dataSent).toMatch(/source excerpts/);
+
+    const off = await withModel.api<{ enabled: boolean }>('/api/settings/ai', {
+      method: 'POST',
+      body: { enabled: false },
+    });
+    expect(off.body.enabled).toBe(false);
+    const s2 = await withModel.api<{ enabled: boolean; capabilities: { available: boolean } }>(
+      '/api/ai/status',
+    );
+    expect(s2.body).toMatchObject({ enabled: false, capabilities: { available: false } });
+    const r = await withModel.api<{ mode: string }>(`/api/repos/${repoA}/chat`, {
+      method: 'POST',
+      body: { question: 'What does handleUsers do?' },
+    });
+    expect(r.body.mode).toBe('retrieval-only');
+
+    await withModel.api('/api/settings/ai', { method: 'POST', body: { enabled: true } });
+    const back = await withModel.api<{ mode: string }>(`/api/repos/${repoA}/chat`, {
+      method: 'POST',
+      body: { question: 'What does handleUsers do?' },
+    });
+    expect(back.body.mode).toBe('model');
+    expect(
+      (await withModel.api('/api/settings/ai', { method: 'POST', body: { enabled: 'no' } })).status,
+    ).toBe(400);
+  });
+});
+
 describe('chat over HTTP', () => {
   it('answers with citations from the model', async () => {
     const r = await withModel.api<{

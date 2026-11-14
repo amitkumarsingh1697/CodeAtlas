@@ -7,6 +7,7 @@ import {
   type ModelProvider,
 } from '../types';
 import { fetchJson } from './http';
+import { isLoopbackUrl } from './loopback';
 
 export interface OllamaOptions {
   baseUrl?: string;
@@ -14,6 +15,8 @@ export interface OllamaOptions {
   contextWindowTokens?: number;
   defaultTimeoutMs?: number;
   fetchImpl?: typeof fetch;
+  /** Required before source context is sent to an Ollama host that is not this machine. */
+  userConsentedToRemote?: boolean;
 }
 
 const tagsSchema = z.object({ models: z.array(z.object({ name: z.string() })).default([]) });
@@ -27,10 +30,13 @@ const chatSchema = z.object({
 /**
  * Ollama adapter using the documented REST API (/api/tags, /api/chat).
  * Structured outputs pass a JSON schema via the `format` field.
+ * A base URL that is not loopback is treated as remote and refused without consent,
+ * the same rule as the OpenAI-compatible adapter.
  */
 export class OllamaProvider implements ModelProvider {
   readonly id = 'ollama';
-  readonly local = true;
+  readonly local: boolean;
+  private readonly consented: boolean;
   private readonly baseUrl: string;
   private readonly model: string;
   private readonly ctx: number;
@@ -43,6 +49,16 @@ export class OllamaProvider implements ModelProvider {
     this.ctx = opts.contextWindowTokens ?? 8192;
     this.timeout = opts.defaultTimeoutMs ?? 120_000;
     this.fetchImpl = opts.fetchImpl;
+    this.local = isLoopbackUrl(this.baseUrl);
+    this.consented = opts.userConsentedToRemote ?? false;
+  }
+
+  private assertConsent() {
+    if (!this.local && !this.consented)
+      throw new AiError(
+        'consent_required',
+        'Sending data to an Ollama host on another machine requires explicit consent (AI_REMOTE_CONSENT=true).',
+      );
   }
 
   async capabilities(): Promise<ModelCapabilities> {
@@ -51,8 +67,15 @@ export class OllamaProvider implements ModelProvider {
       model: this.model,
       contextWindowTokens: this.ctx,
       supportsJsonSchema: true,
-      local: true,
+      local: this.local,
     };
+    if (!this.local && !this.consented)
+      return {
+        ...base,
+        models: [],
+        available: false,
+        reason: 'Ollama host is on another machine and remote use is not consented to.',
+      };
     try {
       const raw = await fetchJson(`${this.baseUrl}/api/tags`, {
         timeoutMs: 3000,
@@ -81,6 +104,7 @@ export class OllamaProvider implements ModelProvider {
   }
 
   async generate(req: GenerateRequest): Promise<GenerateResult> {
+    this.assertConsent();
     const started = Date.now();
     const raw = await fetchJson(`${this.baseUrl}/api/chat`, {
       method: 'POST',

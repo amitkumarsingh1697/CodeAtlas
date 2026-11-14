@@ -377,10 +377,15 @@ function jpaModel(k: Klass): OrmModel | undefined {
 const REPOSITORY =
   /^(Jpa|Crud|ListCrud|PagingAndSorting|ListPagingAndSorting|JpaSpecificationExecutor|Revision|QuerydslPredicateExecutor)?Repository$|^JpaRepository$|^CrudRepository$/;
 
-function springData(k: Klass, out: OrmFile): void {
+/** The bare `Repository` name is generic; it is Spring Data's only when the file imports it. */
+const SPRING_REPOSITORY_IMPORT =
+  /\bimport\s+org\.springframework\.data\.repository\.(Repository|\*)\s*;/;
+
+function springData(k: Klass, out: OrmFile, source: string): void {
   for (const b of k.bases) {
     const m = /^([\w.]+)\s*<\s*([\w.]+)/.exec(b);
     if (!m || !REPOSITORY.test(m[1]!.split('.').pop()!)) continue;
+    if (m[1] === 'Repository' && !SPRING_REPOSITORY_IMPORT.test(source)) continue;
     out.uses.push({
       framework: 'spring-data',
       owner: k.name,
@@ -481,11 +486,15 @@ function exposed(c: N, k: Klass, out: OrmFile): void {
 const JPA_HINT =
   /@(jakarta\.persistence\.|javax\.persistence\.)?(Entity|MappedSuperclass|Embeddable)\b/;
 const SPRING_HINT = /\b(Jpa|Crud|PagingAndSorting|ListCrud)Repository\s*</;
+const SPRING_BARE_HINT = /\bRepository\s*</;
 const EXPOSED_HINT = /org\.jetbrains\.exposed|:\s*(Int|Long|UUID)?(Id)?Table\(/;
 
 export function readJvm(path: string, language: 'Java' | 'Kotlin', source: string): OrmFile | null {
   const jpa = JPA_HINT.test(source);
-  const spring = SPRING_HINT.test(source);
+  const spring =
+    SPRING_HINT.test(source) ||
+    (SPRING_BARE_HINT.test(source) && SPRING_REPOSITORY_IMPORT.test(source)) ||
+    /\borg\.springframework\.data\.repository\.Repository\s*</.test(source);
   const exp = language === 'Kotlin' && EXPOSED_HINT.test(source);
   if (!jpa && !spring && !exp) return null;
   const tree = parseTree(language === 'Java' ? 'java' : 'kotlin', source);
@@ -509,7 +518,7 @@ export function readJvm(path: string, language: 'Java' | 'Kotlin', source: strin
         const m = jpaModel(k);
         if (m) out.models.push(m, ...(m.role === 'entity' ? oneToManyJoins(k) : []));
       }
-      if (spring) springData(k, out);
+      if (spring) springData(k, out, source);
       if (exp) exposed(k.node, k, out);
     }
   } finally {

@@ -48,6 +48,21 @@ export interface Coverage {
   };
   packages: number;
   symbols: number;
+  /** Absent on indexes made before ACC-007, where `symbols` counted TypeScript only. */
+  symbolsByCategory?: {
+    code: number;
+    markup: number;
+    documentation: number;
+    configuration: number;
+  };
+  /** Absent on indexes made before ACC-009. */
+  fileLimit?: {
+    maxFiles: number | null;
+    filesRead: number;
+    filesInRepository: number;
+    filesBeyondLimit: number;
+    reached: boolean;
+  };
   routes: number;
   docs: number;
   imports: { internal: number; external: number; unresolved: number };

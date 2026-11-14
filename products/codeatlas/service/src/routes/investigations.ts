@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { z } from 'zod';
 import { createProvider, type ModelProvider } from '@nexora/ai';
+import { switchable } from '../ai-switch';
 import { InvestigationWorkflow, WorkflowError } from '@nexora/codeatlas-core';
 import { HttpError, type Req } from '../http';
 import { repoOr404, track, type ServiceContext } from '../server';
@@ -19,7 +20,7 @@ const STATUS: Record<WorkflowError['code'], number> = {
 
 export function investigationRoutes(provider?: ModelProvider) {
   return (ctx: ServiceContext): void => {
-    const p = provider ?? createProvider(ctx.cfg.ai);
+    const p = switchable(ctx.db, provider ?? createProvider(ctx.cfg.ai));
     const wf = new InvestigationWorkflow({
       db: ctx.db,
       worktreeRoot: ctx.cfg.worktreeDir ?? join(ctx.cfg.home, 'worktrees'),

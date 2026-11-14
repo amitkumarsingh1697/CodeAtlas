@@ -199,7 +199,9 @@ describe('indexer: safety and coverage', () => {
   });
 
   it('produces a coverage report with resolution figures', () => {
-    expect(report.files.structurallyAnalysed).toBe(12);
+    // The TypeScript adapter read 12 files; the files block counts every analyser (ACC-007).
+    expect(report.adapters[0]?.filesAnalysed).toBe(12);
+    expect(report.files.structurallyAnalysed).toBe(report.inventory.analysed);
     expect(report.files.parseFailures).toEqual([]);
     expect(report.calls.observed).toBeGreaterThan(0);
     expect(report.calls.resolutionRate).toBeGreaterThan(0);
@@ -516,7 +518,7 @@ describe('language adapters (S3-1)', () => {
       expect.objectContaining({
         id: 'typescript',
         languages: ['typescript', 'javascript'],
-        filesAnalysed: report.files.structurallyAnalysed,
+        filesAnalysed: 12,
       }),
     ]);
     expect(report.unsupportedLanguages).toEqual({ APL: 1 });
@@ -526,8 +528,14 @@ describe('language adapters (S3-1)', () => {
     const other = openDb(':memory:');
     const r = indexRepository(other, root, { adapters: [] });
     expect(r.adapters).toEqual([]);
-    expect(r.files.structurallyAnalysed).toBe(0);
-    expect(r.symbols).toBe(0);
+    // Configuration and Markdown readers still run; no code is claimed as analysed.
+    expect(r.files.structurallyAnalysed).toBe(r.inventory.analysed);
+    // The only code symbol is the Python function, read by the tree-sitter analyser.
+    expect(r.symbols).toBe(1);
+    const tsSymbols = other
+      .prepare("SELECT COUNT(*) AS n FROM nodes WHERE kind = 'symbol' AND file_path LIKE '%.ts'")
+      .get() as { n: number };
+    expect(tsSymbols.n).toBe(0);
     expect(r.unsupportedLanguages.TypeScript).toBeGreaterThan(0);
     expect(r.unsupportedLanguages.APL).toBe(1);
     // With no TypeScript adapter, TypeScript files are text only, never claimed as analysed.

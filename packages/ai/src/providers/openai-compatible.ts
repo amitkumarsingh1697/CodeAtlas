@@ -7,6 +7,7 @@ import {
   type ModelProvider,
 } from '../types';
 import { fetchJson } from './http';
+import { isLoopbackUrl } from './loopback';
 
 export interface OpenAiCompatibleOptions {
   baseUrl: string;
@@ -41,7 +42,7 @@ export class OpenAiCompatibleProvider implements ModelProvider {
 
   constructor(opts: OpenAiCompatibleOptions) {
     this.opts = opts;
-    this.local = opts.local ?? /^https?:\/\/(127\.0\.0\.1|localhost)(:|\/)/.test(opts.baseUrl);
+    this.local = opts.local ?? isLoopbackUrl(opts.baseUrl);
   }
 
   private assertConsent() {
