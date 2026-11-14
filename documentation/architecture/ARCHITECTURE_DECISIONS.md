@@ -36,8 +36,9 @@ Decisions are recorded as ADRs in [adr/](adr/). Add a new numbered file for each
 - **Hash router in CodeAtlas web:** the SPA is served by a minimal static handler, so client routes must not need server rewrites.
 - **Clock injection (`ctx.now`)** in CVForge services so expiry and retention logic is testable without sleeping.
   | [0024](adr/0024-strategy-package-is-the-product-baseline.md) | The strategy and delivery package in `docs/strategy-and-delivery/` is the product baseline; the master specification stays as the record of what was built | accepted |
+  | [0026](adr/0026-edge-method-and-rule-catalogue.md) | Every relationship names the rule that produced it (`edges.method`, `edges.adapter`); the rule catalogue is generated from code and tested | accepted |
   | [0029](adr/0029-ai-on-by-default-with-an-off-switch.md) | AI on by default with an off switch in Settings and a notice of what is sent; remote model hosts need `AI_REMOTE_CONSENT`; a recorded deviation from package doc 06 §4 | accepted |
   | [0030](adr/0030-open-core-boundary.md) | Open core: the engine stays Apache-2.0; the report generator and Pro features are paid, in a separate private repository | accepted; counsel review pending |
   | [0031](adr/0031-3d-brain-kept-as-an-exhibit.md) | ADR 0012's 3D brain recorded as a deviation from spec §5.5; no new 3D work in the 90-day plan; 2D views lead the assessment | accepted |
 
-ADR numbers 0025 to 0028 are reserved for decisions the audit roadmap already names (framework adapters, edge method columns, report model and PDF, installable package).
+ADR numbers 0025, 0027 and 0028 are reserved for decisions the audit roadmap already names (framework adapters, report model and PDF, installable package).

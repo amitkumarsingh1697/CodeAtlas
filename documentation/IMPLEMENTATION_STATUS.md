@@ -7,7 +7,7 @@ This is the single tracker required by spec §19.
 
 ## Last evidence run
 
-**Date:** 2026-11-14, in the build container, for commercial Sprint 0.
+**Date:** 2026-11-15, in the build container, for commercial Sprint 1 (engine side). Sprint 0 figures from 2026-11-14 are kept below where still current.
 
 | Command                                   | Result                                                                                                                                           |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -72,14 +72,15 @@ Counts are taken from REQUIREMENTS_TRACEABILITY.md.
 
 ## Sprint status
 
-| Sprint                                            | Status              | Evidence                                                                                                                                                                      |
-| ------------------------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Baseline (spec phases 0–11, built 2026-11-02)     | Built               | Phase reports in the project thread; tests above                                                                                                                              |
-| Sprint 0: governance and research                 | **Done** 2026-11-03 | The 10 governance files exist; 12 sourced research entries; every spec requirement has an ID and status; ArchLens check passes; `pnpm check` green                            |
-| Sprint 1: spec compliance and security findings   | **Done** 2026-11-03 | All 8 items; evidence below and in REQUIREMENTS_TRACEABILITY                                                                                                                  |
-| Sprint 2: product surface and robustness          | **Done** 2026-11-03 | All 7 items; evidence below, in REQUIREMENTS_TRACEABILITY and in `reports/SPRINT_2_REPORT.md`                                                                                 |
-| Sprint 3: CodeAtlas depth, plus CVForge hardening | **Done** 2026-11-04 | All 7 items plus PDF isolation, optional SMTP and email confirmation; evidence below and in `reports/SPRINT_3_REPORT.md`                                                      |
-| Commercial Sprint 0: truth and security fixes     | **Done** 2026-11-14 | SEC-001, SEC-002, ACC-007, ACC-009, JV-008, DOC-001; `pnpm check` 654 tests and the E2E journey pass; see SPRINT_PLAN and `docs/audit/CAPABILITY_MATRIX.md` §Sprint 0 updates |
+| Sprint                                                                      | Status              | Evidence                                                                                                                                                                      |
+| --------------------------------------------------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Baseline (spec phases 0–11, built 2026-11-02)                               | Built               | Phase reports in the project thread; tests above                                                                                                                              |
+| Sprint 0: governance and research                                           | **Done** 2026-11-03 | The 10 governance files exist; 12 sourced research entries; every spec requirement has an ID and status; ArchLens check passes; `pnpm check` green                            |
+| Sprint 1: spec compliance and security findings                             | **Done** 2026-11-03 | All 8 items; evidence below and in REQUIREMENTS_TRACEABILITY                                                                                                                  |
+| Sprint 2: product surface and robustness                                    | **Done** 2026-11-03 | All 7 items; evidence below, in REQUIREMENTS_TRACEABILITY and in `reports/SPRINT_2_REPORT.md`                                                                                 |
+| Sprint 3: CodeAtlas depth, plus CVForge hardening                           | **Done** 2026-11-04 | All 7 items plus PDF isolation, optional SMTP and email confirmation; evidence below and in `reports/SPRINT_3_REPORT.md`                                                      |
+| Commercial Sprint 0: truth and security fixes                               | **Done** 2026-11-14 | SEC-001, SEC-002, ACC-007, ACC-009, JV-008, DOC-001; `pnpm check` 654 tests and the E2E journey pass; see SPRINT_PLAN and `docs/audit/CAPABILITY_MATRIX.md` §Sprint 0 updates |
+| Commercial Sprint 1 (engine side): rule catalogue and assessment data model | **Done** 2026-11-15 | GRAPH-001, REP-001 and the data for REP-003 to REP-005; `pnpm check` 671 tests and the E2E journey pass; report rendering blocked on the private repository (ADR 0030)        |
 
 ## Sprint 1 items
 

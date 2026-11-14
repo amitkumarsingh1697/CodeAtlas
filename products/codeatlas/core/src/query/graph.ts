@@ -26,6 +26,9 @@ export interface EdgeRow {
   evidencePath: string | null;
   evidenceLine: number | null;
   detail: string | null;
+  /** Rule id from the rule catalogue; null on edges stored before schema v9. */
+  method: string | null;
+  adapter: string | null;
 }
 
 interface RawNode {
@@ -51,11 +54,14 @@ interface RawEdge {
   evidence_path: string | null;
   evidence_line: number | null;
   detail: string | null;
+  method: string | null;
+  adapter: string | null;
 }
 
 export const NODE_COLS =
   'id, kind, key, name, file_path, module, symbol_kind, exported, start_line, end_line, data';
-export const EDGE_COLS = 'id, src, dst, kind, confidence, evidence_path, evidence_line, detail';
+export const EDGE_COLS =
+  'id, src, dst, kind, confidence, evidence_path, evidence_line, detail, method, adapter';
 
 export function toNode(r: RawNode): NodeRow {
   return {
@@ -83,6 +89,8 @@ export function toEdge(r: RawEdge): EdgeRow {
     evidencePath: r.evidence_path,
     evidenceLine: r.evidence_line,
     detail: r.detail,
+    method: r.method,
+    adapter: r.adapter,
   };
 }
 

@@ -179,6 +179,7 @@ export function addOrm(
     const dst: NodeRef = { kind: 'table', key: `table:${tableKey(k.refTable)}` };
     if (!graph.has(src) || !graph.has(dst)) continue;
     graph.addEdge({
+      method: 'orm.foreign-key',
       kind: 'references',
       src,
       dst,
@@ -218,10 +219,21 @@ export function addOrm(
       evidenceLine: m.line,
       detail: m.detail,
     };
-    if (m.access === 'maps') graph.addEdge({ kind: 'maps_to', ...edge });
+    if (m.access === 'maps')
+      graph.addEdge({ kind: 'maps_to', method: 'orm.entity-table', ...edge });
     else {
-      graph.addEdge({ kind: 'reads_table', ...edge, confidence: 'inferred' });
-      graph.addEdge({ kind: 'writes_table', ...edge, confidence: 'inferred' });
+      graph.addEdge({
+        kind: 'reads_table',
+        method: 'orm.repository-table',
+        ...edge,
+        confidence: 'inferred',
+      });
+      graph.addEdge({
+        kind: 'writes_table',
+        method: 'orm.repository-table',
+        ...edge,
+        confidence: 'inferred',
+      });
     }
     stats.mappings++;
   }

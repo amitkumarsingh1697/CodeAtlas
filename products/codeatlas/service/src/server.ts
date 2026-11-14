@@ -38,6 +38,8 @@ import {
   riskView,
   search,
   unresolvedList,
+  AssessmentUnavailable,
+  buildAssessment,
   upsertRepo,
   cloneRepository,
   CloneError,
@@ -315,6 +317,16 @@ function registerCoreRoutes(ctx: ServiceContext): void {
       })
       .parse(Object.fromEntries([...req.query.entries()].filter(([, v]) => v !== '')));
     return inventoryFiles(ctx.db, repo.id, q);
+  });
+  // Assessment data model v1 (REP-001): the data the report generator renders.
+  r.add('GET', '/api/repos/:id/assessment', (req) => {
+    const repo = repoOr404(ctx, req.params.id);
+    try {
+      return buildAssessment(ctx.db, repo.id);
+    } catch (e) {
+      if (e instanceof AssessmentUnavailable) throw new HttpError(409, 'NO_ASSESSMENT', e.message);
+      throw e;
+    }
   });
   r.add('GET', '/api/repos/:id/unresolved', (req) => ({
     items: unresolvedList(ctx.db, repoOr404(ctx, req.params.id).id),

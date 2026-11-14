@@ -8,6 +8,8 @@ import {
   CONTAINER_KINDS,
   resolveBases,
   resolveCalls,
+  type BaseRule,
+  type CallRule,
   type DeclRef,
   type ResolveFile,
   type SyntaxResult,
@@ -16,6 +18,7 @@ import type { ScipResolver } from '@nexora/scip';
 import { posix } from 'node:path';
 import type { DiscoveredFile } from '../files';
 import type { GraphBuilder, NodeRef } from '../model';
+import type { RuleId } from '../rules';
 import {
   extractDeclarations,
   type Declaration,
@@ -420,6 +423,7 @@ function linkClassNames(
         : { kind: 'file', key: f.path };
     stats.links.resolved++;
     ctx.graph.addEdge({
+      method: 'config.class-reference',
       kind: 'references',
       src,
       dst,
@@ -460,6 +464,7 @@ function linkMavenModules(ctx: AnalyseContext, files: DiscoveredFile[], stats: A
     if (!target || target === n.filePath) continue;
     stats.links.resolved++;
     ctx.graph.addEdge({
+      method: 'build.module-dependency',
       kind: 'references',
       src: { kind: 'symbol', key: n.key },
       dst: { kind: 'file', key: target },
@@ -555,6 +560,7 @@ export function analyseNonTsFiles(
       });
       const parentKey = s.parent ? keyOf.get(s.parent) : undefined;
       graph.addEdge({
+        method: 'structured.nesting',
         kind: 'contains',
         src: parentKey ? { kind: 'symbol', key: parentKey } : fileRef(f.path),
         dst: { kind: 'symbol', key },
@@ -590,6 +596,7 @@ export function analyseNonTsFiles(
           ? { kind: 'symbol', key: `${f.path}#${l.fromSymbol}` }
           : fileRef(f.path);
       graph.addEdge({
+        method: 'structured.file-link',
         kind: l.kind,
         src: from,
         dst: fileRef(hit.path),
@@ -689,6 +696,7 @@ export function analyseNonTsFiles(
       const p = parentOf(i);
       const parentKey = p !== undefined ? keys[p] : undefined;
       graph.addEdge({
+        method: 'syntax.declaration-nesting',
         kind: 'contains',
         src: parentKey ? { kind: 'symbol', key: parentKey } : fileRef(f.path),
         dst: { kind: 'symbol', key },
@@ -865,6 +873,7 @@ export function analyseNonTsFiles(
         });
         const parentKey = d.parent !== undefined ? keys[d.parent] : undefined;
         graph.addEdge({
+          method: 'declarations.nesting',
           kind: 'contains',
           src: parentKey ? { kind: 'symbol', key: parentKey } : fileRef(f.path),
           dst: { kind: 'symbol', key },
@@ -948,6 +957,7 @@ export function analyseNonTsFiles(
       if (syntaxTargets && target && target !== f.path) syntaxTargets[k] = target;
       if (target && target !== f.path) {
         graph.addEdge({
+          method: 'declarations.import-resolved',
           kind: 'imports',
           src: fileRef(f.path),
           dst: fileRef(target),
@@ -981,6 +991,7 @@ export function analyseNonTsFiles(
           data: { language: f.language },
         });
         graph.addEdge({
+          method: 'declarations.import-external',
           kind: 'imports',
           src: fileRef(f.path),
           dst: ext,
@@ -1010,6 +1021,7 @@ export function analyseNonTsFiles(
       const owner = d.receiver ? types?.get(d.receiver) : undefined;
       if (owner && d.kind === 'method' && keys[i] && owner !== keys[i])
         graph.addEdge({
+          method: 'declarations.receiver-method',
           kind: 'contains',
           src: { kind: 'symbol', key: owner },
           dst: { kind: 'symbol', key: keys[i] as string },
@@ -1135,6 +1147,7 @@ export function analyseNonTsFiles(
       stats.syntax.calls[l.confidence]++;
       if (srcKey === dstKey) continue; // recursion: not a link between two neurons
       graph.addEdge({
+        method: c ? 'scip.reference' : syntaxCallRule(l.rule),
         kind: l.kind,
         src: srcKey ? { kind: 'symbol', key: srcKey } : fileRef(l.file),
         dst: { kind: 'symbol', key: dstKey },
@@ -1167,6 +1180,7 @@ export function analyseNonTsFiles(
       }
       stats.syntax.bases[b.confidence]++;
       graph.addEdge({
+        method: baseRule(b.rule),
         kind: b.kind,
         src: { kind: 'symbol', key: srcKey },
         dst: { kind: 'symbol', key: dstKey },
@@ -1205,6 +1219,7 @@ export function analyseNonTsFiles(
         if (!hit || hit.key === key) return;
         stats.syntax.receivers++;
         graph.addEdge({
+          method: 'syntax.receiver-method',
           kind: 'contains',
           src: { kind: 'symbol', key: hit.key },
           dst: { kind: 'symbol', key },
@@ -1215,4 +1230,15 @@ export function analyseNonTsFiles(
         });
       });
   }
+}
+
+/** The catalogue id of a syntax-layer call rule (only resolved links become edges). */
+function syntaxCallRule(rule: CallRule): RuleId {
+  if (rule === 'unresolved') throw new Error('an unresolved call has no edge');
+  return `syntax.call.${rule}` as const satisfies RuleId;
+}
+
+function baseRule(rule: BaseRule): RuleId {
+  if (rule === 'unresolved') throw new Error('an unresolved base has no edge');
+  return `syntax.base.${rule}` as const satisfies RuleId;
 }

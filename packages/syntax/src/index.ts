@@ -24,6 +24,8 @@ export {
   resolveBases,
   resolveCalls,
   type BaseLink,
+  type BaseRule,
+  type CallRule,
   type CallLink,
   type DeclRef,
   type ResolveFile,

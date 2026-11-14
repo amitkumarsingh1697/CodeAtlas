@@ -1,3 +1,5 @@
+import type { RuleId } from './rules';
+
 export type Confidence = 'observed' | 'inferred' | 'unknown';
 export type NodeKind =
   | 'file'
@@ -31,6 +33,8 @@ export interface NodeRef {
 
 export interface EdgeRec {
   kind: string;
+  /** The rule that produced the link (rules.ts, GRAPH-001). */
+  method: RuleId;
   src: NodeRef;
   dst: NodeRef;
   confidence: Confidence;
@@ -121,6 +125,7 @@ export class GraphBuilder {
       if (RANK[e.confidence] > RANK[prev.confidence])
         Object.assign(prev, {
           confidence: e.confidence,
+          method: e.method,
           evidencePath: e.evidencePath,
           evidenceLine: e.evidenceLine,
         });

@@ -256,6 +256,7 @@ export function addSqlObjects(
     });
     const container = o.parent ? parentKey.get(o.parent.toLowerCase()) : undefined;
     graph.addEdge({
+      method: 'sql.object-nesting',
       kind: 'contains',
       src: container ? { kind: 'symbol', key: container } : { kind: 'file', key: path },
       dst: { kind: 'symbol', key },
@@ -327,6 +328,7 @@ export function linkSqlObjects(graph: GraphBuilder, files: SqlFileResult[]): Sql
           const confidence = viaParser ? 'observed' : 'inferred';
           stats.tables[confidence]++;
           graph.addEdge({
+            method: viaParser ? 'sql.table-use-parsed' : 'sql.table-use-statement-reader',
             kind,
             src,
             dst: hit.ref,
@@ -364,6 +366,7 @@ export function linkSqlObjects(graph: GraphBuilder, files: SqlFileResult[]): Sql
         const confidence = same && viaParser ? 'observed' : 'inferred';
         stats.calls[confidence]++;
         graph.addEdge({
+          method: 'sql.routine-call',
           kind: 'calls',
           src,
           dst: pick[0]!.ref,
@@ -380,6 +383,7 @@ export function linkSqlObjects(graph: GraphBuilder, files: SqlFileResult[]): Sql
           o.kind === 'trigger' ? 'fires_on' : o.kind === 'index' ? 'indexes' : 'references';
         if (hit)
           graph.addEdge({
+            method: 'sql.table-attachment',
             kind,
             src,
             dst: hit.ref,

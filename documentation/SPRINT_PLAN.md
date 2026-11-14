@@ -192,6 +192,18 @@ The audit roadmap ([docs/audit/IMPLEMENTATION_ROADMAP.md](../docs/audit/IMPLEMEN
 
 **Excluded from Sprint 0:** route extraction (Sprint 2), the report (Sprint 1, private repository per ADR 0030), an egress test (Sprint 5).
 
+## Commercial roadmap Sprint 1: assessment report foundation (engine side)
+
+Per ADR 0030 the report generator (REP-002 rendering, REP-006 HTML, REP-007 redaction pass for delivery, REP-008 PDF) lives in a separate private repository. This repository provides the data it renders.
+
+| ID                 | Item                                         | Acceptance criteria                                                                                                                                                                                                 |
+| ------------------ | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GRAPH-001          | Every relationship names its rule            | `edges.method` and `edges.adapter` on every new edge; 61 rules in `rules.ts`; `RULE_CATALOGUE.md` generated and tested; every edge's label is one its rule may give.                                                |
+| REP-001            | Assessment data model v1 and run metadata    | zod schema; every index run records engine and schema versions, scan policy hash and environment; `GET /api/repos/:id/assessment` and `codeatlas assessment <path>`.                                                |
+| REP-003…005 (data) | Architecture, evidence and coverage sections | Routes, tables, entry points and integrations with path, line and evidence class; evidence counts by kind and by rule that match the database; coverage, exclusions, limitations and unresolved with a capped flag. |
+
+**Status:** done 2026-11-15. **Blocked:** REP-002, REP-006 to REP-008 until the private repository exists (founder action).
+
 ## Blocked or external track (not sprint-scheduled)
 
 | Item                                                                  | Blocker                                       | Owner                                            |

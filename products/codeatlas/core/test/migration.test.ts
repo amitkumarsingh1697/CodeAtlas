@@ -43,7 +43,7 @@ describe('schema migration', () => {
 
     const db = openDb(file);
     expect(db.prepare("SELECT value FROM meta WHERE key = 'schema_version'").get()).toEqual({
-      value: '8',
+      value: '9',
     });
     expect(
       (db.prepare('PRAGMA table_info(repos)').all() as { name: string }[]).map((c) => c.name),
@@ -100,7 +100,7 @@ INSERT INTO edges (repo_id, src, dst, kind, confidence) VALUES (1, 10, 11, 'impo
 
     const db = openDb(file);
     expect(db.prepare("SELECT value FROM meta WHERE key = 'schema_version'").get()).toEqual({
-      value: '8',
+      value: '9',
     });
     expect(db.prepare('SELECT id, kind, key FROM nodes ORDER BY id').all()).toEqual([
       { id: 10, kind: 'file', key: 'a.ts' },
@@ -145,7 +145,7 @@ INSERT INTO file_inventory (repo_id, path, language, category, status, method) V
     d.close();
     const db = openDb(file);
     expect(db.prepare("SELECT value FROM meta WHERE key = 'schema_version'").get()).toEqual({
-      value: '8',
+      value: '9',
     });
     expect(db.prepare('SELECT path, status, resolution FROM file_inventory').all()).toEqual([
       { path: 'a.py', status: 'partial', resolution: null },

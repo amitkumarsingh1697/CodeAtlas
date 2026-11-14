@@ -302,6 +302,7 @@ export class IntegrationDetector {
       parent.left === at &&
       parent.operatorToken.kind === ts.SyntaxKind.EqualsToken;
     this.ctx.graph.addEdge({
+      method: 'integrations.env-var',
       kind: written ? 'writes_config' : 'reads_config',
       src: owner,
       dst: this.ctx.graph.addNode({
@@ -319,6 +320,7 @@ export class IntegrationDetector {
 
   private dotenvEdge(at: ts.Node, sf: ts.SourceFile, path: string, owner: NodeRef) {
     this.ctx.graph.addEdge({
+      method: 'integrations.dotenv',
       kind: 'reads_config',
       src: owner,
       dst: this.configFileNode('.env', path),
@@ -369,6 +371,7 @@ export class IntegrationDetector {
       const lit = lastLiteral(args[0]);
       if (lit && CONFIG_FILE_RE.test(lit)) {
         this.ctx.graph.addEdge({
+          method: 'integrations.config-file-read',
           kind: 'reads_config',
           src: ownerOf(),
           dst: this.configFileNode(lit, path),
@@ -408,6 +411,7 @@ export class IntegrationDetector {
     if (client.category === 'db') {
       this.ctx.onDbCall?.(node, client.pkg, sf, path, ownerOf());
       this.ctx.graph.addEdge({
+        method: 'integrations.db-client',
         kind: 'accesses_db',
         src: ownerOf(),
         dst: this.ctx.graph.addNode({
@@ -452,6 +456,7 @@ export class IntegrationDetector {
       prefix = baseUrl.replace(/\/$/, '') + (prefix ?? '');
     const target = classifyUrl(prefix);
     this.ctx.graph.addEdge({
+      method: 'integrations.http-call',
       kind: 'calls_service',
       src: owner,
       dst: this.ctx.graph.addNode({
