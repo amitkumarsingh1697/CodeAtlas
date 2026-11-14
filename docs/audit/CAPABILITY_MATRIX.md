@@ -173,3 +173,12 @@ The rows above record the audit as it was. These rows changed in commercial Spri
 | Spring Data repository → table | Partial                   | Verified                  | A bare `Repository<T, ID>` imported from Spring Data is read (`jvm.ts`); a home-made `Repository<T>` is not; `orm.test.ts`. PetClinic: 3 of 3 repositories linked.                                                    |
 
 The roadmap estimated about 1,100 code symbols for PetClinic (7,402 minus the SVG elements). The measured figure is 260, because the remainder were configuration keys and other entries, not code: 47 classes, 3 interfaces, 6 constructors and 189 methods in Java, plus 15 declarations in other languages.
+
+## Sprint 2 updates (2026-11-15)
+
+| Capability                      | Was             | Now                 | Evidence                                                                                                                                                                                                           |
+| ------------------------------- | --------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Spring MVC routes               | Not implemented | Implemented, tested | `frameworks/spring.ts` (ADR 0025); `frameworks.test.ts`. PetClinic: 17 of 17 method mappings with class prefix and handler. WebFlux functional routes not covered.                                                 |
+| NestJS routes                   | Not implemented | Implemented, tested | `frameworks/nestjs.ts`; `frameworks.test.ts`. Immich: 315 routes against 317 decorators in `server/src` (2 in a `.spec.ts` class). Global prefix not applied; paths not hand-verified.                             |
+| JAX-RS routes                   | Not implemented | Not implemented     | Planned as JX-001 (Java gate).                                                                                                                                                                                     |
+| Change impact (reverse closure) | Partial         | Implemented, tested | Each affected node, route and test carries the evidence of its strongest path; grouped observed and inferred; caveat in API and Node panel; follows table links. `impact.test.ts`, E2E impact step. No export yet. |

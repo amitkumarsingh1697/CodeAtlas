@@ -683,18 +683,37 @@ const IMPACT_KINDS = [
   'handled_by',
   'contains',
   'tests',
+  // A table's impact is the code that reads, writes or maps to it (IMP-002).
+  'reads_table',
+  'writes_table',
+  'maps_to',
 ];
 
-/** Reverse dependency closure: what could be affected if this node changes. */
+/**
+ * Reverse dependency closure: what could be affected if this node changes (IMP-001).
+ *
+ * Each affected node carries the evidence class of the strongest path that reaches it, where a
+ * path is only as strong as its weakest link: a node reached through one inferred call is
+ * "inferred" even if every other link is observed. Among equally strong paths the shortest is
+ * kept. `contains` (a symbol's file) does not add distance.
+ */
+export const IMPACT_CAVEAT =
+  'Impact follows relationships CodeAtlas found in the source. Observed reach rests only on links the source states; inferred reach includes at least one link matched by name, convention or a heuristic, and may be wrong. Runtime wiring (reflection, dependency injection containers, dynamic imports, configuration-driven routing) is not seen, so the true impact can be larger.';
+
+const RANK: Record<Confidence, number> = { unknown: 0, inferred: 1, observed: 2 };
+const weaker = (a: Confidence, b: Confidence): Confidence => (RANK[a] <= RANK[b] ? a : b);
+
 export function impactOf(
   db: Db,
   repoId: number,
   startId: number,
   opts: { depth?: number; maxNodes?: number } = {},
 ): {
-  affected: (NodeRow & { distance: number; via: string })[];
-  routes: NodeRow[];
-  tests: NodeRow[];
+  affected: (NodeRow & { distance: number; via: string; evidence: Confidence })[];
+  groups: Record<Confidence, number>;
+  routes: (NodeRow & { evidence: Confidence })[];
+  tests: (NodeRow & { evidence: Confidence })[];
+  caveat: string;
   truncated: boolean;
 } {
   const depth = opts.depth ?? 3;
@@ -702,33 +721,52 @@ export function impactOf(
   const edges = allEdges(db, repoId, IMPACT_KINDS);
   const inc = new Map<number, EdgeRow[]>();
   for (const e of edges) inc.set(e.dst, [...(inc.get(e.dst) ?? []), e]);
-  // A symbol's file is affected too: walk "contains" upward as well.
-  const dist = new Map<number, { d: number; via: string }>([[startId, { d: 0, via: 'start' }]]);
+  type Reach = { d: number; via: string; ev: Confidence };
+  const best = new Map<number, Reach>([[startId, { d: 0, via: 'start', ev: 'observed' }]]);
   const queue = [startId];
   let truncated = false;
+  // Label-correcting search: a node is revisited only when reached by a stronger path (or an
+  // equally strong, shorter one), so each node is expanded at most a few times.
   while (queue.length) {
     const id = queue.shift() as number;
-    const d = (dist.get(id) as { d: number }).d;
-    if (d >= depth) continue;
+    const cur = best.get(id) as Reach;
+    if (cur.d >= depth) continue;
     for (const e of inc.get(id) ?? []) {
-      if (dist.has(e.src)) continue;
-      if (dist.size >= maxNodes) {
+      const next: Reach = {
+        d: e.kind === 'contains' ? cur.d : cur.d + 1,
+        via: e.kind,
+        ev: weaker(cur.ev, e.confidence),
+      };
+      const prev = best.get(e.src);
+      if (prev) {
+        const better = RANK[next.ev] > RANK[prev.ev] || (next.ev === prev.ev && next.d < prev.d);
+        if (!better) continue;
+      } else if (best.size >= maxNodes) {
         truncated = true;
-        break;
+        continue;
       }
-      dist.set(e.src, { d: e.kind === 'contains' ? d : d + 1, via: e.kind });
+      best.set(e.src, next);
       queue.push(e.src);
     }
   }
-  const nodes = nodesByIds(db, repoId, [...dist.keys()]);
+  const nodes = nodesByIds(db, repoId, [...best.keys()]);
+  const withEv = <T extends NodeRow>(n: T) => ({ ...n, evidence: best.get(n.id)?.ev ?? 'unknown' });
   const affected = nodes
     .filter((n) => n.id !== startId && n.kind !== 'module')
-    .map((n) => ({ ...n, distance: dist.get(n.id)?.d ?? 0, via: dist.get(n.id)?.via ?? '' }))
-    .sort((a, b) => a.distance - b.distance);
+    .map((n) => ({
+      ...withEv(n),
+      distance: best.get(n.id)?.d ?? 0,
+      via: best.get(n.id)?.via ?? '',
+    }))
+    .sort((a, b) => RANK[b.evidence] - RANK[a.evidence] || a.distance - b.distance);
+  const groups: Record<Confidence, number> = { observed: 0, inferred: 0, unknown: 0 };
+  for (const n of affected) groups[n.evidence]++;
   return {
     affected,
-    routes: nodes.filter((n) => n.kind === 'route'),
-    tests: nodes.filter((n) => n.kind === 'file' && !!n.data.isTest),
+    groups,
+    routes: nodes.filter((n) => n.kind === 'route').map(withEv),
+    tests: nodes.filter((n) => n.kind === 'file' && !!n.data.isTest).map(withEv),
+    caveat: IMPACT_CAVEAT,
     truncated,
   };
 }

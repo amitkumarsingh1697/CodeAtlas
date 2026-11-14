@@ -206,6 +206,13 @@ test('index a repository, explore it, ask a question, and take a bug through rev
     await expect(page.getByRole('complementary', { name: 'Node details' })).toContainText(
       'listUsers',
     );
+    // Impact (IMP-001): reach grouped by evidence class, with the caveat.
+    const panel = page.getByRole('complementary', { name: 'Node details' });
+    await panel.getByRole('button', { name: 'What could a change here affect?' }).click();
+    await expect(panel.getByTestId('impact-groups')).toContainText(
+      /\d+ reached only through observed links/,
+    );
+    await expect(panel.getByText(/Runtime wiring .* is not seen/)).toBeVisible();
     await expectAccessible(page, 'flows with node details');
     await page.getByRole('button', { name: 'Close' }).click();
 

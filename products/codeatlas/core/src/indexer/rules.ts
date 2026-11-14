@@ -212,6 +212,18 @@ export const RULES = {
     labels: I,
     description: 'An Express-style registration with an inline handler function.',
   },
+  'spring.request-mapping': {
+    adapter: 'spring-mvc',
+    labels: OI,
+    description:
+      'A `@GetMapping`, `@PostMapping`, `@PutMapping`, `@DeleteMapping`, `@PatchMapping` or `@RequestMapping` on a method of a `@Controller` or `@RestController` class, joined to the class `@RequestMapping` prefix. Observed for string-literal paths; inferred when a path is a constant declared once elsewhere in the repository.',
+  },
+  'nestjs.controller-route': {
+    adapter: 'nestjs',
+    labels: OI,
+    description:
+      'A NestJS `@Get`, `@Post`, `@Put`, `@Patch`, `@Delete`, `@Options`, `@Head` or `@All` method of a `@Controller` class, joined to the controller path; inferred when a path is a constant (such as an enum member) declared elsewhere. A global prefix set elsewhere is not included.',
+  },
   'config.class-reference': {
     adapter: 'config',
     labels: I,
