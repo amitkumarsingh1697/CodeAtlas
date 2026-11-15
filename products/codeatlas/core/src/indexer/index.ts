@@ -511,10 +511,18 @@ function buildAndPersist(
   // ORM models and migrations (Django, SQLAlchemy, JPA, EF Core, Rails, Laravel, GORM,
   // TypeORM, Liquibase…), resolved across files once every SQL and Prisma table is known.
   progress('Reading ORM models and migrations');
-  const ormResult = addOrm(graph, readOrmFiles(disc.files, texts));
+  const ormFiles = readOrmFiles(disc.files, texts);
+  const ormResult = addOrm(graph, ormFiles);
   const orm = ormResult.stats;
-  // JPQL and native queries in Java and Kotlin, linked through the entity mappings just resolved.
-  orm.jpaQueries = addJpaQueries(graph, disc.files, texts, ormResult.schema.mappings);
+  // JPQL and native queries in Java and Kotlin, linked through the entity mappings just resolved
+  // (and the entities' associations, for path joins and entity graphs).
+  orm.jpaQueries = addJpaQueries(
+    graph,
+    disc.files,
+    texts,
+    ormResult.schema.mappings,
+    ormFiles.flatMap((f) => f.models),
+  );
   // Spring bean wiring: which bean each bean is given (JV-002).
   const springBeans = addSpringBeans(graph, disc.files, texts);
 

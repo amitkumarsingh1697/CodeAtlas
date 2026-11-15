@@ -203,6 +203,7 @@ function kotlinClasses(root: N): Klass[] {
 }
 
 const RELATION_SKIP = new Set(['OneToMany', 'Transient', 'ElementCollection']);
+const ASSOCIATIONS = new Set(['ManyToOne', 'OneToOne', 'OneToMany', 'ManyToMany']);
 
 /**
  * A unidirectional `@OneToMany @JoinColumn(name = "x")` puts the key column on the target
@@ -248,7 +249,19 @@ function jpaModel(k: Klass): OrmModel | undefined {
   const embeddable = has(k.ann, 'Embeddable');
   if (!entity && !mapped && !embeddable) return undefined;
   const fields: OrmField[] = [];
+  const associations: { field: string; target: string }[] = [];
   for (const m of k.members) {
+    const rel = m.isStatic || !m.name ? undefined : m.ann.find((a) => ASSOCIATIONS.has(a.name));
+    if (rel) {
+      // targetEntity wins; else the element type of a collection, else the declared type.
+      const target =
+        /^\s*([\w.]+)(?:::class(?:\.java)?|\.class)\s*$/.exec(
+          rel.args.get('targetEntity') ?? '',
+        )?.[1] ??
+        /<\s*(?:[\w.]+\s*,\s*)?([\w.]+)\s*>/.exec(m.type)?.[1] ??
+        m.type;
+      associations.push({ field: m.name, target: baseType(target) });
+    }
     if (m.isStatic || !m.name || m.ann.some((a) => RELATION_SKIP.has(a.name))) continue;
     const col = has(m.ann, 'Column');
     const join = has(m.ann, 'JoinColumn');
@@ -352,6 +365,7 @@ function jpaModel(k: Klass): OrmModel | undefined {
     rule: "JPA default: the entity name (Spring Boot's default naming strategy writes it in snake_case)",
     trySnake: true,
     bases: k.bases.map(baseType),
+    ...(associations.length ? { associations } : {}),
     root: true,
     role: entity ? 'entity' : mapped ? 'abstract' : 'embeddable',
     inherit: strategy === 'JOINED' || strategy === 'TABLE_PER_CLASS' ? 'joined' : 'single',

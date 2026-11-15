@@ -3,7 +3,12 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import { indexRepository, openDb, type Db } from '../src/index';
-import { jpaQuerySites, queryTargets, stringValue } from '../src/indexer/extract/jpa-query';
+import {
+  jpaQuerySites,
+  pathTargets,
+  queryTargets,
+  stringValue,
+} from '../src/indexer/extract/jpa-query';
 
 /** JPA queries → tables (JV-004, rules orm.jpa-query and orm.jpa-named-query). */
 const P = 'src/main/java/app';
@@ -172,7 +177,136 @@ describe('JPA queries → tables (JV-004)', () => {
   });
 });
 
+/** Path joins and entity graphs (rules orm.jpa-path-join, orm.entity-graph). */
+const J = 'src/main/java/clinic';
+const java = (...lines: string[]) => [`package clinic;`, ...lines, ''].join('\n');
+const PATH_FILES = {
+  [`${J}/BaseEntity.java`]: java(
+    'import jakarta.persistence.*;',
+    '@MappedSuperclass',
+    'public abstract class BaseEntity {',
+    '  @Id private Integer id;',
+    '  @ManyToOne private Clinic clinic;',
+    '}',
+  ),
+  [`${J}/Clinic.java`]: java(
+    'import jakarta.persistence.*;',
+    '@Entity @Table(name = "clinics")',
+    'public class Clinic { @Id private Integer id; }',
+  ),
+  [`${J}/Owner.java`]: java(
+    'import jakarta.persistence.*;',
+    'import java.util.Set;',
+    '@Entity @Table(name = "owners")',
+    '@NamedEntityGraph(name = "Owner.detail", attributeNodes = @NamedAttributeNode("pets"))',
+    'public class Owner {',
+    '  @Id private Integer id;',
+    '  private String city;',
+    '  @OneToMany(mappedBy = "owner") private Set<Pet> pets;',
+    '}',
+  ),
+  [`${J}/Pet.java`]: java(
+    'import jakarta.persistence.*;',
+    '@Entity @Table(name = "pets")',
+    'public class Pet extends BaseEntity {',
+    '  @ManyToOne private Owner owner;',
+    '  @ManyToOne private PetType type;',
+    '}',
+  ),
+  [`${J}/PetType.java`]: java(
+    'import jakarta.persistence.*;',
+    '@Entity @Table(name = "types")',
+    'public class PetType { @Id private Integer id; }',
+  ),
+  [`${J}/OwnerRepository.java`]: java(
+    'import java.util.*;',
+    'import org.springframework.data.jpa.repository.*;',
+    'public interface OwnerRepository extends JpaRepository<Owner, Integer> {',
+    '  @Query("select distinct o from Owner o left join fetch o.pets p left join fetch p.type")',
+    '  List<Owner> withPets();',
+    '  @EntityGraph(attributePaths = { "pets", "pets.type" })',
+    '  Optional<Owner> findWithPetsById(Integer id);',
+    '  @EntityGraph(attributePaths = "city")',
+    '  List<Owner> findByCity(String city);',
+    '  @EntityGraph(value = "Owner.detail")',
+    '  List<Owner> findAllByCity(String city);',
+    '  @Query(value = "select * from owners o where o.pets = 1", nativeQuery = true)',
+    '  List<Owner> nativeOnly();',
+    '}',
+  ),
+  [`${J}/PetRepository.java`]: java(
+    'import java.util.*;',
+    'import org.springframework.data.jpa.repository.*;',
+    'public interface PetRepository extends JpaRepository<Pet, Integer> {',
+    '  @Query("select p from Pet p where p.owner.city = :c and p.type.id <> \'x.y\' and p.clinic = :k")',
+    '  List<Pet> inCity(String c);',
+    '  @Query("select c from Pet p join p.clinic c where p.nickname.length > 0")',
+    '  List<Clinic> clinics();',
+    '}',
+  ),
+};
+
+describe('JPQL path joins and @EntityGraph → tables', () => {
+  const { db, repoId } = index(PATH_FILES);
+  const links = () =>
+    (
+      db
+        .prepare(
+          `SELECT e.kind, e.confidence, e.method, s.key AS src, d.key AS dst
+             FROM edges e JOIN nodes s ON s.id = e.src JOIN nodes d ON d.id = e.dst
+            WHERE e.repo_id = ? AND e.method IN ('orm.jpa-path-join', 'orm.entity-graph')`,
+        )
+        .all(repoId) as {
+        kind: string;
+        confidence: string;
+        method: string;
+        src: string;
+        dst: string;
+      }[]
+    )
+      .map((r) => `${r.src.replace(/^.*#/u, '')} ${r.kind} ${r.dst} ${r.confidence} ${r.method}`)
+      .sort();
+
+  it('follows association paths from aliases, through joins, implicit paths and inherited fields', () => {
+    expect(links()).toEqual([
+      'OwnerRepository.findWithPetsById reads_table table:pets inferred orm.entity-graph',
+      'OwnerRepository.findWithPetsById reads_table table:types inferred orm.entity-graph',
+      'OwnerRepository.withPets reads_table table:pets inferred orm.jpa-path-join',
+      'OwnerRepository.withPets reads_table table:types inferred orm.jpa-path-join',
+      // The association comes from the @MappedSuperclass; `p.nickname` is no association.
+      'PetRepository.clinics reads_table table:clinics inferred orm.jpa-path-join',
+      // `p.owner.city` joins the owner. `p.type.id` and `p.clinic = :k` compare key columns
+      // and join nothing; `'x.y'` is a string, not a path.
+      'PetRepository.inCity reads_table table:owners inferred orm.jpa-path-join',
+    ]);
+  });
+
+  it('leaves basic attributes, named entity graphs and native SQL alone, without gaps', () => {
+    const gaps = db
+      .prepare("SELECT text FROM unresolved WHERE repo_id = ? AND kind = 'query'")
+      .all(repoId);
+    expect(gaps).toEqual([]);
+    expect(links().some((l) => /findByCity|findAllByCity|nativeOnly/u.test(l))).toBe(false);
+  });
+});
+
 describe('JPA query reading', () => {
+  it('joins an association on a JOIN path, or on a path that reads past it to a non-id attribute', () => {
+    const entity = (n: string) => (['Pet', 'Owner'].includes(n) ? n : undefined);
+    const links: Record<string, string> = {
+      'Pet.owner': 'Owner',
+      'Owner.city': 'City',
+      'Pet.toys': 'Toy',
+    };
+    const assoc = (c: string, a: string) => links[`${c}.${a}`];
+    const t = (q: string) => pathTargets(q, entity, assoc).sort();
+    expect(t('select p.owner.name, p from Pet p')).toEqual(['Owner']);
+    expect(t('select distinct(p.owner.id) from Pet p where p.owner = :o')).toEqual([]);
+    expect(t('select p from Pet p join p.owner.city c')).toEqual(['City', 'Owner']);
+    expect(t('select t from Pet p left join fetch p.toys t where :p.owner.x = 1')).toEqual(['Toy']);
+    expect(t('SELECT P FROM Pet AS P WHERE P.owner.city.name = ?1')).toEqual(['City', 'Owner']);
+  });
+
   it('joins literal parts and rejects anything built at run time', () => {
     expect(stringValue('"a " + "b"')).toBe('a b');
     expect(stringValue('"""\n  select x\n  from Y\n"""')).toContain('from Y');

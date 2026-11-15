@@ -15,10 +15,24 @@
  * - A query whose text is not a literal, a named query not found or defined twice, and an entity
  *   that no class in the repository maps, are recorded as `query` gaps, never guessed.
  *
- * JPQL path joins (`join o.pets p`) are not followed: the table of a joined association is not
- * linked from the query.
+ * Association paths (rule `orm.jpa-path-join`, inferred): a JPQL path from an alias through an
+ * association attribute (`join fetch o.pets p`, `p.owner.city` in WHERE) also reads the table of
+ * each entity it joins (see `pathTargets`: comparing an association or its id joins nothing). Attributes are read from the entity classes (and their
+ * `@MappedSuperclass` bases), matched by simple class name. A path through an `@Embedded` value or
+ * a basic attribute ends there.
+ *
+ * Entity graphs (rule `orm.entity-graph`, inferred): `@EntityGraph(attributePaths = …)` on a Spring
+ * Data repository method reads the tables its paths reach from the repository's entity. A named
+ * graph (`@EntityGraph("Owner.detail")`) is not read.
  */
-import { lit, parseAnnotation, splitArgs, tableKey, type ResolvedMapping } from '@nexora/orm';
+import {
+  lit,
+  parseAnnotation,
+  splitArgs,
+  tableKey,
+  type OrmModel,
+  type ResolvedMapping,
+} from '@nexora/orm';
 import { bodyRefs, tokenize, type SqlRef } from '@nexora/sql';
 import type { GraphBuilder, NodeRec, NodeRef } from '../model';
 import { isTestSupportPath } from '../test-paths';
@@ -36,12 +50,13 @@ export type JpaSite =
   | { kind: 'query'; line: number; text: string; native: boolean; via: string }
   | { kind: 'define'; line: number; name: string; text: string; native: boolean }
   | { kind: 'named'; line: number; name: string; via: string }
-  | { kind: 'dynamic'; line: number; via: string };
+  | { kind: 'dynamic'; line: number; via: string }
+  | { kind: 'graph'; line: number; paths: string[]; via: string };
 
 const JPA_IMPORT =
   /\bimport\s+(jakarta\.persistence|javax\.persistence|org\.hibernate|org\.springframework\.data\.jpa)\b/u;
 const SITE =
-  /@(Query|NamedQuery|NamedNativeQuery)\s*\(|\.(createQuery|createNativeQuery|createNamedQuery)\s*\(/gu;
+  /@(Query|NamedQuery|NamedNativeQuery|EntityGraph)\s*\(|\.(createQuery|createNativeQuery|createNamedQuery)\s*\(/gu;
 
 /** The text with comments blanked (newlines and string contents kept), so offsets still match. */
 function blankComments(text: string): string {
@@ -137,6 +152,13 @@ export function jpaQuerySites(text: string, kotlin = false): JpaSite[] {
     if (m[1]) {
       const a = parseAnnotation(`@${m[1]}(${args})`);
       if (!a) continue;
+      if (m[1] === 'EntityGraph') {
+        const paths = [...(a.args.get('attributePaths') ?? '').matchAll(/"([^"\\]+)"/gu)].map(
+          (x) => x[1]!,
+        );
+        if (paths.length) out.push({ kind: 'graph', line, paths, via: '@EntityGraph' });
+        continue;
+      }
       if (m[1] === 'Query') {
         // Spring Data's @Query; a repository may name a query instead of writing it.
         const name = lit(a.args.get('name'));
@@ -192,6 +214,52 @@ export function queryTargets(text: string, native: boolean): { reads: SqlRef[]; 
   return { reads: r.reads.filter(keep), writes: r.writes.filter(keep) };
 }
 
+const JPQL_KEYWORDS = new Set(
+  'where join left right inner outer cross on with fetch order group having set and or union select from as'.split(
+    ' ',
+  ),
+);
+
+/**
+ * The classes whose tables a JPQL query reads through association paths. Aliases are declared by
+ * `FROM Entity e` and `JOIN e.attr x` (in order). A `JOIN` path joins every association on it. Any
+ * other dotted path (`p.owner.city` in WHERE or SELECT) joins an association only when the path
+ * goes on past it to an attribute that is not its id: `p.owner = :o` and `p.owner.id` compare the
+ * key column and read no other table. String literals and `:param` names are skipped.
+ */
+export function pathTargets(
+  text: string,
+  entityClass: (name: string) => string | undefined,
+  assoc: (cls: string, attr: string) => string | undefined,
+  isId: (cls: string, attr: string) => boolean = (_c, attr) => attr === 'id',
+): string[] {
+  const q = text.replace(/'(?:[^']|'')*'/gu, "''");
+  const types = new Map<string, string>();
+  const out = new Set<string>();
+  const walk = (path: string, joined: boolean): string | undefined => {
+    const [head, ...rest] = path.split('.');
+    let cls = types.get(head!.toLowerCase());
+    for (let i = 0; i < rest.length; i++) {
+      if (!cls) return undefined;
+      cls = assoc(cls, rest[i]!);
+      const next = rest[i + 1];
+      if (cls && (joined || (next !== undefined && !isId(cls, next)))) out.add(cls);
+    }
+    return cls;
+  };
+  // The alias is read after each match, not consumed by it: in `, p FROM Pet p` the FROM after
+  // `p` (a keyword, not an alias) must stay for the next declaration.
+  const DECL = /\b(from|join(?:\s+fetch)?|,)\s+([A-Za-z_][\w.]*)/giu;
+  for (const d of q.matchAll(DECL)) {
+    const a = /^\s+(?:as\s+)?([A-Za-z_]\w*)/iu.exec(q.slice(d.index + d[0].length))?.[1];
+    const alias = a && !JPQL_KEYWORDS.has(a.toLowerCase()) ? a : undefined;
+    const cls = d[2]!.includes('.') ? walk(d[2]!, /^join/iu.test(d[1]!)) : entityClass(d[2]!);
+    if (alias && cls) types.set(alias.toLowerCase(), cls);
+  }
+  for (const p of q.matchAll(/(?<![:\w.])[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)+/gu)) walk(p[0], false);
+  return [...out];
+}
+
 /** The innermost symbol whose lines hold `line`; the next one starting within 3 lines (an annotation above it). */
 function enclosing(symbols: NodeRec[], line: number): NodeRec | undefined {
   let best: NodeRec | undefined;
@@ -215,6 +283,7 @@ export function addJpaQueries(
   files: { path: string; language: string }[],
   texts: Map<string, string>,
   mappings: ResolvedMapping[],
+  models: OrmModel[] = [],
 ): JpaQueryStats {
   const stats: JpaQueryStats = { sites: 0, linked: 0, gaps: 0 };
   // Entity name → table; a name two entities claim with different tables is not used.
@@ -226,6 +295,59 @@ export function addJpaQueries(
     if (prev === undefined) entities.set(name, { table: m.table, confidence: m.confidence });
     else if (prev && tableKey(prev.table) !== tableKey(m.table)) entities.set(name, null);
   }
+
+  // Class → its own table; entity name → class; table → classes (for a repository's entity).
+  const classTable = new Map<string, string | null>();
+  const entityClass = new Map<string, string | null>();
+  const tableClasses = new Map<string, string[]>();
+  for (const m of mappings) {
+    if (m.framework !== 'jpa' || m.access !== 'maps') continue;
+    const prev = classTable.get(m.owner);
+    classTable.set(m.owner, prev === undefined || prev === m.table ? m.table : null);
+    const name = m.entityName ?? m.owner;
+    const c = entityClass.get(name);
+    entityClass.set(name, c === undefined || c === m.owner ? m.owner : null);
+    const k = tableKey(m.table);
+    tableClasses.set(k, [...new Set([...(tableClasses.get(k) ?? []), m.owner])]);
+  }
+  // Class → association attributes, own and inherited (bases matched by simple name).
+  const jpaModels = new Map<string, OrmModel[]>();
+  for (const m of models)
+    if (m.framework === 'jpa' && m.role !== 'patch')
+      jpaModels.set(m.model, [...(jpaModels.get(m.model) ?? []), m]);
+  const assoc = (cls: string, attr: string, seen = new Set<string>()): string | undefined => {
+    if (seen.has(cls)) return undefined;
+    seen.add(cls);
+    const ms = jpaModels.get(cls) ?? [];
+    // Two classes of one simple name with different targets for the attribute: not guessed.
+    const hits = new Set(
+      ms.flatMap((m) =>
+        (m.associations ?? []).filter((a) => a.field === attr).map((a) => a.target),
+      ),
+    );
+    if (hits.size) return hits.size === 1 ? [...hits][0] : undefined;
+    for (const b of new Set(ms.flatMap((m) => m.bases))) {
+      const t = assoc(b, attr, seen);
+      if (t) return t;
+    }
+    return undefined;
+  };
+
+  /** The id attributes of a class (`@Id` fields, own or inherited). */
+  const ids = (cls: string, seen = new Set<string>()): string[] => {
+    if (seen.has(cls)) return [];
+    seen.add(cls);
+    const ms = jpaModels.get(cls) ?? [];
+    return [
+      ...ms.flatMap((m) => m.fields.filter((f) => f.primaryKey && f.field).map((f) => f.field!)),
+      ...ms.flatMap((m) => m.bases.flatMap((b) => ids(b, seen))),
+    ];
+  };
+  /** The attribute is the class's id; `id` when no `@Id` field is read. */
+  const isId = (cls: string, attr: string) => {
+    const own = ids(cls);
+    return own.length ? own.includes(attr) : attr === 'id';
+  };
 
   const perFile: { path: string; sites: JpaSite[] }[] = [];
   const defined = new Map<string, Extract<JpaSite, { kind: 'define' }>[]>();
@@ -260,6 +382,62 @@ export function addJpaQueries(
         gap(site.via, 'the query text is not a literal (built at run time or from a constant)');
         continue;
       }
+      const src: NodeRef = (() => {
+        const n = enclosing(symbols, site.line);
+        return n ? { kind: n.kind, key: n.key } : { kind: 'file' as const, key: path };
+      })();
+      /** Links the tables of association targets (classes) read through a path. */
+      const linkClasses = (
+        classes: string[],
+        method: 'orm.jpa-path-join' | 'orm.entity-graph',
+        what: string,
+      ) => {
+        let any = false;
+        for (const cls of classes) {
+          const table = classTable.get(cls);
+          if (!table) continue;
+          const dst: NodeRef = { kind: 'table', key: `table:${tableKey(table)}` };
+          if (!graph.has(dst)) continue;
+          graph.addEdge({
+            kind: 'reads_table',
+            method,
+            src,
+            dst,
+            confidence: 'inferred',
+            evidencePath: path,
+            evidenceLine: site.line,
+            detail: `${what} reaches ${cls} → ${table}`,
+          });
+          any = true;
+        }
+        return any;
+      };
+      if (site.kind === 'graph') {
+        // The repository's entity: the table this repository reads, mapped back to its classes.
+        const owner = symbols.find((n) => n.key === src.key)?.name.split('.')[0];
+        const repoTables = mappings.filter(
+          (m) => m.path === path && m.access !== 'maps' && (!owner || m.owner === owner),
+        );
+        const roots = [
+          ...new Set(repoTables.flatMap((m) => tableClasses.get(tableKey(m.table)) ?? [])),
+        ];
+        if (!roots.length) {
+          gap(site.via, "the repository's entity is not known");
+          continue;
+        }
+        const reached = new Set<string>();
+        for (const p of site.paths)
+          for (const root of roots) {
+            let cls: string | undefined = root;
+            for (const attr of p.split('.')) {
+              cls = cls && assoc(cls, attr);
+              if (cls) reached.add(cls);
+            }
+          }
+        if (linkClasses([...reached], 'orm.entity-graph', `@EntityGraph(${site.paths.join(', ')})`))
+          stats.linked++;
+        continue;
+      }
       let text: string;
       let native: boolean;
       let named = false;
@@ -280,12 +458,17 @@ export function addJpaQueries(
         named = true;
       } else ({ text, native } = site);
 
-      const src: NodeRef = (() => {
-        const n = enclosing(symbols, site.line);
-        return n ? { kind: n.kind, key: n.key } : { kind: 'file' as const, key: path };
-      })();
       const targets = queryTargets(text, native);
       let linked = false;
+      if (!native) {
+        const reached = pathTargets(
+          text,
+          (name) => entityClass.get(name) ?? undefined,
+          (cls, attr) => assoc(cls, attr),
+          isId,
+        );
+        if (linkClasses(reached, 'orm.jpa-path-join', `${site.via} path`)) linked = true;
+      }
       const link = (r: SqlRef, kind: 'reads_table' | 'writes_table') => {
         let table: string;
         let confidence: 'observed' | 'inferred';
