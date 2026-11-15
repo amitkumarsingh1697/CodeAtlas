@@ -989,7 +989,7 @@ function readTomlDocument(path: string, text: string, out: { docs?: unknown[] })
 
 // ---------------------------------------------------------------- XML
 
-interface XmlEl {
+export interface XmlEl {
   name: string;
   attrs: Record<string, string>;
   text: string;
@@ -1411,7 +1411,7 @@ export function readXml(path: string, text: string, role: string | undefined): S
 // ---------------------------------------------------------------- Gradle
 
 /** The bodies of every `name { … }` block, with their offsets (braces in strings ignored). */
-function blocksNamed(text: string, name: string): { start: number; end: number }[] {
+export function blocksNamed(text: string, name: string): { start: number; end: number }[] {
   const out: { start: number; end: number }[] = [];
   const re = new RegExp(`(^|[^\\w.])${name}\\s*\\{`, 'g');
   for (const m of text.matchAll(re)) {
