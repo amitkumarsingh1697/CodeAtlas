@@ -7,7 +7,7 @@ import { ASSESSMENT_USAGE, writeAssessment } from './assessment-command';
 import { fileURLToPath } from 'node:url';
 import { loadServiceConfig } from './config';
 import { relaunchWithLargerHeap } from './heap';
-import { createService, listen } from './server';
+import { createService, ensurePrivateHome, listen } from './server';
 import { allRegistrars } from './routes';
 
 const [cmd, ...args] = process.argv.slice(2);
@@ -22,6 +22,7 @@ async function main(): Promise<void> {
     const code = relaunchWithLargerHeap(process.argv[1]!, process.argv.slice(2));
     if (code !== null) process.exit(code);
   }
+  if (cmd !== 'serve') ensurePrivateHome(cfg.home);
   switch (cmd) {
     case 'serve': {
       const { server, ctx } = createService(cfg, allRegistrars);

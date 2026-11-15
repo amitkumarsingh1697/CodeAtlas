@@ -169,7 +169,7 @@ Set these environment variables before starting the service:
 | ------------------------------------------------------------ | ----------------------------------------------- | ----------------------------------------------------------- |
 | `CODEATLAS_HOME`                                             | `~/.codeatlas`                                  | Where the database, token, worktrees and clones are stored  |
 | `CODEATLAS_PORT`                                             | `4317`                                          | Port on 127.0.0.1                                           |
-| `CODEATLAS_ALLOWED_ROOTS`                                    | not set                                         | Restrict which folders can be added                         |
+| `CODEATLAS_ALLOWED_ROOTS`                                    | not set (packaged install: your home folder)    | Restrict which folders can be added                         |
 | `CODEATLAS_WORKTREE_DIR`                                     | `$CODEATLAS_HOME/worktrees`                     | Where investigation worktrees are created                   |
 | `AI_PROVIDER`                                                | `ollama`                                        | `ollama`, `openai-compatible` or `disabled`                 |
 | `OLLAMA_BASE_URL`, `OLLAMA_MODEL`                            | `http://127.0.0.1:11434`, `qwen2.5:7b-instruct` | Local model                                                 |

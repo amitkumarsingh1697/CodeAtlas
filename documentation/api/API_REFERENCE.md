@@ -108,20 +108,20 @@ All endpoints exchange JSON unless noted. Errors use one shape:
 
 ## CodeAtlas (`http://127.0.0.1:4317/api`)
 
-**Authentication.** Every route except `/health` requires header `x-codeatlas-token: <token>` (printed by `serve`, stored at `$CODEATLAS_HOME/token`, mode 0600). Requests with a `Host` other than `127.0.0.1:<port>` / `localhost:<port>` get `421`; requests with a foreign `Origin` get `403`.
+**Authentication.** Every route except `/health` requires header `x-codeatlas-token: <token>` (printed by `serve`; a new token on every start, written to `$CODEATLAS_HOME/token` with mode 0600 while the service runs and removed when it stops). Requests with a `Host` other than `127.0.0.1:<port>` / `localhost:<port>` get `421`; requests with a foreign `Origin` get `403`.
 
 ### Repositories and indexing
 
-| Method       | Path                    | Notes                                                                                                                                                           |
-| ------------ | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GET          | `/health`               | `{ status: "ok" }`                                                                                                                                              |
-| GET          | `/repos`                | Registered repos with latest coverage                                                                                                                           |
-| POST         | `/repos`                | `{ path }` — absolute local path; must be inside `CODEATLAS_ALLOWED_ROOTS` if set; CodeAtlas's own home is refused                                              |
-| GET / DELETE | `/repos/:id`            | Repo, coverage, recent runs / unregister and delete all its indexed data (409 while indexing)                                                                   |
-| POST         | `/repos/:id/index`      | Starts a background index job → `{ jobId }`. Incremental when a previous index can be reused; the coverage report's `incremental[]` says which mode ran and why |
-| GET          | `/jobs/:id`             | Job status                                                                                                                                                      |
-| DELETE       | `/jobs/:id`             | Cancel a running index job (SIGTERM, then SIGKILL after 3 s). The previous index is kept. Unknown id → `404`                                                    |
-| GET          | `/repos/:id/unresolved` | Unresolved references with reasons                                                                                                                              |
+| Method       | Path                    | Notes                                                                                                                                                             |
+| ------------ | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GET          | `/health`               | `{ status: "ok" }`                                                                                                                                                |
+| GET          | `/repos`                | Registered repos with latest coverage                                                                                                                             |
+| POST         | `/repos`                | `{ path }` — absolute local path; must be inside `CODEATLAS_ALLOWED_ROOTS` if set (packaged install: the home folder by default); CodeAtlas's own home is refused |
+| GET / DELETE | `/repos/:id`            | Repo, coverage, recent runs / unregister and delete all its indexed data (409 while indexing)                                                                     |
+| POST         | `/repos/:id/index`      | Starts a background index job → `{ jobId }`. Incremental when a previous index can be reused; the coverage report's `incremental[]` says which mode ran and why   |
+| GET          | `/jobs/:id`             | Job status                                                                                                                                                        |
+| DELETE       | `/jobs/:id`             | Cancel a running index job (SIGTERM, then SIGKILL after 3 s). The previous index is kept. Unknown id → `404`                                                      |
+| GET          | `/repos/:id/unresolved` | Unresolved references with reasons                                                                                                                                |
 
 ### Exploration
 
