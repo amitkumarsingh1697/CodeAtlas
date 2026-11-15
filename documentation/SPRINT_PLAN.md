@@ -238,15 +238,16 @@ Per ADR 0030 the report generator (REP-002 rendering, REP-006 HTML, REP-007 reda
 
 ## Commercial roadmap Sprint 4 (started): Java/Spring gate
 
-| ID     | Item                                     | Acceptance criteria                                                                                                                         |
-| ------ | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| JX-001 | JAX-RS routes, sub-resource locators     | Root resources and locator chains across files; templates normalised; unreachable resources and `Object` locators as gaps                   |
-| T-11   | Route gaps kept on large repositories    | Unresolved references capped per kind; dropped counts by kind in the coverage report and assessment                                         |
-| JV-004 | JPA queries → tables                     | Literal JPQL and SQL linked from the running method through entity mappings; named queries matched by name (inferred); dynamic text as gaps |
-| JV-002 | Spring bean wiring                       | Beans and injection points read; unique, `@Primary`, `@Qualifier` and name matches linked as inferred `injects`; ambiguous points as gaps   |
-| JV-005 | Controller → service → repository chains | A route's flow reaches the tables: derived finders, inherited CRUD calls and `@Query` methods end at their table                            |
+| ID     | Item                                     | Acceptance criteria                                                                                                                          |
+| ------ | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| JX-001 | JAX-RS routes, sub-resource locators     | Root resources and locator chains across files; templates normalised; unreachable resources and `Object` locators as gaps                    |
+| T-11   | Route gaps kept on large repositories    | Unresolved references capped per kind; dropped counts by kind in the coverage report and assessment                                          |
+| JV-004 | JPA queries → tables                     | Literal JPQL and SQL linked from the running method through entity mappings; named queries matched by name (inferred); dynamic text as gaps  |
+| JV-002 | Spring bean wiring                       | Beans and injection points read; unique, `@Primary`, `@Qualifier` and name matches linked as inferred `injects`; ambiguous points as gaps    |
+| JV-005 | Controller → service → repository chains | A route's flow reaches the tables: derived finders, inherited CRUD calls and `@Query` methods end at their table                             |
+| JV-007 | Java benchmark and unresolved constructs | A second Spring corpus labelled before the engine ran and scored; constructs the engine cannot see counted on real corpora; capability sheet |
 
-**Status:** JX-001 done 2026-11-15 (Keycloak: 485 routes, 408 handlers). Not yet benchmarked. T-11 done 2026-11-15: Keycloak stores all 103 route gaps (0 before). JV-004 done 2026-11-15: Keycloak 60 of 102 tables now have a code reader or writer (0 before). JV-002 done 2026-11-15: PetClinic injects 6/6; JHipster sample 19 of 49 injection points linked, the rest framework or library types. JV-005 done 2026-11-15 in flows (PetClinic 9 of 17 routes reach a table, JHipster sample 34 of 48); in the report once the private module exists. Still open: and the Java capability sheet.
+**Status:** JX-001 done 2026-11-15 (Keycloak: 485 routes, 408 handlers). Not yet benchmarked. T-11 done 2026-11-15: Keycloak stores all 103 route gaps (0 before). JV-004 done 2026-11-15: Keycloak 60 of 102 tables now have a code reader or writer (0 before). JV-002 done 2026-11-15: PetClinic injects 6/6; JHipster sample 19 of 49 injection points linked, the rest framework or library types. JV-005 done 2026-11-15 in flows (PetClinic 9 of 17 routes reach a table, JHipster sample 34 of 48); in the report once the private module exists. JV-007 done 2026-11-15: JHipster sample scored 100% precision on all 5 types, recall 100% except `reads_table` 70.4% (JPQL path joins, `@EntityGraph`); [JAVA_CAPABILITY_SHEET.md](product/JAVA_CAPABILITY_SHEET.md). Still open: JV-001 (multi-module Maven and Gradle), JPQL path joins and `@EntityGraph`.
 
 ## Blocked or external track (not sprint-scheduled)
 

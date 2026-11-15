@@ -18,6 +18,8 @@ pnpm --filter @nexora/codeatlas-core exec tsx scripts/score-benchmark.ts \
   "$PWD/documentation/benchmark/ground-truth/spring-petclinic.json" /tmp/petclinic --json /tmp/petclinic-score.json
 ```
 
+Other corpora run the same way with their own ground-truth file and the commit in it, for example `jhipster-sample-app.json` with a clone of `jhipster/jhipster-sample-app` at `6b000b5`.
+
 The script refuses a checkout at another commit, indexes into an in-memory database with default options (no SCIP, no model) and prints precision, recall and F1 by relationship type, with true and false positives split by evidence class.
 
 CI runs the scorer's unit tests and validates every ground-truth file (`core/test/benchmark.test.ts`). CI does not clone the corpus, so a scored run is recorded by hand in the history.

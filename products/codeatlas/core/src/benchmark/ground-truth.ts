@@ -91,5 +91,8 @@ export function normaliseKey(key: string): string {
     k = `${route[1]!.toUpperCase()} ${path}`;
   }
   if (k.startsWith('table:')) k = k.toLowerCase();
+  // The indexer keys a later overload of a method \`File#C.m@<line>\` (indexer/docs.ts); ground
+  // truth labels a method by name, so every overload of it compares as the one method.
+  if (k.includes('#')) k = k.replace(/@\d+$/u, '');
   return k;
 }
