@@ -50,3 +50,28 @@ export interface RouteAdapter {
     gaps: RouteGap[];
   };
 }
+
+/** One file as a repository-level adapter sees it. */
+export interface AdapterFile {
+  path: string;
+  text: string;
+  declarations: DeclView[];
+}
+
+/**
+ * An adapter whose routes need more than one file, such as JAX-RS sub-resource locators that
+ * return a resource class declared elsewhere. It sees every file it applies to at once.
+ */
+export interface RepositoryRouteAdapter {
+  id: string;
+  name: string;
+  languages: string[];
+  applies(text: string): boolean;
+  repositoryRoutes(
+    files: AdapterFile[],
+    constants: Map<string, string>,
+  ): {
+    routes: (RouteFinding & { file: string })[];
+    gaps: (RouteGap & { file: string })[];
+  };
+}

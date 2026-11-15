@@ -11,7 +11,7 @@ This is the single tracker required by spec §19.
 
 | Command                                      | Result                                                                                                                                           |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `pnpm check` (typecheck, lint, tests)        | pass: 692 tests (2026-11-15)                                                                                                                     |
+| `pnpm check` (typecheck, lint, tests)        | pass: 695 tests (2026-11-15)                                                                                                                     |
 | `pnpm format:check`                          | clean (2026-11-15)                                                                                                                               |
 | `pnpm audit --prod`                          | no known vulnerabilities (2026-11-14)                                                                                                            |
 | `pnpm --filter @nexora/codeatlas-web e2e`    | 1 journey passed, with the impact step (2026-11-15, Sprint 2)                                                                                    |
