@@ -256,3 +256,11 @@ Per ADR 0030 the report generator (REP-002 rendering, REP-006 HTML, REP-007 reda
 | --------------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------------ |
 | Real-model evaluation (CodeAtlas chat and patches)                    | Ollama not installed in the build environment | Founder's machine, or an environment with Ollama |
 | Legal review of the privacy notice and the open-core split (ADR 0030) | External                                      | Founder                                          |
+
+## Commercial roadmap Sprint 5 (started): packaging, egress proof and security
+
+| ID      | Item                 | Acceptance criteria                                                                                                                              |
+| ------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| PKG-004 | Network-denied check | Index, assessment and brain run with the network denied in CI; any outbound attempt fails the job; `DATA_FLOW.md` and a customer data-flow sheet |
+
+**Status:** PKG-004 done 2026-11-15: `scripts/egress-check.sh` in CI job `egress`; CodeAtlas core and Immich indexed offline with 0 outbound attempts. The paid report does not exist yet (ADR 0030), so the assessment model stands in for it. Still open: PKG-001 to PKG-003, PKG-005 to PKG-007, LIC-001.
