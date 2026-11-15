@@ -44,3 +44,5 @@ export { runMetadata, ruleCatalogueHash } from './assessment/run-metadata';
 export { RULES, ruleCatalogueMarkdown, type RuleId } from './indexer/rules';
 export { symbolCategory, type SymbolCategory } from './indexer/symbol-category';
 export { ENGINE_VERSION } from './version';
+export * from './benchmark/ground-truth';
+export * from './benchmark/score';

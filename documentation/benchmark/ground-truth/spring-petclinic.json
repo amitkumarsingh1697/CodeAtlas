@@ -1,0 +1,311 @@
+{
+  "version": 1,
+  "corpus": {
+    "name": "spring-projects/spring-petclinic",
+    "url": "https://github.com/spring-projects/spring-petclinic",
+    "commit": "500158f732419217507c7656904b8e6aa1bcc0d6",
+    "licence": "Apache-2.0"
+  },
+  "labelling": {
+    "status": "claude-labelled",
+    "labelledBy": "Claude (AI), reading the source at the pinned commit",
+    "labelledOn": "2026-11-15",
+    "method": "Labels taken from the source at the pinned commit: a small script listed every Spring mapping, @Table and repository declaration under src/main/java, and each controller, entity and repository file was then read to confirm prefixes, handler names and repository base types. Labels were not copied from CodeAtlas output. Awaiting founder spot-check (decision D-9)."
+  },
+  "scope": [
+    {
+      "type": "handled_by",
+      "paths": ["src/main/java"],
+      "rule": "One relationship per HTTP verb and path declared with a Spring mapping annotation, to the annotated method; class-level @RequestMapping prefix joined; no servlet context path."
+    },
+    {
+      "type": "maps_to",
+      "paths": ["src/main/java"],
+      "rule": "An @Entity class to its own primary table (@Table name, or the default name); @MappedSuperclass classes have no table."
+    },
+    {
+      "type": "reads_table",
+      "paths": ["src/main/java"],
+      "rule": "A Spring Data repository reads the primary table of its aggregate type argument."
+    },
+    {
+      "type": "writes_table",
+      "paths": ["src/main/java"],
+      "rule": "A Spring Data repository writes its aggregate table only when it declares or inherits a write method (save, delete); Repository<T, ID> with only finders does not."
+    }
+  ],
+  "relationships": [
+    {
+      "type": "handled_by",
+      "from": "GET /owners/new",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java#OwnerController.initCreationForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java",
+        "line": 72
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /owners/new",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java#OwnerController.processCreationForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java",
+        "line": 77
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /owners/find",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java#OwnerController.initFindForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java",
+        "line": 89
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /owners",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java#OwnerController.processFindForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java",
+        "line": 94
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /owners/{ownerId}/edit",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java#OwnerController.initUpdateOwnerForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java",
+        "line": 148
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /owners/{ownerId}/edit",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java#OwnerController.processUpdateOwnerForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java",
+        "line": 153
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /owners/{ownerId}",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java#OwnerController.showOwner",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java",
+        "line": 178
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /owners/{ownerId}/pets/new",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java#PetController.initCreationForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java",
+        "line": 100
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /owners/{ownerId}/pets/new",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java#PetController.processCreationForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java",
+        "line": 107
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /owners/{ownerId}/pets/{petId}/edit",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java#PetController.initUpdateForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java",
+        "line": 139
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /owners/{ownerId}/pets/{petId}/edit",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java#PetController.processUpdateForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java",
+        "line": 144
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /owners/{ownerId}/pets/{petId}/visits/new",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/VisitController.java#VisitController.initNewVisitForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/VisitController.java",
+        "line": 90
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /owners/{ownerId}/pets/{petId}/visits/new",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/VisitController.java#VisitController.processNewVisitForm",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/VisitController.java",
+        "line": 97
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /oups",
+      "to": "src/main/java/org/springframework/samples/petclinic/system/CrashController.java#CrashController.triggerException",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/system/CrashController.java",
+        "line": 31
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /",
+      "to": "src/main/java/org/springframework/samples/petclinic/system/WelcomeController.java#WelcomeController.welcome",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/system/WelcomeController.java",
+        "line": 25
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /vets.html",
+      "to": "src/main/java/org/springframework/samples/petclinic/vet/VetController.java#VetController.showVetList",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/vet/VetController.java",
+        "line": 45
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /vets",
+      "to": "src/main/java/org/springframework/samples/petclinic/vet/VetController.java#VetController.showResourcesVetList",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/vet/VetController.java",
+        "line": 72
+      }
+    },
+    {
+      "type": "maps_to",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/Owner.java#Owner",
+      "to": "table:owners",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/Owner.java",
+        "line": 49
+      }
+    },
+    {
+      "type": "maps_to",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/Pet.java#Pet",
+      "to": "table:pets",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/Pet.java",
+        "line": 45
+      }
+    },
+    {
+      "type": "maps_to",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/PetType.java#PetType",
+      "to": "table:types",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/PetType.java",
+        "line": 27
+      }
+    },
+    {
+      "type": "maps_to",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/Visit.java#Visit",
+      "to": "table:visits",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/Visit.java",
+        "line": 36
+      }
+    },
+    {
+      "type": "maps_to",
+      "from": "src/main/java/org/springframework/samples/petclinic/vet/Specialty.java#Specialty",
+      "to": "table:specialties",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/vet/Specialty.java",
+        "line": 29
+      }
+    },
+    {
+      "type": "maps_to",
+      "from": "src/main/java/org/springframework/samples/petclinic/vet/Vet.java#Vet",
+      "to": "table:vets",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/vet/Vet.java",
+        "line": 44
+      }
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java#OwnerRepository",
+      "to": "table:owners",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java",
+        "line": 36
+      }
+    },
+    {
+      "type": "writes_table",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java#OwnerRepository",
+      "to": "table:owners",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java",
+        "line": 36
+      },
+      "note": "Inherits save and delete from JpaRepository."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/PetTypeRepository.java#PetTypeRepository",
+      "to": "table:types",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/PetTypeRepository.java",
+        "line": 30
+      }
+    },
+    {
+      "type": "writes_table",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/PetTypeRepository.java#PetTypeRepository",
+      "to": "table:types",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/PetTypeRepository.java",
+        "line": 30
+      },
+      "note": "Inherits save and delete from JpaRepository."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/org/springframework/samples/petclinic/vet/VetRepository.java#VetRepository",
+      "to": "table:vets",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/vet/VetRepository.java",
+        "line": 38
+      }
+    }
+  ],
+  "outOfScope": [
+    {
+      "what": "Vet \u2192 vet_specialties join table (@JoinTable)",
+      "reason": "Join tables are not maps_to in ground truth v1; they need their own relationship type."
+    },
+    {
+      "what": "Tables reached through cascades or eager fetches (for example OwnerRepository \u2192 pets)",
+      "reason": "Ground truth v1 labels only the aggregate table a repository names directly."
+    },
+    {
+      "what": "Calls and imports",
+      "reason": "Not labelled in this file yet."
+    },
+    {
+      "what": "Code under src/test",
+      "reason": "Benchmark scope is production code."
+    }
+  ]
+}

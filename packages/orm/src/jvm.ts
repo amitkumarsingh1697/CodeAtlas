@@ -381,18 +381,35 @@ const REPOSITORY =
 const SPRING_REPOSITORY_IMPORT =
   /\bimport\s+org\.springframework\.data\.repository\.(Repository|\*)\s*;/;
 
+/** Spring Data derived write methods (save, delete, remove) and `@Modifying` queries. */
+const WRITE_METHOD = /^(save|delete|remove)/;
+function declaresWriteMethod(iface: N): boolean {
+  return findAll(
+    field(iface, 'body') ?? iface,
+    (n) => n.type === 'method_declaration' || n.type === 'function_declaration',
+  ).some((md) => {
+    const name =
+      field(md, 'name')?.text ?? named(md).find((x) => x.type === 'simple_identifier')?.text ?? '';
+    return WRITE_METHOD.test(name) || /@Modifying\b/.test(md.text);
+  });
+}
+
 function springData(k: Klass, out: OrmFile, source: string): void {
   for (const b of k.bases) {
     const m = /^([\w.]+)\s*<\s*([\w.]+)/.exec(b);
     if (!m || !REPOSITORY.test(m[1]!.split('.').pop()!)) continue;
     if (m[1] === 'Repository' && !SPRING_REPOSITORY_IMPORT.test(source)) continue;
+    // The bare marker interface inherits no methods, so it writes only through methods it declares.
+    const writes = baseType(m[1]!) !== 'Repository' || declaresWriteMethod(k.node);
     out.uses.push({
       framework: 'spring-data',
       owner: k.name,
       line: line(k.node),
       model: m[2]!,
-      access: 'reads-writes',
-      detail: `Spring Data repository of ${m[2]} (${m[1]}): its methods read and write the table`,
+      access: writes ? 'reads-writes' : 'reads',
+      detail: writes
+        ? `Spring Data repository of ${m[2]} (${m[1]}): its methods read and write the table`
+        : `Spring Data repository of ${m[2]} (${m[1]}): it declares only finder methods, so it reads the table`,
     });
     if (!out.frameworks.includes('spring-data')) out.frameworks.push('spring-data');
   }

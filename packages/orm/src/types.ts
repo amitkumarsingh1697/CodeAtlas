@@ -199,7 +199,7 @@ export interface OrmUse {
   table?: string;
   /** Default table name candidates when only a class name is known (Rails, Eloquent). */
   candidates?: string[];
-  access: 'maps' | 'reads-writes';
+  access: 'maps' | 'reads' | 'reads-writes';
   detail: string;
 }
 
@@ -333,7 +333,7 @@ export interface ResolvedMapping {
   owner: string;
   table: string;
   framework: OrmFramework;
-  access: 'maps' | 'reads-writes';
+  access: 'maps' | 'reads' | 'reads-writes';
   confidence: 'observed' | 'inferred';
   detail: string;
 }
