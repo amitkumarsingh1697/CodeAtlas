@@ -107,6 +107,9 @@ describe('benchmark scoring (ACC-004)', () => {
     expect(normaliseKey('GET /x (src/B.ts)')).toBe('GET /x');
     expect(normaliseKey('table:Owners')).toBe('table:owners');
     expect(normaliseKey('src/A.java#A.a')).toBe('src/A.java#A.a');
+    // A later overload, keyed with its start line, is the same labelled method.
+    expect(normaliseKey('src/A.java#A.a@38')).toBe('src/A.java#A.a');
+    expect(normaliseKey('npm:@scope/pkg@1')).toBe('npm:@scope/pkg@1');
   });
 
   it('puts the labelling status and a warning before any figure that is not adjudicated', () => {
@@ -159,7 +162,7 @@ describe('benchmark scoring (ACC-004)', () => {
     }
   });
 
-  it('the PetClinic ground truth holds 17 routes, 6 entity tables, 3 repositories, 1 query and 6 injections', () => {
+  it('the PetClinic ground truth holds 17 routes, 6 entity tables, 7 table reads, 2 table writes and 6 injections', () => {
     const gt = groundTruthSchema.parse(
       JSON.parse(readFileSync(join(GT_DIR, 'spring-petclinic.json'), 'utf8')),
     );
@@ -170,6 +173,20 @@ describe('benchmark scoring (ACC-004)', () => {
       count('reads_table'),
       count('writes_table'),
       count('injects'),
-    ]).toEqual([17, 6, 4, 2, 6]);
+    ]).toEqual([17, 6, 7, 2, 6]);
+  });
+
+  it('the JHipster sample ground truth holds 38 routes, 5 entity tables, 27 table reads, 5 table writes and 20 injections', () => {
+    const gt = groundTruthSchema.parse(
+      JSON.parse(readFileSync(join(GT_DIR, 'jhipster-sample-app.json'), 'utf8')),
+    );
+    const count = (t: string) => gt.relationships.filter((r) => r.type === t).length;
+    expect([
+      count('handled_by'),
+      count('maps_to'),
+      count('reads_table'),
+      count('writes_table'),
+      count('injects'),
+    ]).toEqual([38, 5, 27, 5, 20]);
   });
 });

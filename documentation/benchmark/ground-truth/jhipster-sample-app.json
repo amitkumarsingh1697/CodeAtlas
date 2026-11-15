@@ -1,0 +1,944 @@
+{
+  "version": 1,
+  "corpus": {
+    "name": "jhipster/jhipster-sample-app",
+    "url": "https://github.com/jhipster/jhipster-sample-app",
+    "commit": "6b000b5d23a36c45e01472471b84a44fa2464044",
+    "licence": "Apache-2.0"
+  },
+  "labelling": {
+    "status": "claude-labelled",
+    "labelledBy": "Claude (AI), reading the source at the pinned commit",
+    "labelledOn": "2026-11-15",
+    "method": "Labels written before CodeAtlas was run on this file set: grep listed every Spring mapping, @Entity/@Table, repository interface, stereotype class, constructor, @Bean method and @Autowired member under src/main/java, and each controller, entity, repository and configuration file was then read to confirm prefixes, handler names, query text, entity associations and injected types. Labels were not copied from CodeAtlas output. Awaiting founder spot-check (decision D-9)."
+  },
+  "scope": [
+    {
+      "type": "handled_by",
+      "paths": ["src/main/java"],
+      "rule": "One relationship per HTTP verb and path declared with a Spring mapping annotation, to the annotated method; class-level @RequestMapping prefix joined; a mapping with several paths gives one relationship per path; no servlet context path."
+    },
+    {
+      "type": "maps_to",
+      "paths": ["src/main/java"],
+      "rule": "An @Entity class to its own primary table (@Table name, or the default name); @MappedSuperclass classes have no table."
+    },
+    {
+      "type": "reads_table",
+      "paths": ["src/main/java"],
+      "rule": "A Spring Data repository reads the primary table of its aggregate type argument. A method that runs a query (@Query, EntityManager.createQuery, or a Spring Data derived finder) reads every entity table the query touches: entities named in FROM or JOIN, entities reached by a path join (join fetch a.b, or a.b.c in WHERE), and associations fetched by @EntityGraph. Join tables are excluded. default methods that only call other repository methods are not labelled."
+    },
+    {
+      "type": "writes_table",
+      "paths": ["src/main/java"],
+      "rule": "A Spring Data repository writes its aggregate table only when it declares or inherits a write method (save, delete)."
+    },
+    {
+      "type": "injects",
+      "paths": ["src/main/java"],
+      "rule": "A Spring bean (stereotype class, or a @Bean method for its parameters) is given another bean defined in this repository (a stereotype class, a @ConfigurationProperties class or a @Bean method) through its constructor, an @Autowired field or setter, or a @Bean method parameter. Beans that Spring Boot or a library supplies (Environment, CacheManager, JHipsterProperties) are not labelled."
+    }
+  ],
+  "relationships": [
+    {
+      "type": "handled_by",
+      "from": "POST /api/register",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java#AccountResource.registerAccount",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java",
+        "line": 71
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/activate",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java#AccountResource.activateAccount",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java",
+        "line": 88
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/account",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java#AccountResource.getAccount",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java",
+        "line": 103
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api/account",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java#AccountResource.saveAccount",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java",
+        "line": 119
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api/account/change-password",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java#AccountResource.changePassword",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java",
+        "line": 148
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api/account/reset-password/init",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java#AccountResource.requestPasswordReset",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java",
+        "line": 162
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api/account/reset-password/finish",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java#AccountResource.finishPasswordReset",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java",
+        "line": 182
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api/authenticate",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AuthenticateController.java#AuthenticateController.authorize",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AuthenticateController.java",
+        "line": 56
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/authenticate",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AuthenticateController.java#AuthenticateController.isAuthenticated",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AuthenticateController.java",
+        "line": 74
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api/authorities",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AuthorityResource.java#AuthorityResource.createAuthority",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AuthorityResource.java",
+        "line": 49
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/authorities",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AuthorityResource.java#AuthorityResource.getAllAuthorities",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AuthorityResource.java",
+        "line": 67
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/authorities/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AuthorityResource.java#AuthorityResource.getAuthority",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AuthorityResource.java",
+        "line": 80
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /api/authorities/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/AuthorityResource.java#AuthorityResource.deleteAuthority",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AuthorityResource.java",
+        "line": 94
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api/bank-accounts",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java#BankAccountResource.createBankAccount",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java",
+        "line": 51
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /api/bank-accounts/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java#BankAccountResource.updateBankAccount",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java",
+        "line": 73
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /api/bank-accounts/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java#BankAccountResource.partialUpdateBankAccount",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java",
+        "line": 107
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/bank-accounts",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java#BankAccountResource.getAllBankAccounts",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java",
+        "line": 146
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/bank-accounts/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java#BankAccountResource.getBankAccount",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java",
+        "line": 164
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /api/bank-accounts/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java#BankAccountResource.deleteBankAccount",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java",
+        "line": 177
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api/labels",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java#LabelResource.createLabel",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java",
+        "line": 51
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /api/labels/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java#LabelResource.updateLabel",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java",
+        "line": 73
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /api/labels/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java#LabelResource.partialUpdateLabel",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java",
+        "line": 105
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/labels",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java#LabelResource.getAllLabels",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java",
+        "line": 142
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/labels/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java#LabelResource.getLabel",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java",
+        "line": 154
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /api/labels/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java#LabelResource.deleteLabel",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java",
+        "line": 167
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api/operations",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java#OperationResource.createOperation",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java",
+        "line": 56
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /api/operations/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java#OperationResource.updateOperation",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java",
+        "line": 78
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /api/operations/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java#OperationResource.partialUpdateOperation",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java",
+        "line": 112
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/operations",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java#OperationResource.getAllOperations",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java",
+        "line": 153
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/operations/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java#OperationResource.getOperation",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java",
+        "line": 175
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /api/operations/{id}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java#OperationResource.deleteOperation",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java",
+        "line": 188
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/users",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/PublicUserResource.java#PublicUserResource.getAllPublicUsers",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/PublicUserResource.java",
+        "line": 46
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api/admin/users",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java#UserResource.createUser",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java",
+        "line": 105
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /api/admin/users",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java#UserResource.updateUser",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java",
+        "line": 134
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/admin/users",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java#UserResource.getAllUsers",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java",
+        "line": 163
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api/admin/users/{login}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java#UserResource.getUser",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java",
+        "line": 186
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /api/admin/users/{login}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java#UserResource.deleteUser",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java",
+        "line": 199
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /api/admin/users/{login}",
+      "to": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java#UserResource.updateUser",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java",
+        "line": 134
+      }
+    },
+    {
+      "type": "maps_to",
+      "from": "src/main/java/io/github/jhipster/sample/domain/Authority.java#Authority",
+      "to": "table:jhi_authority",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/domain/Authority.java",
+        "line": 17
+      }
+    },
+    {
+      "type": "maps_to",
+      "from": "src/main/java/io/github/jhipster/sample/domain/BankAccount.java#BankAccount",
+      "to": "table:bank_account",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/domain/BankAccount.java",
+        "line": 18
+      }
+    },
+    {
+      "type": "maps_to",
+      "from": "src/main/java/io/github/jhipster/sample/domain/Label.java#Label",
+      "to": "table:label",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/domain/Label.java",
+        "line": 17
+      }
+    },
+    {
+      "type": "maps_to",
+      "from": "src/main/java/io/github/jhipster/sample/domain/Operation.java#Operation",
+      "to": "table:operation",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/domain/Operation.java",
+        "line": 19
+      }
+    },
+    {
+      "type": "maps_to",
+      "from": "src/main/java/io/github/jhipster/sample/domain/User.java#User",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/domain/User.java",
+        "line": 25
+      }
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/AuthorityRepository.java#AuthorityRepository",
+      "to": "table:jhi_authority",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/AuthorityRepository.java",
+        "line": 12
+      }
+    },
+    {
+      "type": "writes_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/AuthorityRepository.java#AuthorityRepository",
+      "to": "table:jhi_authority",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/AuthorityRepository.java",
+        "line": 12
+      },
+      "note": "Inherits save and delete from JpaRepository."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java#BankAccountRepository",
+      "to": "table:bank_account",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java",
+        "line": 16
+      }
+    },
+    {
+      "type": "writes_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java#BankAccountRepository",
+      "to": "table:bank_account",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java",
+        "line": 16
+      },
+      "note": "Inherits save and delete from JpaRepository."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/LabelRepository.java#LabelRepository",
+      "to": "table:label",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/LabelRepository.java",
+        "line": 12
+      }
+    },
+    {
+      "type": "writes_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/LabelRepository.java#LabelRepository",
+      "to": "table:label",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/LabelRepository.java",
+        "line": 12
+      },
+      "note": "Inherits save and delete from JpaRepository."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java#OperationRepository",
+      "to": "table:operation",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java",
+        "line": 19
+      }
+    },
+    {
+      "type": "writes_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java#OperationRepository",
+      "to": "table:operation",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java",
+        "line": 19
+      },
+      "note": "Inherits save and delete from JpaRepository."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 17
+      }
+    },
+    {
+      "type": "writes_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 17
+      },
+      "note": "Inherits save and delete from JpaRepository."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java#BankAccountRepository.findByUserIsCurrentUser",
+      "to": "table:bank_account",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java",
+        "line": 17
+      }
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java#BankAccountRepository.findByUserIsCurrentUser",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java",
+        "line": 17
+      },
+      "note": "Path join through bankAccount.user (JPQL)."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java#BankAccountRepository.findAllWithToOneRelationships",
+      "to": "table:bank_account",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java",
+        "line": 32
+      }
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java#BankAccountRepository.findAllWithToOneRelationships",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java",
+        "line": 32
+      },
+      "note": "Path join through bankAccount.user (JPQL)."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java#BankAccountRepository.findOneWithToOneRelationships",
+      "to": "table:bank_account",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java",
+        "line": 41
+      }
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java#BankAccountRepository.findOneWithToOneRelationships",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java",
+        "line": 41
+      },
+      "note": "Path join through bankAccount.user (JPQL)."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java#OperationRepository.findAllWithToOneRelationships",
+      "to": "table:operation",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java",
+        "line": 32
+      }
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java#OperationRepository.findAllWithToOneRelationships",
+      "to": "table:bank_account",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java",
+        "line": 32
+      },
+      "note": "Path join through operation.bankAccount (JPQL)."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java#OperationRepository.findOneWithToOneRelationships",
+      "to": "table:operation",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java",
+        "line": 41
+      }
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java#OperationRepository.findOneWithToOneRelationships",
+      "to": "table:bank_account",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java",
+        "line": 41
+      },
+      "note": "Path join through operation.bankAccount (JPQL)."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/OperationRepositoryWithBagRelationshipsImpl.java#OperationRepositoryWithBagRelationshipsImpl.fetchLabels",
+      "to": "table:operation",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/OperationRepositoryWithBagRelationshipsImpl.java",
+        "line": 41
+      },
+      "note": "EntityManager.createQuery; both overloads share one symbol."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/OperationRepositoryWithBagRelationshipsImpl.java#OperationRepositoryWithBagRelationshipsImpl.fetchLabels",
+      "to": "table:label",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/OperationRepositoryWithBagRelationshipsImpl.java",
+        "line": 41
+      },
+      "note": "Path join through operation.labels (JPQL)."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository.findOneByActivationKey",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 22
+      },
+      "note": "Spring Data derived query."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository.findAllByActivatedIsFalseAndActivationKeyIsNotNullAndCreatedDateBefore",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 24
+      },
+      "note": "Spring Data derived query."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository.findOneByResetKey",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 26
+      },
+      "note": "Spring Data derived query."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository.findOneWithAuthoritiesByEmailIgnoreCase",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 30
+      },
+      "note": "Spring Data derived query."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository.findOneByEmailIgnoreCase",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 32
+      },
+      "note": "Spring Data derived query."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository.findOneWithAuthoritiesByLogin",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 36
+      },
+      "note": "Spring Data derived query."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository.findOneByLogin",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 38
+      },
+      "note": "Spring Data derived query."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository.findAllByIdNotNullAndActivatedIsTrue",
+      "to": "table:jhi_user",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 40
+      },
+      "note": "Spring Data derived query."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository.findOneWithAuthoritiesByEmailIgnoreCase",
+      "to": "table:jhi_authority",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 29
+      },
+      "note": "@EntityGraph(attributePaths = \"authorities\") fetches the authorities."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository.findOneWithAuthoritiesByLogin",
+      "to": "table:jhi_authority",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java",
+        "line": 35
+      },
+      "note": "@EntityGraph(attributePaths = \"authorities\") fetches the authorities."
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/config/LiquibaseConfiguration.java#LiquibaseConfiguration.liquibase",
+      "to": "src/main/java/io/github/jhipster/sample/config/AsyncConfiguration.java#AsyncConfiguration.getAsyncExecutor",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/config/LiquibaseConfiguration.java",
+        "line": 33
+      },
+      "note": "@Qualifier(\"taskExecutor\"); AsyncConfiguration is @Profile(\"!testdev & !testprod\")."
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/config/LiquibaseConfiguration.java#LiquibaseConfiguration.liquibase",
+      "to": "src/main/java/io/github/jhipster/sample/config/ApplicationProperties.java#ApplicationProperties",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/config/LiquibaseConfiguration.java",
+        "line": 33
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/config/SecurityJwtConfiguration.java#SecurityJwtConfiguration.jwtDecoder",
+      "to": "src/main/java/io/github/jhipster/sample/management/SecurityMetersService.java#SecurityMetersService",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/config/SecurityJwtConfiguration.java",
+        "line": 29
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/security/DomainUserDetailsService.java#DomainUserDetailsService",
+      "to": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/security/DomainUserDetailsService.java",
+        "line": 28
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/service/UserService.java#UserService",
+      "to": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/service/UserService.java",
+        "line": 44
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/service/UserService.java#UserService",
+      "to": "src/main/java/io/github/jhipster/sample/config/SecurityConfiguration.java#SecurityConfiguration.passwordEncoder",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/service/UserService.java",
+        "line": 44
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/service/UserService.java#UserService",
+      "to": "src/main/java/io/github/jhipster/sample/repository/AuthorityRepository.java#AuthorityRepository",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/service/UserService.java",
+        "line": 44
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java#AccountResource",
+      "to": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java",
+        "line": 51
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java#AccountResource",
+      "to": "src/main/java/io/github/jhipster/sample/service/UserService.java#UserService",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java",
+        "line": 51
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java#AccountResource",
+      "to": "src/main/java/io/github/jhipster/sample/service/MailService.java#MailService",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java",
+        "line": 51
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java#AccountResource",
+      "to": "src/main/java/io/github/jhipster/sample/config/SecurityConfiguration.java#SecurityConfiguration.passwordEncoder",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AccountResource.java",
+        "line": 51
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/AuthenticateController.java#AuthenticateController",
+      "to": "src/main/java/io/github/jhipster/sample/config/SecurityJwtConfiguration.java#SecurityJwtConfiguration.jwtEncoder",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AuthenticateController.java",
+        "line": 51
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/AuthorityResource.java#AuthorityResource",
+      "to": "src/main/java/io/github/jhipster/sample/repository/AuthorityRepository.java#AuthorityRepository",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/AuthorityResource.java",
+        "line": 38
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java#BankAccountResource",
+      "to": "src/main/java/io/github/jhipster/sample/repository/BankAccountRepository.java#BankAccountRepository",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/BankAccountResource.java",
+        "line": 40
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java#LabelResource",
+      "to": "src/main/java/io/github/jhipster/sample/repository/LabelRepository.java#LabelRepository",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/LabelResource.java",
+        "line": 40
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java#OperationResource",
+      "to": "src/main/java/io/github/jhipster/sample/repository/OperationRepository.java#OperationRepository",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/OperationResource.java",
+        "line": 45
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/PublicUserResource.java#PublicUserResource",
+      "to": "src/main/java/io/github/jhipster/sample/service/UserService.java#UserService",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/PublicUserResource.java",
+        "line": 36
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java#UserResource",
+      "to": "src/main/java/io/github/jhipster/sample/service/UserService.java#UserService",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java",
+        "line": 87
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java#UserResource",
+      "to": "src/main/java/io/github/jhipster/sample/repository/UserRepository.java#UserRepository",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java",
+        "line": 87
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java#UserResource",
+      "to": "src/main/java/io/github/jhipster/sample/service/MailService.java#MailService",
+      "evidence": {
+        "path": "src/main/java/io/github/jhipster/sample/web/rest/UserResource.java",
+        "line": 87
+      }
+    }
+  ],
+  "outOfScope": [
+    {
+      "what": "Join tables rel_operation__label and jhi_user_authority (@JoinTable)",
+      "reason": "Join tables are not a relationship type in ground truth v1."
+    },
+    {
+      "what": "Spring Data repository fragment OperationRepositoryWithBagRelationshipsImpl behind OperationRepository",
+      "reason": "Spring wires the Impl class into the repository proxy by naming convention; this is a call relationship, not an injection, and calls are not labelled yet."
+    },
+    {
+      "what": "Beans Spring Security and Spring Data use without an injection point in this code (DomainUserDetailsService as userDetailsService, SpringSecurityAuditorAware through @EnableJpaAuditing(auditorAwareRef))",
+      "reason": "No constructor, field or parameter in this repository receives them; the framework looks them up by type or name."
+    },
+    {
+      "what": "Calls and imports",
+      "reason": "Not labelled in this file yet."
+    },
+    {
+      "what": "Code under src/test and the Angular client under src/main/webapp",
+      "reason": "Benchmark scope is Java production code."
+    }
+  ]
+}

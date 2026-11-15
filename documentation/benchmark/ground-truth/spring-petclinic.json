@@ -26,7 +26,7 @@
     {
       "type": "reads_table",
       "paths": ["src/main/java"],
-      "rule": "A Spring Data repository reads the primary table of its aggregate type argument; a repository method whose @Query (JPQL or SQL) names an entity or table reads that table."
+      "rule": "A Spring Data repository reads the primary table of its aggregate type argument. A method that runs a query (@Query, EntityManager.createQuery, or a declared Spring Data finder such as findBy\u2026 or findAll) reads every entity table the query touches: entities named in FROM or JOIN, entities reached by a path join, and associations fetched by @EntityGraph. Join tables are excluded."
     },
     {
       "type": "writes_table",
@@ -304,6 +304,36 @@
       }
     },
     {
+      "type": "reads_table",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java#OwnerRepository.findByLastNameStartingWith",
+      "to": "table:owners",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java",
+        "line": 45
+      },
+      "note": "Declared Spring Data finder (no @Query). Label added 2026-11-15 after the scope rule was widened to method-level finders (JV-007)."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java#OwnerRepository.findById",
+      "to": "table:owners",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java",
+        "line": 60
+      },
+      "note": "Declared Spring Data finder (no @Query). Label added 2026-11-15 after the scope rule was widened to method-level finders (JV-007)."
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/org/springframework/samples/petclinic/vet/VetRepository.java#VetRepository.findAll",
+      "to": "table:vets",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/vet/VetRepository.java",
+        "line": 46
+      },
+      "note": "Declared Spring Data finder (no @Query). Label added 2026-11-15 after the scope rule was widened to method-level finders (JV-007); both findAll overloads are one label."
+    },
+    {
       "type": "injects",
       "from": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java#OwnerController",
       "to": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java#OwnerRepository",
@@ -360,11 +390,11 @@
   ],
   "outOfScope": [
     {
-      "what": "Vet → vet_specialties join table (@JoinTable)",
+      "what": "Vet \u2192 vet_specialties join table (@JoinTable)",
       "reason": "Join tables are not maps_to in ground truth v1; they need their own relationship type."
     },
     {
-      "what": "Tables reached through cascades or eager fetches (for example OwnerRepository → pets)",
+      "what": "Tables reached through cascades or eager fetches (for example OwnerRepository \u2192 pets)",
       "reason": "Ground truth v1 labels only the aggregate table a repository names directly."
     },
     {
