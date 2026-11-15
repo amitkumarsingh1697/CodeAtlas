@@ -123,13 +123,21 @@ function trackJob(ctx: ServiceContext, job: Job): void {
  * reused, and the data folder is kept owner-only.
  */
 export function createSessionToken(home: string): string {
-  mkdirSync(home, { recursive: true, mode: 0o700 });
-  if (statSync(home).mode & 0o077) chmodSync(home, 0o700);
+  ensurePrivateHome(home);
   const file = join(home, 'token');
   const t = randomBytes(32).toString('base64url');
   rmSync(file, { force: true });
   writeFileSync(file, `${t}\n`, { mode: 0o600, flag: 'wx' });
   return t;
+}
+
+/**
+ * PKG-002: the data folder holds copies of source text, so only its owner may open it. Every
+ * command calls this before opening the database; an existing folder is tightened to 0700.
+ */
+export function ensurePrivateHome(home: string): void {
+  mkdirSync(home, { recursive: true, mode: 0o700 });
+  if (statSync(home).mode & 0o077) chmodSync(home, 0o700);
 }
 
 /** Removes the token file when it still holds this service's token (a newer start may own it). */
@@ -487,6 +495,7 @@ export function createService(
   extra: RouteRegistrar[] = [],
 ): { server: Server; ctx: ServiceContext } {
   mkdirSync(cfg.home, { recursive: true, mode: 0o700 });
+  ensurePrivateHome(cfg.home);
   const dbPath = join(cfg.home, 'codeatlas.db');
   const db = openDb(dbPath);
   // An index run left 'running' by a crash or kill never committed; record it as failed.

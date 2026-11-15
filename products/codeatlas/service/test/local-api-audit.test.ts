@@ -9,6 +9,7 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -74,6 +75,20 @@ describe('session token', () => {
     const r = await svc.api(`/api/repos?token=${svc.ctx.token}`, { token: null });
     expect(r.status).toBe(401);
     await svc.close();
+  });
+});
+
+describe('data folder', () => {
+  it('every CLI command leaves the data folder owner-only, even one created 0755', () => {
+    const home = tmp('ca-cli-');
+    chmodSync(home, 0o755);
+    const r = spawnSync(
+      process.execPath,
+      ['--no-warnings', '--import', 'tsx', 'src/cli.ts', 'search', '1', 'x'],
+      { env: { ...process.env, CODEATLAS_HOME: home, AI_PROVIDER: 'disabled' }, encoding: 'utf8' },
+    );
+    expect(r.status).toBe(0);
+    expect(statSync(home).mode & 0o777).toBe(0o700);
   });
 });
 
