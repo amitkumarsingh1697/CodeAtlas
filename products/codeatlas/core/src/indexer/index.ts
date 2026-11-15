@@ -392,9 +392,9 @@ function buildAndPersist(
   const buildNodes = buildModuleNodes(
     buildModel,
     new Set(packages.map((p) => p.name)),
-    new Set(pkgDirs),
+    new Map(packages.map((p) => [p.dir, p.name])),
   );
-  const modDirs = [...pkgDirs, ...buildNodes.map((b) => b.dir)];
+  const modDirs = [...pkgDirs, ...buildNodes.filter((b) => !b.sharesPackage).map((b) => b.dir)];
   const moduleOf = (p: string): string => {
     const d = nearest(p, modDirs);
     if (d === undefined) return repoName;
@@ -415,7 +415,7 @@ function buildAndPersist(
       module: p.name,
       data: { dir: p.dir, build: 'npm' },
     });
-  for (const b of buildNodes)
+  for (const b of buildNodes.filter((x) => !x.sharesPackage))
     graph.addNode({
       kind: 'module',
       key: b.key,

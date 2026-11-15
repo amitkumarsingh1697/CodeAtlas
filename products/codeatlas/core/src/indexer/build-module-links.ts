@@ -3,13 +3,23 @@
  * a `depends_on` edge per declared module dependency (rule `build.module-dependency`), and a
  * check of every resolved import between two build modules against the declared dependencies.
  */
-import { dependencyClosure, type BuildModel, type BuildModule } from './build-modules';
+import {
+  dependencyClosure,
+  type BuildDependency,
+  type BuildModel,
+  type BuildModule,
+} from './build-modules';
 import type { GraphBuilder } from './model';
 
 export interface BuildModuleNode {
   key: string;
   dir: string;
   module: BuildModule;
+  /**
+   * The folder is already a module because it holds a package.json: the build module's
+   * dependencies attach to that npm module (named by the package), and no second node is made.
+   */
+  sharesPackage?: boolean;
 }
 
 export interface BuildModuleStats {
@@ -32,18 +42,25 @@ export interface BuildModuleStats {
   }[];
 }
 
-/** Module keys: the module name, or `name (folder)` when another module already has the name. */
+/**
+ * Module keys: the module name, or `name (folder)` when another module already has the name. A
+ * folder that is also an npm package keeps the package's module (`packageDirs`: folder → name).
+ */
 export function buildModuleNodes(
   model: BuildModel,
   takenNames: Set<string>,
-  takenDirs: Set<string>,
+  packageDirs: Map<string, string>,
 ): BuildModuleNode[] {
   const out: BuildModuleNode[] = [];
   const names = new Set(takenNames);
   const dup = new Map<string, number>();
   for (const m of model.modules) dup.set(m.name, (dup.get(m.name) ?? 0) + 1);
   for (const m of model.modules) {
-    if (takenDirs.has(m.dir)) continue;
+    const pkg = packageDirs.get(m.dir);
+    if (pkg !== undefined) {
+      out.push({ key: pkg, dir: m.dir, module: m, sharesPackage: true });
+      continue;
+    }
     const key =
       names.has(m.name) || (dup.get(m.name) ?? 0) > 1 ? `${m.name} (${m.dir || '.'})` : m.name;
     names.add(key);
@@ -75,6 +92,34 @@ export function addBuildModuleLinks(
       evidenceLine: d.line,
       detail: `${d.scope} dependency on ${dst}`,
     });
+  }
+  // A child POM inherits its parent's <dependencies>: the child depends on those modules too.
+  const byFrom = new Map<string, BuildDependency[]>();
+  for (const d of model.dependencies) byFrom.set(d.from, [...(byFrom.get(d.from) ?? []), d]);
+  for (const n of nodes) {
+    const seen = new Set<string>([n.dir]);
+    for (
+      let p = model.parents.get(n.dir);
+      p !== undefined && !seen.has(p);
+      p = model.parents.get(p)
+    ) {
+      seen.add(p);
+      for (const d of byFrom.get(p) ?? []) {
+        const dst = keyOf.get(d.to);
+        if (!dst || dst === n.key || pairs.has(`${n.key}\u0000${dst}`)) continue;
+        pairs.add(`${n.key}\u0000${dst}`);
+        graph.addEdge({
+          kind: 'depends_on',
+          method: 'build.module-dependency',
+          src: { kind: 'module', key: n.key },
+          dst: { kind: 'module', key: dst },
+          confidence: d.confidence,
+          evidencePath: d.path,
+          evidenceLine: d.line,
+          detail: `${d.scope} dependency on ${dst}, inherited from the parent POM ${keyOf.get(p) ?? p}`,
+        });
+      }
+    }
   }
   for (const u of model.unresolved)
     graph.addUnresolved({

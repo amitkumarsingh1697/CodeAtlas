@@ -187,4 +187,69 @@ describe('build modules in the index', () => {
       rmSync(root, { recursive: true, force: true });
     }
   });
+
+  it('keeps the Maven dependencies of a folder that is also an npm package, under the package name', async () => {
+    const { mkdirSync, mkdtempSync, rmSync, writeFileSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { dirname: dn, join: jn } = await import('node:path');
+    const { indexRepository, openDb } = await import('../src/index');
+    const root = mkdtempSync(jn(tmpdir(), 'codeatlas-build-'));
+    const files: Record<string, string> = {
+      'pom.xml': pom(
+        '<groupId>org.acme</groupId><artifactId>shop</artifactId><packaging>pom</packaging><modules><module>ui</module><module>server</module><module>api</module></modules>\n<dependencies>\n<dependency><groupId>org.acme</groupId><artifactId>api</artifactId></dependency>\n</dependencies>',
+      ),
+      'api/pom.xml': pom(
+        '<parent><groupId>org.acme</groupId><artifactId>shop</artifactId><version>1</version></parent><artifactId>api</artifactId>',
+      ),
+      // ui is built by Maven (frontend plugin) and is also an npm package.
+      'ui/pom.xml': pom(
+        '<parent><groupId>org.acme</groupId><artifactId>shop</artifactId><version>1</version></parent><artifactId>shop-ui</artifactId>\n<dependencies>\n<dependency><groupId>org.acme</groupId><artifactId>api</artifactId><scope>provided</scope></dependency>\n</dependencies>',
+      ),
+      'ui/package.json': JSON.stringify({ name: '@acme/shop-ui' }),
+      'server/pom.xml': pom(
+        '<parent><groupId>org.acme</groupId><artifactId>shop</artifactId><version>1</version></parent><artifactId>server</artifactId>\n<dependencies>\n<dependency><groupId>org.acme</groupId><artifactId>shop-ui</artifactId></dependency>\n</dependencies>',
+      ),
+    };
+    try {
+      for (const [p, c] of Object.entries(files)) {
+        mkdirSync(dn(jn(root, p)), { recursive: true });
+        writeFileSync(jn(root, p), c);
+      }
+      const db = openDb(':memory:');
+      const { repoId } = indexRepository(db, root);
+      const mods = db
+        .prepare("SELECT key FROM nodes WHERE repo_id = ? AND kind = 'module' ORDER BY key")
+        .all(repoId)
+        .map((m) => m.key);
+      // One module for the ui folder, named by its package.json.
+      expect(mods).toEqual(['@acme/shop-ui', 'api', 'server', 'shop']);
+      const deps = db
+        .prepare(
+          `SELECT s.key s, d.key d FROM edges e JOIN nodes s ON s.id = e.src JOIN nodes d ON d.id = e.dst
+            WHERE e.repo_id = ? AND e.kind = 'depends_on' ORDER BY s.key`,
+        )
+        .all(repoId)
+        .map((d) => `${d.s} -> ${d.d}`);
+      // The parent's dependency on api is inherited by server (ui declares it itself; api is the target).
+      expect(deps).toEqual([
+        '@acme/shop-ui -> api',
+        'server -> @acme/shop-ui',
+        'server -> api',
+        'shop -> api',
+      ]);
+      const inherited = db
+        .prepare(
+          `SELECT e.detail, e.evidence_path p, e.evidence_line l FROM edges e JOIN nodes s ON s.id = e.src JOIN nodes d ON d.id = e.dst
+            WHERE e.repo_id = ? AND e.kind = 'depends_on' AND s.key = 'server' AND d.key = 'api'`,
+        )
+        .get(repoId);
+      expect(inherited).toEqual({
+        detail: 'compile dependency on api, inherited from the parent POM shop',
+        p: 'pom.xml',
+        l: 5,
+      });
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
 });
