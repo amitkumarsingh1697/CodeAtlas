@@ -23,6 +23,10 @@ pnpm --filter @nexora/codeatlas-web build && pnpm --filter @nexora/codeatlas-web
 - Update [documentation/REQUIREMENTS_TRACEABILITY.md](documentation/REQUIREMENTS_TRACEABILITY.md) and other docs your change affects.
 - Never commit secrets or private source code. Test data must be synthetic.
 
-## Licence
+## Licence and sign-off
 
-By contributing you agree that your contribution is licensed under the [Apache License 2.0](LICENSE), the licence of this repository.
+By contributing you agree that your contribution is licensed under the [Apache License 2.0](LICENSE), the licence of this repository (section 5 of the licence).
+
+Every commit must carry a `Signed-off-by:` line (`git commit -s`), which certifies the [Developer Certificate of Origin 1.1](https://developercertificate.org/): that you wrote the change or otherwise have the right to submit it under this licence. Do not submit code copied from another project unless its licence is compatible with Apache-2.0 and you keep its notice; say where it came from in the pull request.
+
+The paid report generator and Pro features live in a separate private repository (ADR 0030). Contributions here stay in this repository under Apache-2.0 and are never moved into the paid module.

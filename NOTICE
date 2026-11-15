@@ -1,0 +1,23 @@
+CodeAtlas and ArchLens
+Copyright 2026 Amit Kumar Singh and the CodeAtlas contributors
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+It was extracted on 2026-11-14 from the NEXORA repository
+(https://github.com/amitkumarsingh1697/NEXORA), also licensed under the Apache License 2.0
+by the same copyright holder.
+
+Third-party software:
+- The ArchLens skill bundles third-party code and data. Their licences, in full, are in
+  skills/archlens/scripts/brain/THIRD-PARTY-LICENSES.txt, GRAMMAR-LICENSES.txt and
+  TYPESCRIPT-LICENSE.txt, with grammar sources and commits in GRAMMARS.json.
+- The tree-sitter grammars in packages/syntax/grammars each keep their licence beside them
+  (<id>.LICENSE) and are listed with source and commit in packages/syntax/grammars/MANIFEST.json.
+- npm dependencies are installed from the registry and keep their own licences.
+
+"CodeAtlas", "ArchLens" and "Nexora" are names used by the copyright holder. The Apache License
+does not grant permission to use them (section 6). They have not been registered or cleared as
+trademarks; see docs/legal/LEGAL_REVIEW.md.
+
+ArchLens is a skill for Anthropic's Claude. It is not made, endorsed or supported by Anthropic.
+"Claude" is a trademark of Anthropic, PBC, used here only to say what the skill works with.

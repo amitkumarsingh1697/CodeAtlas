@@ -12,7 +12,7 @@ Package document 06 §4 asks for every optional AI feature to be off by default.
 ## Decision
 
 1. AI stays on by default. When no model is reachable, Ask answers with the relevant code and relationships only, as before.
-2. Settings has a "Turn AI off" switch (`POST /api/settings/ai`, stored in the local `settings` table). When AI is off, chat and investigations use the disabled provider, so no request reaches any model.
+2. Settings has a "Turn AI off" switch (`POST /api/settings/ai`, stored in the local `meta` table (corrected 2026-11-15: there is no `settings` table)). When AI is off, chat and investigations use the disabled provider, so no request reaches any model.
 3. Ask and Settings show the endpoint (without credentials) and what each question sends: the question, up to 8 source excerpts of at most 60 lines each with secrets redacted, and the related graph facts with paths and lines.
 4. Both providers (Ollama and OpenAI-compatible) treat any host other than `localhost`, `127.0.0.0/8` or `::1` as remote, and refuse to call it unless `AI_REMOTE_CONSENT=true`. Status reports the remote Ollama as unavailable without contacting it.
 5. The other §4 rules still apply: payloads are minimised and redacted, logs hold metadata only, and every feature works without a model.
