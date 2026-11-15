@@ -1,0 +1,2873 @@
+{
+  "version": 1,
+  "corpus": {
+    "name": "immich-app/immich",
+    "url": "https://github.com/immich-app/immich",
+    "commit": "e5d6eb7be67834f59d90e4b7a86f5dec7ac9af86",
+    "licence": "AGPL-3.0"
+  },
+  "labelling": {
+    "status": "claude-labelled",
+    "labelledBy": "Claude (AI), from the source at the pinned commit",
+    "labelledOn": "2026-11-15",
+    "method": "A separate Python script (not the CodeAtlas adapter) read every non-test .ts file under server/src that imports @nestjs/common: the @Controller argument (a string literal or a RouteKey member resolved from server/src/enum.ts), each member-level verb decorator and the next method name. Every decorator argument was a string literal or empty; none needed manual resolution. Eleven verb and path pairs appear twice because MaintenanceWorkerController serves the same routes in the maintenance worker; both handlers are labelled. Awaiting founder spot-check (decision D-9)."
+  },
+  "scope": [
+    {
+      "type": "handled_by",
+      "paths": ["server/src"],
+      "rule": "One relationship per HTTP verb and path declared with a NestJS verb decorator on a method of an @Controller class, to that method; controller prefix joined; the global prefix (api, set in app.common.ts) is not included."
+    }
+  ],
+  "relationships": [
+    {
+      "type": "handled_by",
+      "from": "GET /activities",
+      "to": "server/src/controllers/activity.controller.ts#ActivityController.getActivities",
+      "evidence": {
+        "path": "server/src/controllers/activity.controller.ts",
+        "line": 23
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /activities",
+      "to": "server/src/controllers/activity.controller.ts#ActivityController.createActivity",
+      "evidence": {
+        "path": "server/src/controllers/activity.controller.ts",
+        "line": 35
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /activities/statistics",
+      "to": "server/src/controllers/activity.controller.ts#ActivityController.getActivityStatistics",
+      "evidence": {
+        "path": "server/src/controllers/activity.controller.ts",
+        "line": 54
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /activities/:id",
+      "to": "server/src/controllers/activity.controller.ts#ActivityController.deleteActivity",
+      "evidence": {
+        "path": "server/src/controllers/activity.controller.ts",
+        "line": 65
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /albums",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.getAllAlbums",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 29
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /albums",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.createAlbum",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 40
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /albums/statistics",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.getAlbumStatistics",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 51
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /albums/:id",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.getAlbumInfo",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 63
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /albums/:id",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.updateAlbumInfo",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 73
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /albums/:id",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.deleteAlbum",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 89
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /albums/:id/map-markers",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.getAlbumMapMarkers",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 103
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /albums/:id/assets",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.addAssetsToAlbum",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 113
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /albums/assets",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.addAssetsToAlbums",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 128
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /albums/:id/assets",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.removeAssetFromAlbum",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 139
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /albums/:id/users",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.addUsersToAlbum",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 154
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /albums/:id/user/:userId",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.updateAlbumUser",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 169
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /albums/:id/user/:userId",
+      "to": "server/src/controllers/album.controller.ts#AlbumController.removeUserFromAlbum",
+      "evidence": {
+        "path": "server/src/controllers/album.controller.ts",
+        "line": 185
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api-keys",
+      "to": "server/src/controllers/api-key.controller.ts#ApiKeyController.createApiKey",
+      "evidence": {
+        "path": "server/src/controllers/api-key.controller.ts",
+        "line": 16
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api-keys",
+      "to": "server/src/controllers/api-key.controller.ts#ApiKeyController.getApiKeys",
+      "evidence": {
+        "path": "server/src/controllers/api-key.controller.ts",
+        "line": 27
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api-keys/me",
+      "to": "server/src/controllers/api-key.controller.ts#ApiKeyController.getMyApiKey",
+      "evidence": {
+        "path": "server/src/controllers/api-key.controller.ts",
+        "line": 38
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /api-keys/:id",
+      "to": "server/src/controllers/api-key.controller.ts#ApiKeyController.getApiKey",
+      "evidence": {
+        "path": "server/src/controllers/api-key.controller.ts",
+        "line": 49
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /api-keys/:id",
+      "to": "server/src/controllers/api-key.controller.ts#ApiKeyController.updateApiKey",
+      "evidence": {
+        "path": "server/src/controllers/api-key.controller.ts",
+        "line": 60
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /api-keys/:id",
+      "to": "server/src/controllers/api-key.controller.ts#ApiKeyController.updateApiKeyV3",
+      "evidence": {
+        "path": "server/src/controllers/api-key.controller.ts",
+        "line": 75
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /api-keys/:id/rotate",
+      "to": "server/src/controllers/api-key.controller.ts#ApiKeyController.rotateApiKey",
+      "evidence": {
+        "path": "server/src/controllers/api-key.controller.ts",
+        "line": 86
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /api-keys/:id",
+      "to": "server/src/controllers/api-key.controller.ts#ApiKeyController.deleteApiKey",
+      "evidence": {
+        "path": "server/src/controllers/api-key.controller.ts",
+        "line": 98
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /.well-known/immich",
+      "to": "server/src/controllers/app.controller.ts#AppController.getImmichWellKnown",
+      "evidence": {
+        "path": "server/src/controllers/app.controller.ts",
+        "line": 15
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /.well-known/webauthn",
+      "to": "server/src/controllers/app.controller.ts#AppController.getWebAuthnWellKnown",
+      "evidence": {
+        "path": "server/src/controllers/app.controller.ts",
+        "line": 26
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /custom.css",
+      "to": "server/src/controllers/app.controller.ts#AppController.getCustomCss",
+      "evidence": {
+        "path": "server/src/controllers/app.controller.ts",
+        "line": 33
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /asset-files",
+      "to": "server/src/controllers/asset-file.controller.ts#AssetFilesController.searchAssetFiles",
+      "evidence": {
+        "path": "server/src/controllers/asset-file.controller.ts",
+        "line": 22
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /asset-files/:id",
+      "to": "server/src/controllers/asset-file.controller.ts#AssetFilesController.getAssetFile",
+      "evidence": {
+        "path": "server/src/controllers/asset-file.controller.ts",
+        "line": 33
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /asset-files/:id",
+      "to": "server/src/controllers/asset-file.controller.ts#AssetFilesController.deleteAssetFile",
+      "evidence": {
+        "path": "server/src/controllers/asset-file.controller.ts",
+        "line": 44
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /asset-files/:id/download",
+      "to": "server/src/controllers/asset-file.controller.ts#AssetFilesController.downloadAssetFile",
+      "evidence": {
+        "path": "server/src/controllers/asset-file.controller.ts",
+        "line": 56
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /assets",
+      "to": "server/src/controllers/asset-media.controller.ts#AssetMediaController.uploadAsset",
+      "evidence": {
+        "path": "server/src/controllers/asset-media.controller.ts",
+        "line": 51
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/:id/original",
+      "to": "server/src/controllers/asset-media.controller.ts#AssetMediaController.downloadAsset",
+      "evidence": {
+        "path": "server/src/controllers/asset-media.controller.ts",
+        "line": 92
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/:id/thumbnail",
+      "to": "server/src/controllers/asset-media.controller.ts#AssetMediaController.viewAsset",
+      "evidence": {
+        "path": "server/src/controllers/asset-media.controller.ts",
+        "line": 110
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/:id/video/playback",
+      "to": "server/src/controllers/asset-media.controller.ts#AssetMediaController.playAssetVideo",
+      "evidence": {
+        "path": "server/src/controllers/asset-media.controller.ts",
+        "line": 163
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /assets/bulk-upload-check",
+      "to": "server/src/controllers/asset-media.controller.ts#AssetMediaController.checkBulkUpload",
+      "evidence": {
+        "path": "server/src/controllers/asset-media.controller.ts",
+        "line": 180
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/statistics",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.getAssetStatistics",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 33
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /assets/jobs",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.runAssetJobs",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 44
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /assets",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.updateAssets",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 56
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /assets",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.updateAssetsV3",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 68
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /assets",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.deleteAssets",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 76
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/:id",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.getAssetInfo",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 88
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /assets/copy",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.copyAsset",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 99
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /assets/metadata",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.updateBulkAssetMetadata",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 111
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /assets/metadata",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.deleteBulkAssetMetadata",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 125
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /assets/:id",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.updateAsset",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 137
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /assets/:id",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.updateAssetV3",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 152
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/:id/metadata",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.getAssetMetadata",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 163
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/:id/ocr",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.getAssetOcr",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 174
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /assets/:id/metadata",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.updateAssetMetadata",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 185
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/:id/metadata/:key",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.getAssetMetadataByKey",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 200
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /assets/:id/metadata/:key",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.deleteAssetMetadata",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 214
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/:id/edits",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.getAssetEdits",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 226
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /assets/:id/edits",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.editAsset",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 237
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /assets/:id/edits",
+      "to": "server/src/controllers/asset.controller.ts#AssetController.removeAssetEdits",
+      "evidence": {
+        "path": "server/src/controllers/asset.controller.ts",
+        "line": 252
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/auth/unlink-all",
+      "to": "server/src/controllers/auth-admin.controller.ts#AuthAdminController.unlinkAllOAuthAccountsAdmin",
+      "evidence": {
+        "path": "server/src/controllers/auth-admin.controller.ts",
+        "line": 13
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /auth/login",
+      "to": "server/src/controllers/auth.controller.ts#AuthController.login",
+      "evidence": {
+        "path": "server/src/controllers/auth.controller.ts",
+        "line": 30
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /auth/admin-sign-up",
+      "to": "server/src/controllers/auth.controller.ts#AuthController.signUpAdmin",
+      "evidence": {
+        "path": "server/src/controllers/auth.controller.ts",
+        "line": 53
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /auth/validateToken",
+      "to": "server/src/controllers/auth.controller.ts#AuthController.validateAccessToken",
+      "evidence": {
+        "path": "server/src/controllers/auth.controller.ts",
+        "line": 64
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /auth/change-password",
+      "to": "server/src/controllers/auth.controller.ts#AuthController.changePassword",
+      "evidence": {
+        "path": "server/src/controllers/auth.controller.ts",
+        "line": 76
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /auth/logout",
+      "to": "server/src/controllers/auth.controller.ts#AuthController.logout",
+      "evidence": {
+        "path": "server/src/controllers/auth.controller.ts",
+        "line": 88
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /auth/status",
+      "to": "server/src/controllers/auth.controller.ts#AuthController.getAuthStatus",
+      "evidence": {
+        "path": "server/src/controllers/auth.controller.ts",
+        "line": 111
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /auth/pin-code",
+      "to": "server/src/controllers/auth.controller.ts#AuthController.setupPinCode",
+      "evidence": {
+        "path": "server/src/controllers/auth.controller.ts",
+        "line": 123
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /auth/pin-code",
+      "to": "server/src/controllers/auth.controller.ts#AuthController.changePinCode",
+      "evidence": {
+        "path": "server/src/controllers/auth.controller.ts",
+        "line": 135
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /auth/pin-code",
+      "to": "server/src/controllers/auth.controller.ts#AuthController.resetPinCode",
+      "evidence": {
+        "path": "server/src/controllers/auth.controller.ts",
+        "line": 147
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /auth/session/unlock",
+      "to": "server/src/controllers/auth.controller.ts#AuthController.unlockAuthSession",
+      "evidence": {
+        "path": "server/src/controllers/auth.controller.ts",
+        "line": 159
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /auth/session/lock",
+      "to": "server/src/controllers/auth.controller.ts#AuthController.lockAuthSession",
+      "evidence": {
+        "path": "server/src/controllers/auth.controller.ts",
+        "line": 171
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /cluster-groups/requests",
+      "to": "server/src/controllers/cluster-group.controller.ts#ClusterGroupController.getClusterGroupRequests",
+      "evidence": {
+        "path": "server/src/controllers/cluster-group.controller.ts",
+        "line": 18
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /cluster-groups/requests/:id/accept",
+      "to": "server/src/controllers/cluster-group.controller.ts#ClusterGroupController.acceptClusterGroupRequest",
+      "evidence": {
+        "path": "server/src/controllers/cluster-group.controller.ts",
+        "line": 29
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /cluster-groups/requests/:id",
+      "to": "server/src/controllers/cluster-group.controller.ts#ClusterGroupController.deleteClusterGroupRequest",
+      "evidence": {
+        "path": "server/src/controllers/cluster-group.controller.ts",
+        "line": 41
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /cluster-groups/:id/requests",
+      "to": "server/src/controllers/cluster-group.controller.ts#ClusterGroupController.getClusterGroupRequestsForGroup",
+      "evidence": {
+        "path": "server/src/controllers/cluster-group.controller.ts",
+        "line": 53
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /cluster-groups/:id/users",
+      "to": "server/src/controllers/cluster-group.controller.ts#ClusterGroupController.getClusterGroupUsers",
+      "evidence": {
+        "path": "server/src/controllers/cluster-group.controller.ts",
+        "line": 67
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /cluster-groups/:id/requests",
+      "to": "server/src/controllers/cluster-group.controller.ts#ClusterGroupController.createClusterGroupRequest",
+      "evidence": {
+        "path": "server/src/controllers/cluster-group.controller.ts",
+        "line": 78
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /cluster-groups/:id/regenerate-people",
+      "to": "server/src/controllers/cluster-group.controller.ts#ClusterGroupController.clusterGroupRegeneratePeople",
+      "evidence": {
+        "path": "server/src/controllers/cluster-group.controller.ts",
+        "line": 96
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /cluster-groups/:id/leave",
+      "to": "server/src/controllers/cluster-group.controller.ts#ClusterGroupController.leaveClusterGroup",
+      "evidence": {
+        "path": "server/src/controllers/cluster-group.controller.ts",
+        "line": 108
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/config",
+      "to": "server/src/controllers/config-admin.controller.ts#ConfigAdminController.getAdminConfig",
+      "evidence": {
+        "path": "server/src/controllers/config-admin.controller.ts",
+        "line": 14
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/config/defaults",
+      "to": "server/src/controllers/config-admin.controller.ts#ConfigAdminController.getAdminConfigDefaults",
+      "evidence": {
+        "path": "server/src/controllers/config-admin.controller.ts",
+        "line": 25
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /admin/config",
+      "to": "server/src/controllers/config-admin.controller.ts#ConfigAdminController.updateAdminConfig",
+      "evidence": {
+        "path": "server/src/controllers/config-admin.controller.ts",
+        "line": 36
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /public/config",
+      "to": "server/src/controllers/config-public.controller.ts#ConfigPublicController.getPublicConfig",
+      "evidence": {
+        "path": "server/src/controllers/config-public.controller.ts",
+        "line": 14
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /public/config/defaults",
+      "to": "server/src/controllers/config-public.controller.ts#ConfigPublicController.getPublicConfigDefaults",
+      "evidence": {
+        "path": "server/src/controllers/config-public.controller.ts",
+        "line": 25
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /config",
+      "to": "server/src/controllers/config-user.controller.ts#ConfigUserController.getUserConfig",
+      "evidence": {
+        "path": "server/src/controllers/config-user.controller.ts",
+        "line": 14
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /config/defaults",
+      "to": "server/src/controllers/config-user.controller.ts#ConfigUserController.getUserConfigDefaults",
+      "evidence": {
+        "path": "server/src/controllers/config-user.controller.ts",
+        "line": 25
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/database-backups",
+      "to": "server/src/controllers/database-backup.controller.ts#DatabaseBackupController.listDatabaseBackups",
+      "evidence": {
+        "path": "server/src/controllers/database-backup.controller.ts",
+        "line": 30
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/database-backups/:filename",
+      "to": "server/src/controllers/database-backup.controller.ts#DatabaseBackupController.downloadDatabaseBackup",
+      "evidence": {
+        "path": "server/src/controllers/database-backup.controller.ts",
+        "line": 41
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /admin/database-backups",
+      "to": "server/src/controllers/database-backup.controller.ts#DatabaseBackupController.deleteDatabaseBackup",
+      "evidence": {
+        "path": "server/src/controllers/database-backup.controller.ts",
+        "line": 57
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/database-backups/start-restore",
+      "to": "server/src/controllers/database-backup.controller.ts#DatabaseBackupController.startDatabaseRestoreFlow",
+      "evidence": {
+        "path": "server/src/controllers/database-backup.controller.ts",
+        "line": 68
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/database-backups/upload",
+      "to": "server/src/controllers/database-backup.controller.ts#DatabaseBackupController.uploadDatabaseBackup",
+      "evidence": {
+        "path": "server/src/controllers/database-backup.controller.ts",
+        "line": 86
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /download/info",
+      "to": "server/src/controllers/download.controller.ts#DownloadController.getDownloadInfo",
+      "evidence": {
+        "path": "server/src/controllers/download.controller.ts",
+        "line": 16
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /download/archive",
+      "to": "server/src/controllers/download.controller.ts#DownloadController.downloadArchive",
+      "evidence": {
+        "path": "server/src/controllers/download.controller.ts",
+        "line": 28
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /duplicates",
+      "to": "server/src/controllers/duplicate.controller.ts#DuplicateController.getAssetDuplicates",
+      "evidence": {
+        "path": "server/src/controllers/duplicate.controller.ts",
+        "line": 17
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /duplicates",
+      "to": "server/src/controllers/duplicate.controller.ts#DuplicateController.deleteDuplicates",
+      "evidence": {
+        "path": "server/src/controllers/duplicate.controller.ts",
+        "line": 28
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /duplicates/:id",
+      "to": "server/src/controllers/duplicate.controller.ts#DuplicateController.deleteDuplicate",
+      "evidence": {
+        "path": "server/src/controllers/duplicate.controller.ts",
+        "line": 40
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /duplicates/resolve",
+      "to": "server/src/controllers/duplicate.controller.ts#DuplicateController.resolveDuplicates",
+      "evidence": {
+        "path": "server/src/controllers/duplicate.controller.ts",
+        "line": 52
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /faces",
+      "to": "server/src/controllers/face.controller.ts#FaceController.createFace",
+      "evidence": {
+        "path": "server/src/controllers/face.controller.ts",
+        "line": 22
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /faces",
+      "to": "server/src/controllers/face.controller.ts#FaceController.getFaces",
+      "evidence": {
+        "path": "server/src/controllers/face.controller.ts",
+        "line": 34
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /faces/:id",
+      "to": "server/src/controllers/face.controller.ts#FaceController.reassignFacesById",
+      "evidence": {
+        "path": "server/src/controllers/face.controller.ts",
+        "line": 45
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /faces/:id",
+      "to": "server/src/controllers/face.controller.ts#FaceController.deleteFace",
+      "evidence": {
+        "path": "server/src/controllers/face.controller.ts",
+        "line": 60
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/integrity/summary",
+      "to": "server/src/controllers/integrity-admin.controller.ts#IntegrityAdminController.getIntegrityReportSummary",
+      "evidence": {
+        "path": "server/src/controllers/integrity-admin.controller.ts",
+        "line": 27
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/integrity/report",
+      "to": "server/src/controllers/integrity-admin.controller.ts#IntegrityAdminController.getIntegrityReport",
+      "evidence": {
+        "path": "server/src/controllers/integrity-admin.controller.ts",
+        "line": 38
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/integrity/report/:id/file",
+      "to": "server/src/controllers/integrity-admin.controller.ts#IntegrityAdminController.getIntegrityReportFile",
+      "evidence": {
+        "path": "server/src/controllers/integrity-admin.controller.ts",
+        "line": 50
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /admin/integrity/report/:id",
+      "to": "server/src/controllers/integrity-admin.controller.ts#IntegrityAdminController.deleteIntegrityReport",
+      "evidence": {
+        "path": "server/src/controllers/integrity-admin.controller.ts",
+        "line": 66
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/integrity/report/:type/csv",
+      "to": "server/src/controllers/integrity-admin.controller.ts#IntegrityAdminController.getIntegrityReportCsv",
+      "evidence": {
+        "path": "server/src/controllers/integrity-admin.controller.ts",
+        "line": 77
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /jobs",
+      "to": "server/src/controllers/job.controller.ts#JobController.getQueuesLegacy",
+      "evidence": {
+        "path": "server/src/controllers/job.controller.ts",
+        "line": 21
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /jobs",
+      "to": "server/src/controllers/job.controller.ts#JobController.createJob",
+      "evidence": {
+        "path": "server/src/controllers/job.controller.ts",
+        "line": 32
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /jobs/:name",
+      "to": "server/src/controllers/job.controller.ts#JobController.runQueueCommandLegacy",
+      "evidence": {
+        "path": "server/src/controllers/job.controller.ts",
+        "line": 45
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /libraries",
+      "to": "server/src/controllers/library.controller.ts#LibraryController.getAllLibraries",
+      "evidence": {
+        "path": "server/src/controllers/library.controller.ts",
+        "line": 22
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /libraries",
+      "to": "server/src/controllers/library.controller.ts#LibraryController.createLibrary",
+      "evidence": {
+        "path": "server/src/controllers/library.controller.ts",
+        "line": 33
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /libraries/:id",
+      "to": "server/src/controllers/library.controller.ts#LibraryController.getLibrary",
+      "evidence": {
+        "path": "server/src/controllers/library.controller.ts",
+        "line": 44
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /libraries/:id",
+      "to": "server/src/controllers/library.controller.ts#LibraryController.updateLibrary",
+      "evidence": {
+        "path": "server/src/controllers/library.controller.ts",
+        "line": 55
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /libraries/:id",
+      "to": "server/src/controllers/library.controller.ts#LibraryController.updateLibraryV3",
+      "evidence": {
+        "path": "server/src/controllers/library.controller.ts",
+        "line": 66
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /libraries/:id",
+      "to": "server/src/controllers/library.controller.ts#LibraryController.deleteLibrary",
+      "evidence": {
+        "path": "server/src/controllers/library.controller.ts",
+        "line": 73
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /libraries/:id/validate",
+      "to": "server/src/controllers/library.controller.ts#LibraryController.validate",
+      "evidence": {
+        "path": "server/src/controllers/library.controller.ts",
+        "line": 85
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /libraries/:id/statistics",
+      "to": "server/src/controllers/library.controller.ts#LibraryController.getLibraryStatistics",
+      "evidence": {
+        "path": "server/src/controllers/library.controller.ts",
+        "line": 98
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /libraries/:id/scan",
+      "to": "server/src/controllers/library.controller.ts#LibraryController.scanLibrary",
+      "evidence": {
+        "path": "server/src/controllers/library.controller.ts",
+        "line": 110
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/maintenance/status",
+      "to": "server/src/controllers/maintenance.controller.ts#MaintenanceController.getMaintenanceStatus",
+      "evidence": {
+        "path": "server/src/controllers/maintenance.controller.ts",
+        "line": 24
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/maintenance/detect-install",
+      "to": "server/src/controllers/maintenance.controller.ts#MaintenanceController.detectPriorInstall",
+      "evidence": {
+        "path": "server/src/controllers/maintenance.controller.ts",
+        "line": 35
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/maintenance/login",
+      "to": "server/src/controllers/maintenance.controller.ts#MaintenanceController.maintenanceLogin",
+      "evidence": {
+        "path": "server/src/controllers/maintenance.controller.ts",
+        "line": 46
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/maintenance",
+      "to": "server/src/controllers/maintenance.controller.ts#MaintenanceController.setMaintenanceMode",
+      "evidence": {
+        "path": "server/src/controllers/maintenance.controller.ts",
+        "line": 57
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /map/markers",
+      "to": "server/src/controllers/map.controller.ts#MapController.getMapMarkers",
+      "evidence": {
+        "path": "server/src/controllers/map.controller.ts",
+        "line": 20
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /map/reverse-geocode",
+      "to": "server/src/controllers/map.controller.ts#MapController.reverseGeocode",
+      "evidence": {
+        "path": "server/src/controllers/map.controller.ts",
+        "line": 31
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /memories",
+      "to": "server/src/controllers/memory.controller.ts#MemoryController.searchMemories",
+      "evidence": {
+        "path": "server/src/controllers/memory.controller.ts",
+        "line": 23
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /memories",
+      "to": "server/src/controllers/memory.controller.ts#MemoryController.createMemory",
+      "evidence": {
+        "path": "server/src/controllers/memory.controller.ts",
+        "line": 35
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /memories/statistics",
+      "to": "server/src/controllers/memory.controller.ts#MemoryController.memoriesStatistics",
+      "evidence": {
+        "path": "server/src/controllers/memory.controller.ts",
+        "line": 47
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /memories/:id",
+      "to": "server/src/controllers/memory.controller.ts#MemoryController.getMemory",
+      "evidence": {
+        "path": "server/src/controllers/memory.controller.ts",
+        "line": 58
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /memories/:id",
+      "to": "server/src/controllers/memory.controller.ts#MemoryController.updateMemory",
+      "evidence": {
+        "path": "server/src/controllers/memory.controller.ts",
+        "line": 69
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /memories/:id",
+      "to": "server/src/controllers/memory.controller.ts#MemoryController.updateMemoryV3",
+      "evidence": {
+        "path": "server/src/controllers/memory.controller.ts",
+        "line": 84
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /memories/:id",
+      "to": "server/src/controllers/memory.controller.ts#MemoryController.deleteMemory",
+      "evidence": {
+        "path": "server/src/controllers/memory.controller.ts",
+        "line": 95
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /memories/:id/assets",
+      "to": "server/src/controllers/memory.controller.ts#MemoryController.addMemoryAssets",
+      "evidence": {
+        "path": "server/src/controllers/memory.controller.ts",
+        "line": 107
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /memories/:id/assets",
+      "to": "server/src/controllers/memory.controller.ts#MemoryController.removeMemoryAssets",
+      "evidence": {
+        "path": "server/src/controllers/memory.controller.ts",
+        "line": 122
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/notifications",
+      "to": "server/src/controllers/notification-admin.controller.ts#NotificationAdminController.createNotification",
+      "evidence": {
+        "path": "server/src/controllers/notification-admin.controller.ts",
+        "line": 23
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/notifications/test-email",
+      "to": "server/src/controllers/notification-admin.controller.ts#NotificationAdminController.sendTestEmailAdmin",
+      "evidence": {
+        "path": "server/src/controllers/notification-admin.controller.ts",
+        "line": 34
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/notifications/templates/:name",
+      "to": "server/src/controllers/notification-admin.controller.ts#NotificationAdminController.getNotificationTemplateAdmin",
+      "evidence": {
+        "path": "server/src/controllers/notification-admin.controller.ts",
+        "line": 46
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /notifications",
+      "to": "server/src/controllers/notification.controller.ts#NotificationController.getNotifications",
+      "evidence": {
+        "path": "server/src/controllers/notification.controller.ts",
+        "line": 22
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /notifications",
+      "to": "server/src/controllers/notification.controller.ts#NotificationController.updateNotifications",
+      "evidence": {
+        "path": "server/src/controllers/notification.controller.ts",
+        "line": 33
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /notifications",
+      "to": "server/src/controllers/notification.controller.ts#NotificationController.deleteNotifications",
+      "evidence": {
+        "path": "server/src/controllers/notification.controller.ts",
+        "line": 45
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /notifications/:id",
+      "to": "server/src/controllers/notification.controller.ts#NotificationController.getNotification",
+      "evidence": {
+        "path": "server/src/controllers/notification.controller.ts",
+        "line": 57
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /notifications/:id",
+      "to": "server/src/controllers/notification.controller.ts#NotificationController.updateNotification",
+      "evidence": {
+        "path": "server/src/controllers/notification.controller.ts",
+        "line": 68
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /notifications/:id",
+      "to": "server/src/controllers/notification.controller.ts#NotificationController.deleteNotification",
+      "evidence": {
+        "path": "server/src/controllers/notification.controller.ts",
+        "line": 83
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /oauth/mobile-redirect",
+      "to": "server/src/controllers/oauth.controller.ts#OAuthController.redirectOAuthToMobile",
+      "evidence": {
+        "path": "server/src/controllers/oauth.controller.ts",
+        "line": 24
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /oauth/authorize",
+      "to": "server/src/controllers/oauth.controller.ts#OAuthController.startOAuth",
+      "evidence": {
+        "path": "server/src/controllers/oauth.controller.ts",
+        "line": 40
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /oauth/callback",
+      "to": "server/src/controllers/oauth.controller.ts#OAuthController.finishOAuth",
+      "evidence": {
+        "path": "server/src/controllers/oauth.controller.ts",
+        "line": 66
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /oauth/link",
+      "to": "server/src/controllers/oauth.controller.ts#OAuthController.linkOAuthAccount",
+      "evidence": {
+        "path": "server/src/controllers/oauth.controller.ts",
+        "line": 92
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /oauth/unlink",
+      "to": "server/src/controllers/oauth.controller.ts#OAuthController.unlinkOAuthAccount",
+      "evidence": {
+        "path": "server/src/controllers/oauth.controller.ts",
+        "line": 108
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /oauth/backchannel-logout",
+      "to": "server/src/controllers/oauth.controller.ts#OAuthController.logoutOAuth",
+      "evidence": {
+        "path": "server/src/controllers/oauth.controller.ts",
+        "line": 120
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /partners",
+      "to": "server/src/controllers/partner.controller.ts#PartnerController.getPartners",
+      "evidence": {
+        "path": "server/src/controllers/partner.controller.ts",
+        "line": 16
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /partners",
+      "to": "server/src/controllers/partner.controller.ts#PartnerController.createPartner",
+      "evidence": {
+        "path": "server/src/controllers/partner.controller.ts",
+        "line": 27
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /partners/:id",
+      "to": "server/src/controllers/partner.controller.ts#PartnerController.createPartnerDeprecated",
+      "evidence": {
+        "path": "server/src/controllers/partner.controller.ts",
+        "line": 38
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /partners/:id",
+      "to": "server/src/controllers/partner.controller.ts#PartnerController.updatePartner",
+      "evidence": {
+        "path": "server/src/controllers/partner.controller.ts",
+        "line": 49
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /partners/:id",
+      "to": "server/src/controllers/partner.controller.ts#PartnerController.removePartner",
+      "evidence": {
+        "path": "server/src/controllers/partner.controller.ts",
+        "line": 64
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /passkeys/registration/start",
+      "to": "server/src/controllers/passkey.controller.ts#PasskeyController.startRegistration",
+      "evidence": {
+        "path": "server/src/controllers/passkey.controller.ts",
+        "line": 40
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /passkeys/registration/finish",
+      "to": "server/src/controllers/passkey.controller.ts#PasskeyController.finishRegistration",
+      "evidence": {
+        "path": "server/src/controllers/passkey.controller.ts",
+        "line": 52
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /passkeys/authentication/start",
+      "to": "server/src/controllers/passkey.controller.ts#PasskeyController.startAuthentication",
+      "evidence": {
+        "path": "server/src/controllers/passkey.controller.ts",
+        "line": 68
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /passkeys/authentication/finish",
+      "to": "server/src/controllers/passkey.controller.ts#PasskeyController.finishAuthentication",
+      "evidence": {
+        "path": "server/src/controllers/passkey.controller.ts",
+        "line": 80
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /passkeys",
+      "to": "server/src/controllers/passkey.controller.ts#PasskeyController.searchPasskeys",
+      "evidence": {
+        "path": "server/src/controllers/passkey.controller.ts",
+        "line": 104
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /passkeys/:id",
+      "to": "server/src/controllers/passkey.controller.ts#PasskeyController.getPasskey",
+      "evidence": {
+        "path": "server/src/controllers/passkey.controller.ts",
+        "line": 115
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /passkeys/:id",
+      "to": "server/src/controllers/passkey.controller.ts#PasskeyController.updatePasskey",
+      "evidence": {
+        "path": "server/src/controllers/passkey.controller.ts",
+        "line": 126
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /passkeys/:id",
+      "to": "server/src/controllers/passkey.controller.ts#PasskeyController.deletePasskey",
+      "evidence": {
+        "path": "server/src/controllers/passkey.controller.ts",
+        "line": 141
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /people",
+      "to": "server/src/controllers/person.controller.ts#PersonController.getAllPeople",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 55
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /people",
+      "to": "server/src/controllers/person.controller.ts#PersonController.createPerson",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 66
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /people",
+      "to": "server/src/controllers/person.controller.ts#PersonController.updatePeople",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 77
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /people",
+      "to": "server/src/controllers/person.controller.ts#PersonController.deletePeople",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 88
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /people/:id",
+      "to": "server/src/controllers/person.controller.ts#PersonController.getPerson",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 100
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /people/:id",
+      "to": "server/src/controllers/person.controller.ts#PersonController.updatePerson",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 111
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /people/:id",
+      "to": "server/src/controllers/person.controller.ts#PersonController.updatePersonV3",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 126
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /people/:id",
+      "to": "server/src/controllers/person.controller.ts#PersonController.deletePerson",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 137
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /people/:id/statistics",
+      "to": "server/src/controllers/person.controller.ts#PersonController.getPersonStatistics",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 149
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /people/:id/thumbnail",
+      "to": "server/src/controllers/person.controller.ts#PersonController.getPersonThumbnail",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 160
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /people/:id/reassign",
+      "to": "server/src/controllers/person.controller.ts#PersonController.reassignFaces",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 177
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /people/merge",
+      "to": "server/src/controllers/person.controller.ts#PersonController.mergePeople",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 192
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /people/:id/merge",
+      "to": "server/src/controllers/person.controller.ts#PersonController.mergePersonLegacy",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 205
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /people/users",
+      "to": "server/src/controllers/person.controller.ts#PersonController.getUsersForPeople",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 225
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /people/users",
+      "to": "server/src/controllers/person.controller.ts#PersonController.upsertPeopleUsers",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 236
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /people/users",
+      "to": "server/src/controllers/person.controller.ts#PersonController.removeUsersFromPeople",
+      "evidence": {
+        "path": "server/src/controllers/person.controller.ts",
+        "line": 247
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /plugins",
+      "to": "server/src/controllers/plugin.controller.ts#PluginController.searchPlugins",
+      "evidence": {
+        "path": "server/src/controllers/plugin.controller.ts",
+        "line": 21
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /plugins/methods",
+      "to": "server/src/controllers/plugin.controller.ts#PluginController.searchPluginMethods",
+      "evidence": {
+        "path": "server/src/controllers/plugin.controller.ts",
+        "line": 32
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /plugins/templates",
+      "to": "server/src/controllers/plugin.controller.ts#PluginController.searchPluginTemplates",
+      "evidence": {
+        "path": "server/src/controllers/plugin.controller.ts",
+        "line": 43
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /plugins/:id",
+      "to": "server/src/controllers/plugin.controller.ts#PluginController.getPlugin",
+      "evidence": {
+        "path": "server/src/controllers/plugin.controller.ts",
+        "line": 54
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /queues",
+      "to": "server/src/controllers/queue.controller.ts#QueueController.getQueues",
+      "evidence": {
+        "path": "server/src/controllers/queue.controller.ts",
+        "line": 22
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /queues/:name",
+      "to": "server/src/controllers/queue.controller.ts#QueueController.getQueue",
+      "evidence": {
+        "path": "server/src/controllers/queue.controller.ts",
+        "line": 33
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /queues/:name",
+      "to": "server/src/controllers/queue.controller.ts#QueueController.updateQueue",
+      "evidence": {
+        "path": "server/src/controllers/queue.controller.ts",
+        "line": 44
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /queues/:name/jobs",
+      "to": "server/src/controllers/queue.controller.ts#QueueController.getQueueJobs",
+      "evidence": {
+        "path": "server/src/controllers/queue.controller.ts",
+        "line": 59
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /queues/:name/jobs",
+      "to": "server/src/controllers/queue.controller.ts#QueueController.emptyQueue",
+      "evidence": {
+        "path": "server/src/controllers/queue.controller.ts",
+        "line": 74
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /search/metadata",
+      "to": "server/src/controllers/search.controller.ts#SearchController.searchAssets",
+      "evidence": {
+        "path": "server/src/controllers/search.controller.ts",
+        "line": 30
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /search/statistics",
+      "to": "server/src/controllers/search.controller.ts#SearchController.searchAssetStatistics",
+      "evidence": {
+        "path": "server/src/controllers/search.controller.ts",
+        "line": 42
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /search/random",
+      "to": "server/src/controllers/search.controller.ts#SearchController.searchRandom",
+      "evidence": {
+        "path": "server/src/controllers/search.controller.ts",
+        "line": 54
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /search/large-assets",
+      "to": "server/src/controllers/search.controller.ts#SearchController.searchLargeAssets",
+      "evidence": {
+        "path": "server/src/controllers/search.controller.ts",
+        "line": 66
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /search/smart",
+      "to": "server/src/controllers/search.controller.ts#SearchController.searchSmart",
+      "evidence": {
+        "path": "server/src/controllers/search.controller.ts",
+        "line": 82
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /search/explore",
+      "to": "server/src/controllers/search.controller.ts#SearchController.getExploreData",
+      "evidence": {
+        "path": "server/src/controllers/search.controller.ts",
+        "line": 94
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /search/person",
+      "to": "server/src/controllers/search.controller.ts#SearchController.searchPerson",
+      "evidence": {
+        "path": "server/src/controllers/search.controller.ts",
+        "line": 105
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /search/places",
+      "to": "server/src/controllers/search.controller.ts#SearchController.searchPlaces",
+      "evidence": {
+        "path": "server/src/controllers/search.controller.ts",
+        "line": 116
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /search/cities",
+      "to": "server/src/controllers/search.controller.ts#SearchController.getAssetsByCity",
+      "evidence": {
+        "path": "server/src/controllers/search.controller.ts",
+        "line": 127
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /search/suggestions",
+      "to": "server/src/controllers/search.controller.ts#SearchController.getSearchSuggestions",
+      "evidence": {
+        "path": "server/src/controllers/search.controller.ts",
+        "line": 139
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/about",
+      "to": "server/src/controllers/server.controller.ts#ServerController.getAboutInfo",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 33
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/apk-links",
+      "to": "server/src/controllers/server.controller.ts#ServerController.getApkLinks",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 44
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/storage",
+      "to": "server/src/controllers/server.controller.ts#ServerController.getStorage",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 55
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/ping",
+      "to": "server/src/controllers/server.controller.ts#ServerController.pingServer",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 66
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/version",
+      "to": "server/src/controllers/server.controller.ts#ServerController.getServerVersion",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 77
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/version-history",
+      "to": "server/src/controllers/server.controller.ts#ServerController.getVersionHistory",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 88
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/features",
+      "to": "server/src/controllers/server.controller.ts#ServerController.getServerFeatures",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 99
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/config",
+      "to": "server/src/controllers/server.controller.ts#ServerController.getServerConfig",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 114
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/statistics",
+      "to": "server/src/controllers/server.controller.ts#ServerController.getServerStatistics",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 129
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/media-types",
+      "to": "server/src/controllers/server.controller.ts#ServerController.getSupportedMediaTypes",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 140
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/license",
+      "to": "server/src/controllers/server.controller.ts#ServerController.getServerLicense",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 151
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /server/license",
+      "to": "server/src/controllers/server.controller.ts#ServerController.setServerLicense",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 163
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /server/license",
+      "to": "server/src/controllers/server.controller.ts#ServerController.deleteServerLicense",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 174
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/version-check",
+      "to": "server/src/controllers/server.controller.ts#ServerController.getVersionCheck",
+      "evidence": {
+        "path": "server/src/controllers/server.controller.ts",
+        "line": 186
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /sessions",
+      "to": "server/src/controllers/session.controller.ts#SessionController.createSession",
+      "evidence": {
+        "path": "server/src/controllers/session.controller.ts",
+        "line": 21
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /sessions",
+      "to": "server/src/controllers/session.controller.ts#SessionController.getSessions",
+      "evidence": {
+        "path": "server/src/controllers/session.controller.ts",
+        "line": 32
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /sessions",
+      "to": "server/src/controllers/session.controller.ts#SessionController.deleteAllSessions",
+      "evidence": {
+        "path": "server/src/controllers/session.controller.ts",
+        "line": 43
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /sessions/:id",
+      "to": "server/src/controllers/session.controller.ts#SessionController.updateSession",
+      "evidence": {
+        "path": "server/src/controllers/session.controller.ts",
+        "line": 55
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /sessions/:id",
+      "to": "server/src/controllers/session.controller.ts#SessionController.updateSessionV3",
+      "evidence": {
+        "path": "server/src/controllers/session.controller.ts",
+        "line": 70
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /sessions/:id",
+      "to": "server/src/controllers/session.controller.ts#SessionController.deleteSession",
+      "evidence": {
+        "path": "server/src/controllers/session.controller.ts",
+        "line": 81
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /sessions/:id/lock",
+      "to": "server/src/controllers/session.controller.ts#SessionController.lockSession",
+      "evidence": {
+        "path": "server/src/controllers/session.controller.ts",
+        "line": 93
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /shared-links",
+      "to": "server/src/controllers/shared-link.controller.ts#SharedLinkController.getAllSharedLinks",
+      "evidence": {
+        "path": "server/src/controllers/shared-link.controller.ts",
+        "line": 58
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /shared-links/login",
+      "to": "server/src/controllers/shared-link.controller.ts#SharedLinkController.sharedLinkLogin",
+      "evidence": {
+        "path": "server/src/controllers/shared-link.controller.ts",
+        "line": 69
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /shared-links/me",
+      "to": "server/src/controllers/shared-link.controller.ts#SharedLinkController.getMySharedLink",
+      "evidence": {
+        "path": "server/src/controllers/shared-link.controller.ts",
+        "line": 91
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /shared-links/:id",
+      "to": "server/src/controllers/shared-link.controller.ts#SharedLinkController.getSharedLinkById",
+      "evidence": {
+        "path": "server/src/controllers/shared-link.controller.ts",
+        "line": 102
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /shared-links",
+      "to": "server/src/controllers/shared-link.controller.ts#SharedLinkController.createSharedLink",
+      "evidence": {
+        "path": "server/src/controllers/shared-link.controller.ts",
+        "line": 113
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /shared-links/:id",
+      "to": "server/src/controllers/shared-link.controller.ts#SharedLinkController.updateSharedLink",
+      "evidence": {
+        "path": "server/src/controllers/shared-link.controller.ts",
+        "line": 124
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /shared-links/:id",
+      "to": "server/src/controllers/shared-link.controller.ts#SharedLinkController.removeSharedLink",
+      "evidence": {
+        "path": "server/src/controllers/shared-link.controller.ts",
+        "line": 139
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /shared-links/:id/assets",
+      "to": "server/src/controllers/shared-link.controller.ts#SharedLinkController.addSharedLinkAssets",
+      "evidence": {
+        "path": "server/src/controllers/shared-link.controller.ts",
+        "line": 151
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /shared-links/:id/assets",
+      "to": "server/src/controllers/shared-link.controller.ts#SharedLinkController.removeSharedLinkAssets",
+      "evidence": {
+        "path": "server/src/controllers/shared-link.controller.ts",
+        "line": 167
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /stacks",
+      "to": "server/src/controllers/stack.controller.ts#StackController.searchStacks",
+      "evidence": {
+        "path": "server/src/controllers/stack.controller.ts",
+        "line": 17
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /stacks",
+      "to": "server/src/controllers/stack.controller.ts#StackController.createStack",
+      "evidence": {
+        "path": "server/src/controllers/stack.controller.ts",
+        "line": 28
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /stacks",
+      "to": "server/src/controllers/stack.controller.ts#StackController.deleteStacks",
+      "evidence": {
+        "path": "server/src/controllers/stack.controller.ts",
+        "line": 40
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /stacks/:id",
+      "to": "server/src/controllers/stack.controller.ts#StackController.getStack",
+      "evidence": {
+        "path": "server/src/controllers/stack.controller.ts",
+        "line": 52
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /stacks/:id",
+      "to": "server/src/controllers/stack.controller.ts#StackController.updateStack",
+      "evidence": {
+        "path": "server/src/controllers/stack.controller.ts",
+        "line": 63
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /stacks/:id",
+      "to": "server/src/controllers/stack.controller.ts#StackController.updateStackV3",
+      "evidence": {
+        "path": "server/src/controllers/stack.controller.ts",
+        "line": 78
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /stacks/:id",
+      "to": "server/src/controllers/stack.controller.ts#StackController.deleteStack",
+      "evidence": {
+        "path": "server/src/controllers/stack.controller.ts",
+        "line": 89
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /stacks/:id/assets/:assetId",
+      "to": "server/src/controllers/stack.controller.ts#StackController.removeAssetFromStack",
+      "evidence": {
+        "path": "server/src/controllers/stack.controller.ts",
+        "line": 101
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /sync/stream",
+      "to": "server/src/controllers/sync.controller.ts#SyncController.getSyncStream",
+      "evidence": {
+        "path": "server/src/controllers/sync.controller.ts",
+        "line": 20
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /sync/ack",
+      "to": "server/src/controllers/sync.controller.ts#SyncController.getSyncAck",
+      "evidence": {
+        "path": "server/src/controllers/sync.controller.ts",
+        "line": 38
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /sync/ack",
+      "to": "server/src/controllers/sync.controller.ts#SyncController.sendSyncAck",
+      "evidence": {
+        "path": "server/src/controllers/sync.controller.ts",
+        "line": 49
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /sync/ack",
+      "to": "server/src/controllers/sync.controller.ts#SyncController.deleteSyncAck",
+      "evidence": {
+        "path": "server/src/controllers/sync.controller.ts",
+        "line": 62
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /system-config",
+      "to": "server/src/controllers/system-config.controller.ts#SystemConfigController.getConfig",
+      "evidence": {
+        "path": "server/src/controllers/system-config.controller.ts",
+        "line": 18
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /system-config/defaults",
+      "to": "server/src/controllers/system-config.controller.ts#SystemConfigController.getConfigDefaults",
+      "evidence": {
+        "path": "server/src/controllers/system-config.controller.ts",
+        "line": 33
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /system-config",
+      "to": "server/src/controllers/system-config.controller.ts#SystemConfigController.updateConfig",
+      "evidence": {
+        "path": "server/src/controllers/system-config.controller.ts",
+        "line": 48
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /system-config/storage-template-options",
+      "to": "server/src/controllers/system-config.controller.ts#SystemConfigController.getStorageTemplateOptions",
+      "evidence": {
+        "path": "server/src/controllers/system-config.controller.ts",
+        "line": 63
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /system-metadata/admin-onboarding",
+      "to": "server/src/controllers/system-metadata.controller.ts#SystemMetadataController.getAdminOnboarding",
+      "evidence": {
+        "path": "server/src/controllers/system-metadata.controller.ts",
+        "line": 18
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /system-metadata/admin-onboarding",
+      "to": "server/src/controllers/system-metadata.controller.ts#SystemMetadataController.updateAdminOnboarding",
+      "evidence": {
+        "path": "server/src/controllers/system-metadata.controller.ts",
+        "line": 29
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /system-metadata/reverse-geocoding-state",
+      "to": "server/src/controllers/system-metadata.controller.ts#SystemMetadataController.getReverseGeocodingState",
+      "evidence": {
+        "path": "server/src/controllers/system-metadata.controller.ts",
+        "line": 41
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /system-metadata/version-check-state",
+      "to": "server/src/controllers/system-metadata.controller.ts#SystemMetadataController.getVersionCheckState",
+      "evidence": {
+        "path": "server/src/controllers/system-metadata.controller.ts",
+        "line": 52
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /tags",
+      "to": "server/src/controllers/tag.controller.ts#TagController.createTag",
+      "evidence": {
+        "path": "server/src/controllers/tag.controller.ts",
+        "line": 24
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /tags",
+      "to": "server/src/controllers/tag.controller.ts#TagController.getAllTags",
+      "evidence": {
+        "path": "server/src/controllers/tag.controller.ts",
+        "line": 35
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /tags",
+      "to": "server/src/controllers/tag.controller.ts#TagController.upsertTags",
+      "evidence": {
+        "path": "server/src/controllers/tag.controller.ts",
+        "line": 46
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /tags/assets",
+      "to": "server/src/controllers/tag.controller.ts#TagController.bulkTagAssets",
+      "evidence": {
+        "path": "server/src/controllers/tag.controller.ts",
+        "line": 57
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /tags/:id",
+      "to": "server/src/controllers/tag.controller.ts#TagController.getTagById",
+      "evidence": {
+        "path": "server/src/controllers/tag.controller.ts",
+        "line": 68
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /tags/:id",
+      "to": "server/src/controllers/tag.controller.ts#TagController.updateTag",
+      "evidence": {
+        "path": "server/src/controllers/tag.controller.ts",
+        "line": 79
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /tags/:id",
+      "to": "server/src/controllers/tag.controller.ts#TagController.updateTagV3",
+      "evidence": {
+        "path": "server/src/controllers/tag.controller.ts",
+        "line": 90
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /tags/:id",
+      "to": "server/src/controllers/tag.controller.ts#TagController.deleteTag",
+      "evidence": {
+        "path": "server/src/controllers/tag.controller.ts",
+        "line": 101
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /tags/:id/assets",
+      "to": "server/src/controllers/tag.controller.ts#TagController.tagAssets",
+      "evidence": {
+        "path": "server/src/controllers/tag.controller.ts",
+        "line": 113
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /tags/:id/assets",
+      "to": "server/src/controllers/tag.controller.ts#TagController.untagAssets",
+      "evidence": {
+        "path": "server/src/controllers/tag.controller.ts",
+        "line": 128
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /timeline/buckets",
+      "to": "server/src/controllers/timeline.controller.ts#TimelineController.getTimeBuckets",
+      "evidence": {
+        "path": "server/src/controllers/timeline.controller.ts",
+        "line": 15
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /timeline/bucket",
+      "to": "server/src/controllers/timeline.controller.ts#TimelineController.getTimeBucket",
+      "evidence": {
+        "path": "server/src/controllers/timeline.controller.ts",
+        "line": 26
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /trash/empty",
+      "to": "server/src/controllers/trash.controller.ts#TrashController.emptyTrash",
+      "evidence": {
+        "path": "server/src/controllers/trash.controller.ts",
+        "line": 16
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /trash/restore",
+      "to": "server/src/controllers/trash.controller.ts#TrashController.restoreTrash",
+      "evidence": {
+        "path": "server/src/controllers/trash.controller.ts",
+        "line": 28
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /trash/restore/assets",
+      "to": "server/src/controllers/trash.controller.ts#TrashController.restoreAssets",
+      "evidence": {
+        "path": "server/src/controllers/trash.controller.ts",
+        "line": 40
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/users",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.searchUsersAdmin",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 26
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/users",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.createUserAdmin",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 37
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/users/:id",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.getUserAdmin",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 48
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /admin/users/:id",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.updateUserAdmin",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 59
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /admin/users/:id",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.updateUserAdminV3",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 74
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /admin/users/:id",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.deleteUserAdmin",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 85
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/users/:id/calendar-heatmap",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.getUserCalendarHeatmapAdmin",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 100
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/users/:id/sessions",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.getUserSessionsAdmin",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 115
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/users/:id/statistics",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.getUserStatisticsAdmin",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 126
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/users/:id/preferences",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.getUserPreferencesAdmin",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 141
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /admin/users/:id/preferences",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.updateUserPreferencesAdmin",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 152
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /admin/users/:id/preferences",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.updateUserPreferencesAdminV3",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 167
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/users/:id/restore",
+      "to": "server/src/controllers/user-admin.controller.ts#UserAdminController.restoreUserAdmin",
+      "evidence": {
+        "path": "server/src/controllers/user-admin.controller.ts",
+        "line": 178
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /users",
+      "to": "server/src/controllers/user.controller.ts#UserController.searchUsers",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 44
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /users/me",
+      "to": "server/src/controllers/user.controller.ts#UserController.getMyUser",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 55
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /users/me/calendar-heatmap",
+      "to": "server/src/controllers/user.controller.ts#UserController.getMyCalendarHeatmap",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 66
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /users/me",
+      "to": "server/src/controllers/user.controller.ts#UserController.updateMyUser",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 77
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /users/me",
+      "to": "server/src/controllers/user.controller.ts#UserController.updateMyUserV3",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 88
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /users/me/preferences",
+      "to": "server/src/controllers/user.controller.ts#UserController.getMyPreferences",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 95
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /users/me/preferences",
+      "to": "server/src/controllers/user.controller.ts#UserController.updateMyPreferences",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 106
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /users/me/preferences",
+      "to": "server/src/controllers/user.controller.ts#UserController.updateMyPreferencesV3",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 120
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /users/me/license",
+      "to": "server/src/controllers/user.controller.ts#UserController.getUserLicense",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 130
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /users/me/license",
+      "to": "server/src/controllers/user.controller.ts#UserController.setUserLicense",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 141
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /users/me/license",
+      "to": "server/src/controllers/user.controller.ts#UserController.deleteUserLicense",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 152
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /users/me/onboarding",
+      "to": "server/src/controllers/user.controller.ts#UserController.getUserOnboarding",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 164
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /users/me/onboarding",
+      "to": "server/src/controllers/user.controller.ts#UserController.setUserOnboarding",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 175
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /users/me/onboarding",
+      "to": "server/src/controllers/user.controller.ts#UserController.deleteUserOnboarding",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 186
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /users/:id",
+      "to": "server/src/controllers/user.controller.ts#UserController.getUser",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 198
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /users/profile-image",
+      "to": "server/src/controllers/user.controller.ts#UserController.createProfileImage",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 209
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /users/profile-image",
+      "to": "server/src/controllers/user.controller.ts#UserController.deleteProfileImage",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 226
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /users/:id/profile-image",
+      "to": "server/src/controllers/user.controller.ts#UserController.getProfileImage",
+      "evidence": {
+        "path": "server/src/controllers/user.controller.ts",
+        "line": 238
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/:id/video/stream/main.m3u8",
+      "to": "server/src/controllers/video-stream.controller.ts#VideoStreamController.getMainPlaylist",
+      "evidence": {
+        "path": "server/src/controllers/video-stream.controller.ts",
+        "line": 29
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/:id/video/stream/:sessionId/:variantIndex/playlist.m3u8",
+      "to": "server/src/controllers/video-stream.controller.ts#VideoStreamController.getMediaPlaylist",
+      "evidence": {
+        "path": "server/src/controllers/video-stream.controller.ts",
+        "line": 43
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /assets/:id/video/stream/:sessionId/:variantIndex/:filename",
+      "to": "server/src/controllers/video-stream.controller.ts#VideoStreamController.getSegment",
+      "evidence": {
+        "path": "server/src/controllers/video-stream.controller.ts",
+        "line": 61
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /assets/:id/video/stream/:sessionId",
+      "to": "server/src/controllers/video-stream.controller.ts#VideoStreamController.endSession",
+      "evidence": {
+        "path": "server/src/controllers/video-stream.controller.ts",
+        "line": 84
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /view/folder/unique-paths",
+      "to": "server/src/controllers/view.controller.ts#ViewController.getUniqueOriginalPaths",
+      "evidence": {
+        "path": "server/src/controllers/view.controller.ts",
+        "line": 15
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /view/folder",
+      "to": "server/src/controllers/view.controller.ts#ViewController.getAssetsByOriginalPath",
+      "evidence": {
+        "path": "server/src/controllers/view.controller.ts",
+        "line": 26
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /workflows",
+      "to": "server/src/controllers/workflow.controller.ts#WorkflowController.createWorkflow",
+      "evidence": {
+        "path": "server/src/controllers/workflow.controller.ts",
+        "line": 25
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /workflows",
+      "to": "server/src/controllers/workflow.controller.ts#WorkflowController.searchWorkflows",
+      "evidence": {
+        "path": "server/src/controllers/workflow.controller.ts",
+        "line": 36
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /workflows/triggers",
+      "to": "server/src/controllers/workflow.controller.ts#WorkflowController.getWorkflowTriggers",
+      "evidence": {
+        "path": "server/src/controllers/workflow.controller.ts",
+        "line": 47
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /workflows/:id",
+      "to": "server/src/controllers/workflow.controller.ts#WorkflowController.getWorkflow",
+      "evidence": {
+        "path": "server/src/controllers/workflow.controller.ts",
+        "line": 58
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /workflows/:id/share",
+      "to": "server/src/controllers/workflow.controller.ts#WorkflowController.getWorkflowForShare",
+      "evidence": {
+        "path": "server/src/controllers/workflow.controller.ts",
+        "line": 69
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PUT /workflows/:id",
+      "to": "server/src/controllers/workflow.controller.ts#WorkflowController.updateWorkflow",
+      "evidence": {
+        "path": "server/src/controllers/workflow.controller.ts",
+        "line": 80
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "PATCH /workflows/:id",
+      "to": "server/src/controllers/workflow.controller.ts#WorkflowController.updateWorkflowV3",
+      "evidence": {
+        "path": "server/src/controllers/workflow.controller.ts",
+        "line": 96
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /workflows/:id",
+      "to": "server/src/controllers/workflow.controller.ts#WorkflowController.deleteWorkflow",
+      "evidence": {
+        "path": "server/src/controllers/workflow.controller.ts",
+        "line": 107
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /workflows/:id/logs",
+      "to": "server/src/controllers/workflow.controller.ts#WorkflowController.getWorkflowLogs",
+      "evidence": {
+        "path": "server/src/controllers/workflow.controller.ts",
+        "line": 119
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/config",
+      "to": "server/src/maintenance/maintenance-worker.controller.ts#MaintenanceWorkerController.getServerConfig",
+      "evidence": {
+        "path": "server/src/maintenance/maintenance-worker.controller.ts",
+        "line": 47
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/ping",
+      "to": "server/src/maintenance/maintenance-worker.controller.ts#MaintenanceWorkerController.pingServer",
+      "evidence": {
+        "path": "server/src/maintenance/maintenance-worker.controller.ts",
+        "line": 52
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /server/version",
+      "to": "server/src/maintenance/maintenance-worker.controller.ts#MaintenanceWorkerController.getServerVersion",
+      "evidence": {
+        "path": "server/src/maintenance/maintenance-worker.controller.ts",
+        "line": 57
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/database-backups",
+      "to": "server/src/maintenance/maintenance-worker.controller.ts#MaintenanceWorkerController.listDatabaseBackups",
+      "evidence": {
+        "path": "server/src/maintenance/maintenance-worker.controller.ts",
+        "line": 63
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/database-backups/:filename",
+      "to": "server/src/maintenance/maintenance-worker.controller.ts#MaintenanceWorkerController.downloadDatabaseBackup",
+      "evidence": {
+        "path": "server/src/maintenance/maintenance-worker.controller.ts",
+        "line": 70
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "DELETE /admin/database-backups",
+      "to": "server/src/maintenance/maintenance-worker.controller.ts#MaintenanceWorkerController.deleteDatabaseBackup",
+      "evidence": {
+        "path": "server/src/maintenance/maintenance-worker.controller.ts",
+        "line": 81
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/database-backups/upload",
+      "to": "server/src/maintenance/maintenance-worker.controller.ts#MaintenanceWorkerController.uploadDatabaseBackup",
+      "evidence": {
+        "path": "server/src/maintenance/maintenance-worker.controller.ts",
+        "line": 88
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/maintenance/status",
+      "to": "server/src/maintenance/maintenance-worker.controller.ts#MaintenanceWorkerController.maintenanceStatus",
+      "evidence": {
+        "path": "server/src/maintenance/maintenance-worker.controller.ts",
+        "line": 98
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "GET /admin/maintenance/detect-install",
+      "to": "server/src/maintenance/maintenance-worker.controller.ts#MaintenanceWorkerController.detectPriorInstall",
+      "evidence": {
+        "path": "server/src/maintenance/maintenance-worker.controller.ts",
+        "line": 103
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/maintenance/login",
+      "to": "server/src/maintenance/maintenance-worker.controller.ts#MaintenanceWorkerController.maintenanceLogin",
+      "evidence": {
+        "path": "server/src/maintenance/maintenance-worker.controller.ts",
+        "line": 108
+      }
+    },
+    {
+      "type": "handled_by",
+      "from": "POST /admin/maintenance",
+      "to": "server/src/maintenance/maintenance-worker.controller.ts#MaintenanceWorkerController.setMaintenanceMode",
+      "evidence": {
+        "path": "server/src/maintenance/maintenance-worker.controller.ts",
+        "line": 123
+      }
+    }
+  ],
+  "outOfScope": [
+    {
+      "what": "The /api global prefix",
+      "reason": "Set at run time by app.setGlobalPrefix; ground truth v1 paths are relative to the application root."
+    },
+    {
+      "what": "Routes in test files (for example the class in server/src/zod.spec.ts)",
+      "reason": "Benchmark scope is production code."
+    },
+    {
+      "what": "Entity tables, repositories and calls",
+      "reason": "Not labelled in this file yet."
+    }
+  ]
+}

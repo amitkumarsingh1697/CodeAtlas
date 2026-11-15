@@ -86,13 +86,14 @@ describe('benchmark scoring (ACC-004)', () => {
       p('handled_by', 'GET /a', 'src/A.java#A.a', 'observed'),
       p('handled_by', 'GET /t', 'test/T.java#T.t', 'observed', 'test/T.java'),
       p('handled_by', 'GET /s', 'srcx/S.java#S.s', 'observed', 'srcx/S.java'),
+      p('handled_by', 'GET /z', 'src/z.spec.ts#Z.z', 'observed', 'src/z.spec.ts'),
       p('writes_table', 'src/repo/R.java#R', 'table:r', 'inferred', 'src/repo/R.java'),
     ]);
     const h = s.types.find((t) => t.type === 'handled_by')!;
     expect(h.byEvidence.observed.truePositives).toBe(1);
     expect(h.byEvidence.inferred.truePositives).toBe(0);
     expect(h.falsePositives).toBe(0);
-    expect(s.predictionsOutOfScope).toBe(2);
+    expect(s.predictionsOutOfScope).toBe(3);
     const w = s.types.find((t) => t.type === 'writes_table')!;
     expect([w.truePositives, w.falsePositives, w.falseNegatives]).toEqual([0, 1, 0]);
     expect(w.precision).toBe(0);

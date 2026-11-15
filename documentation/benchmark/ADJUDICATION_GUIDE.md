@@ -27,7 +27,7 @@ Labels are written from the source, never copied from CodeAtlas output. A labell
 
 ## 3. Scope
 
-Each ground-truth file names, per type, the folders whose relationships of that type were **all** labelled. A prediction of that type counts only when its source file lies in one of those folders; everything else is reported as out of scope, not as a false positive. Production code only: test folders are out of scope unless a file says otherwise.
+Each ground-truth file names, per type, the folders whose relationships of that type were **all** labelled. A prediction of that type counts only when its source file lies in one of those folders; everything else is reported as out of scope, not as a false positive. Production code only: the scorer treats any test file or test-support folder (`isTestSupportPath`) as out of scope, even under a labelled folder.
 
 ## 4. Matching and scoring
 

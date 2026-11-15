@@ -2,6 +2,7 @@
  * Benchmark scoring (ACC-004): precision, recall and F1 by relationship type, and precision by
  * evidence class, following package doc 07 §3. Pure apart from `predictionsFromDb`, which only reads.
  */
+import { isTestSupportPath } from '../indexer/test-paths';
 import type { Db } from '../store/db';
 import {
   BENCHMARK_TYPES,
@@ -81,8 +82,11 @@ export function scoreBenchmark(truth: GroundTruth, predictions: Prediction[]): B
     const scopes = truth.scope.filter((s) => s.type === type);
     if (scopes.length === 0) continue;
     const paths = scopes.flatMap((s) => s.paths);
+    // Test code is never in scope (adjudication guide §3), even under a labelled folder.
     const inScope = (p: string | null) =>
-      p !== null && paths.some((root) => p === root || p.startsWith(root.replace(/\/?$/u, '/')));
+      p !== null &&
+      !isTestSupportPath(p) &&
+      paths.some((root) => p === root || p.startsWith(root.replace(/\/?$/u, '/')));
 
     const expected = new Map<string, GroundTruth['relationships'][number]>();
     for (const r of truth.relationships) if (r.type === type) expected.set(pair(r.from, r.to), r);
