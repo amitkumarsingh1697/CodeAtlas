@@ -13,7 +13,8 @@ Third-party software:
   TYPESCRIPT-LICENSE.txt, with grammar sources and commits in GRAMMARS.json.
 - The tree-sitter grammars in packages/syntax/grammars each keep their licence beside them
   (<id>.LICENSE) and are listed with source and commit in packages/syntax/grammars/MANIFEST.json.
-- npm dependencies are installed from the registry and keep their own licences.
+- npm dependencies are installed from the registry and keep their own licences. Those used at
+  run time are listed, with version, licence and source, in THIRD_PARTY_NOTICES.md.
 
 "CodeAtlas", "ArchLens" and "Nexora" are names used by the copyright holder. The Apache License
 does not grant permission to use them (section 6). They have not been registered or cleared as
