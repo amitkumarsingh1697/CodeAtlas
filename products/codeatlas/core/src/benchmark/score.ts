@@ -6,7 +6,9 @@ import { isTestSupportPath } from '../indexer/test-paths';
 import type { Db } from '../store/db';
 import {
   BENCHMARK_TYPES,
+  isPublishable,
   normaliseKey,
+  spotCheckSize,
   type BenchmarkType,
   type GroundTruth,
 } from './ground-truth';
@@ -42,6 +44,8 @@ export interface BenchmarkScore {
   corpus: GroundTruth['corpus'];
   labelling: GroundTruth['labelling'];
   types: TypeScore[];
+  /** Labels in the ground-truth file. */
+  labels: number;
   /** Predictions of an in-scope type whose source file lies outside the labelled paths. */
   predictionsOutOfScope: number;
 }
@@ -158,6 +162,7 @@ export function scoreBenchmark(truth: GroundTruth, predictions: Prediction[]): B
     corpus: truth.corpus,
     labelling: truth.labelling,
     types,
+    labels: truth.relationships.length,
     predictionsOutOfScope: outOfScope,
   };
 }
@@ -174,9 +179,12 @@ export function benchmarkMarkdown(s: BenchmarkScore, engineVersion: string): str
         ? `, reviewed by ${s.labelling.reviewedBy} on ${s.labelling.reviewedOn ?? 'unknown date'}`
         : ', not independently reviewed') +
       `. CodeAtlas engine ${engineVersion}.`,
-    s.labelling.status === 'adjudicated'
+    s.labelling.review && s.labelling.reviewedBy
+      ? `Spot-check: ${s.labelling.review.checked} of ${s.labels} labels checked by ${s.labelling.reviewedBy} on ${s.labelling.reviewedOn ?? 'unknown date'} (${s.labelling.review.disagreements} corrected; sample seed \`${s.labelling.review.seed}\`).\n`
+      : '',
+    isPublishable(s.labelling, s.labels)
       ? ''
-      : '\n> Not adjudicated: these figures are for engineering use only and must not be quoted externally.\n',
+      : `\n> Not adjudicated or spot-checked (at least ${spotCheckSize(s.labels)} of ${s.labels} labels): these figures are for engineering use only and must not be quoted externally.\n`,
     '| Type | TP | FP | FN | Precision | Recall | F1 | Observed TP/FP | Inferred TP/FP |',
     '| --- | --: | --: | --: | --: | --: | --: | --: | --: |',
     ...s.types.map(

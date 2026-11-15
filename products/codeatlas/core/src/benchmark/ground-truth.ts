@@ -25,8 +25,9 @@ export const BENCHMARK_TYPES = [
 export type BenchmarkType = (typeof BENCHMARK_TYPES)[number];
 
 /**
- * Who has checked the labels. Only `adjudicated` figures may be quoted outside the company
- * (doc 07 §3 step 2: independent manual review).
+ * Who has checked the labels. Figures may be quoted outside the company only from an `adjudicated`
+ * file, or from a `spot-checked` one whose reviewer checked a random sample of at least 10% of its
+ * labels (decision D-9, 2026-11-15; doc 07 §3 step 2 asks for independent manual review).
  */
 export const LABEL_STATUSES = ['draft', 'claude-labelled', 'spot-checked', 'adjudicated'] as const;
 
@@ -53,6 +54,14 @@ export const groundTruthSchema = z.object({
       .regex(/^\d{4}-\d{2}-\d{2}$/u)
       .optional(),
     method: z.string().min(1),
+    /** The spot-check: labels checked (drawn by `reviewSample` with `seed`), and how many were wrong. */
+    review: z
+      .object({
+        checked: z.number().int().positive(),
+        disagreements: z.number().int().nonnegative(),
+        seed: z.string().min(1),
+      })
+      .optional(),
   }),
   /**
    * For each type, the source folders whose relationships of that type were all labelled. A
@@ -95,4 +104,55 @@ export function normaliseKey(key: string): string {
   // truth labels a method by name, so every overload of it compares as the one method.
   if (k.includes('#')) k = k.replace(/@\d+$/u, '');
   return k;
+}
+
+/** The share of labels a spot-check must cover before its figures may be quoted (D-9). */
+export const SPOT_CHECK_SHARE = 0.1;
+
+/** Labels a spot-check of `total` labels must cover. */
+export const spotCheckSize = (total: number): number => Math.ceil(total * SPOT_CHECK_SHARE);
+
+/** Whether figures scored against this labelling may be quoted outside the company (D-9). */
+export function isPublishable(labelling: GroundTruth['labelling'], labels: number): boolean {
+  if (!labelling.reviewedBy || !labelling.reviewedOn) return false;
+  if (labelling.status === 'adjudicated') return true;
+  return (
+    labelling.status === 'spot-checked' &&
+    !!labelling.review &&
+    labels > 0 &&
+    labelling.review.checked >= spotCheckSize(labels)
+  );
+}
+
+/** FNV-1a, then mulberry32: a small seeded generator, so a review sample can be drawn again. */
+function seeded(seed: string): () => number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < seed.length; i++) h = Math.imul(h ^ seed.charCodeAt(i), 0x01000193);
+  let a = h >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * A random sample of the labels for a reviewer (D-9): 10% of each type, rounded up, so every type
+ * is checked. The same file and seed give the same sample, in file order.
+ */
+export function reviewSample(truth: GroundTruth, seed: string): GroundTruth['relationships'] {
+  const rand = seeded(seed);
+  const picked = new Set<number>();
+  for (const type of BENCHMARK_TYPES) {
+    const idx = truth.relationships.flatMap((r, i) => (r.type === type ? [i] : []));
+    // Fisher-Yates, then the first n.
+    for (let i = idx.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      [idx[i], idx[j]] = [idx[j]!, idx[i]!];
+    }
+    for (const i of idx.slice(0, spotCheckSize(idx.length))) picked.add(i);
+  }
+  return truth.relationships.filter((_, i) => picked.has(i));
 }

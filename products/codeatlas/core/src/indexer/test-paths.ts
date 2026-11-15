@@ -1,6 +1,6 @@
 const TEST_RE = /(^|\/)(__tests__|e2e)\/|[._-](test|spec)\.[cm]?[jt]sx?$/;
 /** Test helpers and fixtures: code that supports tests but is not part of the architecture. */
-const TEST_SUPPORT_RE = /(^|\/)(test|tests|__mocks__|fixtures?)\//;
+const TEST_SUPPORT_RE = /(^|\/)(test|tests|testFixtures|__mocks__|fixtures?)\//;
 
 /** A test file (`x.test.ts`, `x.spec.js`, `__tests__/`, `e2e/`). */
 export function isTestPath(p: string): boolean {
