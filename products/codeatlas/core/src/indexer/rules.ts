@@ -203,6 +203,24 @@ export const RULES = {
     labels: O,
     description: 'An import names a Node.js built-in module.',
   },
+  'typescript.import-workspace': {
+    adapter: 'typescript',
+    labels: OI,
+    description:
+      "A bare import names a package of this repository's workspace that node_modules does not link: observed when the entry its package.json names is in the repository, inferred when the entry is build output and its source is assumed (TS-001).",
+  },
+  'typescript.import-subpath': {
+    adapter: 'typescript',
+    labels: I,
+    description:
+      'A `#` import matched an entry of the nearest package.json `imports` map and was resolved with extensions tried, as bundlers do (TS-001).',
+  },
+  'typescript.import-framework-module': {
+    adapter: 'typescript',
+    labels: O,
+    description:
+      'A SvelteKit module (`$app/*`, `$env/*`, `$service-worker`) imported in a package that depends on @sveltejs/kit (TS-001).',
+  },
   'typescript.import-uninstalled-package': {
     adapter: 'typescript',
     labels: I,

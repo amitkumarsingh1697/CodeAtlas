@@ -26,6 +26,8 @@ export interface AdapterContext {
   files: DiscoveredFile[];
   /** Every discovered path in the repository, for import resolution. */
   allPaths: Set<string>;
+  /** Paths found but not read because of the file limit (so an import into them is a gap). */
+  notRead?: Set<string>;
   graph: GraphBuilder;
   moduleOf: (path: string) => string;
   /** Present when incremental indexing is on; `previous` is this adapter's cache from the last run. */
@@ -64,6 +66,7 @@ export const typeScriptAdapter: LanguageAdapter = {
       ctx.graph,
       ctx.moduleOf,
       ctx.cache ? { previous: (ctx.cache.previous as TsCacheState | null) ?? null } : undefined,
+      ctx.notRead,
     );
     return {
       cache: s.cache as unknown as AdapterCache,

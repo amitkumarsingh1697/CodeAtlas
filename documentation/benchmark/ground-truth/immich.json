@@ -10,13 +10,22 @@
     "status": "claude-labelled",
     "labelledBy": "Claude (AI), from the source at the pinned commit",
     "labelledOn": "2026-11-15",
-    "method": "A separate Python script (not the CodeAtlas adapter) read every non-test .ts file under server/src that imports @nestjs/common: the @Controller argument (a string literal or a RouteKey member resolved from server/src/enum.ts), each member-level verb decorator and the next method name. Every decorator argument was a string literal or empty; none needed manual resolution. Eleven verb and path pairs appear twice because MaintenanceWorkerController serves the same routes in the maintenance worker; both handlers are labelled. Awaiting founder spot-check (decision D-9)."
+    "method": "A separate Python script (not the CodeAtlas adapter) read every non-test .ts file under server/src that imports @nestjs/common: the @Controller argument (a string literal or a RouteKey member resolved from server/src/enum.ts), each member-level verb decorator and the next method name. Every decorator argument was a string literal or empty; none needed manual resolution. Eleven verb and path pairs appear twice because MaintenanceWorkerController serves the same routes in the maintenance worker; both handlers are labelled. Awaiting founder spot-check (decision D-9). Imports (TS-001, added 2026-11-15): a separate Python script (regexes over the source, not CodeAtlas code) labelled 558 imports in 108 files. Its first run disagreed with CodeAtlas on 12 pairs; on reading the source, 2 were labeller errors (it did not apply packages/cli tsconfig paths, and it counted a type-position import('svelte')), which were fixed in the script, and 1 was a CodeAtlas defect (a $app/... specifier rewritten as a Svelte store read), which was fixed in CodeAtlas."
   },
   "scope": [
     {
       "type": "handled_by",
       "paths": ["server/src"],
       "rule": "One relationship per HTTP verb and path declared with a NestJS verb decorator on a method of an @Controller class, to that method; controller prefix joined; the global prefix (api, set in app.common.ts) is not included."
+    },
+    {
+      "type": "imports",
+      "paths": [
+        "web/src/lib/components/shared-components",
+        "packages/cli/src",
+        "web/src/lib/utils"
+      ],
+      "rule": "One relationship per (file, target) for every static import, export-from and literal dynamic import() in non-test .ts, .js and .svelte files (script blocks) under these folders. The target is the repository file it loads (relative paths with extensions and index files tried, a .js specifier also matching its .ts source; tsconfig paths; package.json imports such as #lib/*; a workspace package's source, mapped from its built entry through its tsconfig outDir and rootDir), node:<name> for a Node built-in, @sveltejs/kit for $app/* and $env/*, and otherwise the npm package name. A bundler query such as ?url is ignored."
     }
   ],
   "relationships": [
@@ -2854,6 +2863,5028 @@
         "path": "server/src/maintenance/maintenance-worker.controller.ts",
         "line": 123
       }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/Combobox.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/Combobox.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/Combobox.svelte",
+      "to": "web/src/lib/actions/focus-outside.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/Combobox.svelte",
+        "line": 23
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/Combobox.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/Combobox.svelte",
+        "line": 24
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/Combobox.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/Combobox.svelte",
+        "line": 25
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/Combobox.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/Combobox.svelte",
+        "line": 27
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/ControlAppBar.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/ControlAppBar.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/ControlAppBar.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/ControlAppBar.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/ControlAppBar.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/ControlAppBar.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/CoordinatesInput.svelte",
+      "to": "web/src/lib/components/shared-components/NumberRangeInput.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/CoordinatesInput.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/CoordinatesInput.svelte",
+      "to": "geo-coordinates-parser",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/CoordinatesInput.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/CoordinatesInput.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/CoordinatesInput.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/EmptyPlaceholder.svelte",
+      "to": "web/src/lib/assets/empty-1.svg",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/EmptyPlaceholder.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/NumberRangeInput.svelte",
+      "to": "lodash-es",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/NumberRangeInput.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/NumberRangeInput.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/NumberRangeInput.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/Qrcode.svelte",
+      "to": "qrcode",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/Qrcode.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/Qrcode.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/Qrcode.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/TagPill.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/TagPill.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/TagPill.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/TagPill.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/TagPill.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/TagPill.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/ThemeButton.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/ThemeButton.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/UserAvatar.svelte",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/UserAvatar.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/UserAvatar.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/UserAvatar.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/UserAvatar.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/UserAvatar.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+      "to": "web/src/lib/managers/feature-flags-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+      "to": "@futo-org/backups-orchestrator-ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+      "to": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+      "to": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+      "to": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "web/src/lib/elements/Portal.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "web/src/lib/modals/PurchaseModal.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "web/src/lib/utils/auth.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "web/src/lib/utils/handle-error.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "web/src/lib/utils/purchase-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 13
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 14
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/PurchaseInfo.svelte",
+        "line": 16
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/RecentAlbums.svelte",
+      "to": "web/src/lib/queries/album.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/RecentAlbums.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/RecentAlbums.svelte",
+      "to": "web/src/lib/queries/client.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/RecentAlbums.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/RecentAlbums.svelte",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/RecentAlbums.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/RecentAlbums.svelte",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/RecentAlbums.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/RecentAlbums.svelte",
+      "to": "@tanstack/svelte-query",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/RecentAlbums.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "to": "web/src/lib/managers/release-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "to": "web/src/lib/modals/ServerAboutModal.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "to": "web/src/lib/queries/server-info.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "to": "web/src/lib/stores/websocket.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "to": "@tanstack/svelte-query",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/ServerStatus.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+      "to": "web/src/lib/queries/server-info.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+      "to": "web/src/lib/utils/byte-units.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+      "to": "@tanstack/svelte-query",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/StorageSpace.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "web/src/lib/components/shared-components/side-bar/BottomInfo.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "web/src/lib/components/shared-components/side-bar/RecentAlbums.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "web/src/lib/components/sidebar/Sidebar.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "web/src/lib/queries/client.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "web/src/lib/queries/config-user.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 38
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 39
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/side-bar/UserSidebar.svelte",
+        "line": 40
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/Tree.svelte",
+      "to": "web/src/lib/components/shared-components/tree/TreeItems.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/Tree.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/Tree.svelte",
+      "to": "web/src/lib/utils/tree-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/Tree.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/Tree.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/Tree.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/Tree.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/Tree.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/TreeBreadcrumbs.svelte",
+      "to": "web/src/lib/utils/tree-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/TreeBreadcrumbs.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/TreeBreadcrumbs.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/TreeBreadcrumbs.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/TreeBreadcrumbs.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/TreeBreadcrumbs.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/TreeBreadcrumbs.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/TreeBreadcrumbs.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/TreeItemThumbnails.svelte",
+      "to": "web/src/lib/utils/tree-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/TreeItemThumbnails.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/TreeItemThumbnails.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/TreeItemThumbnails.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/TreeItems.svelte",
+      "to": "web/src/lib/components/shared-components/tree/Tree.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/TreeItems.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/tree/TreeItems.svelte",
+      "to": "web/src/lib/utils/tree-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/tree/TreeItems.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/components/asset-viewer/AssetViewer.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/components/asset-viewer/actions/action.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/components/assets/thumbnail/Thumbnail.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/elements/Portal.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/managers/asset-multi-select-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/managers/asset-viewer-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/managers/feature-flags-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/managers/timeline-manager/types.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/modals/AssetDeleteConfirmModal.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/modals/ShortcutsModal.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 13
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/stores/keyboard-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 14
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 15
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 16
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/utils/actions.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 17
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/utils/asset-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 18
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/utils/focus-util.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 19
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/utils/handle-error.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 20
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/utils/layout-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 21
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/utils/navigation.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 22
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/utils/timeline-util.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 23
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "web/src/lib/utils/tunables.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 24
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 25
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 26
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "lodash-es",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 27
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 28
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/gallery-viewer/GalleryViewer.svelte",
+        "line": 29
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/album-selection/NewAlbumListItem.svelte",
+      "to": "web/src/lib/components/shared-components/album-selection/album-selection-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/album-selection/NewAlbumListItem.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/album-selection/NewAlbumListItem.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/album-selection/NewAlbumListItem.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/album-selection/NewAlbumListItem.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/album-selection/NewAlbumListItem.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/album-selection/NewAlbumListItem.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/album-selection/NewAlbumListItem.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/album-selection/NewAlbumListItem.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/album-selection/NewAlbumListItem.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/album-selection/album-selection-utils.ts",
+      "to": "web/src/lib/utils/album-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/album-selection/album-selection-utils.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/album-selection/album-selection-utils.ts",
+      "to": "web/src/lib/utils/string-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/album-selection/album-selection-utils.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/album-selection/album-selection-utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/album-selection/album-selection-utils.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/album-selection/album-selection-utils.ts",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/album-selection/album-selection-utils.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/album-selection/album-selection-utils.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/album-selection/album-selection-utils.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+      "to": "web/src/lib/actions/context-menu-navigation.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+      "to": "web/src/lib/components/shared-components/context-menu/ContextMenu.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+      "to": "web/src/lib/managers/language-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+      "to": "web/src/lib/stores/context-menu.store.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+      "to": "web/src/lib/utils/context-menu.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/ButtonContextMenu.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/ContextMenu.svelte",
+      "to": "web/src/lib/actions/click-outside.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/ContextMenu.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/ContextMenu.svelte",
+      "to": "web/src/lib/managers/language-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/ContextMenu.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/ContextMenu.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/ContextMenu.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/MenuOption.svelte",
+      "to": "web/src/lib/stores/context-menu.store.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/MenuOption.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/context-menu/MenuOption.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/context-menu/MenuOption.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "web/src/lib/actions/focus-trap.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "web/src/lib/modals/AvatarEditModal.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "web/src/lib/modals/HelpAndFeedbackModal.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "web/src/lib/queries/server-info.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "@tanstack/svelte-query",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 13
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "to": "web/src/lib/components/shared-components/UserAvatar.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+        "line": 14
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/actions/click-outside.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/elements/SkipLink.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/queries/notification.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/services/app.service.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 13
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/stores/media-query-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 14
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/stores/sidebar.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 15
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 16
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 17
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "@tanstack/svelte-query",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 18
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 19
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 20
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/components/shared-components/ThemeButton.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 21
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/components/shared-components/UserAvatar.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 22
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+      "to": "web/src/lib/components/shared-components/navigation-bar/AccountInfoPanel.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NavigationBar.svelte",
+        "line": 23
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationItem.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationItem.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationItem.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationItem.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationItem.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationItem.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationItem.svelte",
+      "to": "luxon",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationItem.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "web/src/lib/actions/focus-trap.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "web/src/lib/components/shared-components/navigation-bar/NotificationItem.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "web/src/lib/queries/client.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "web/src/lib/queries/notification.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 13
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 14
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "@tanstack/svelte-query",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 15
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 16
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 17
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/navigation-bar/NotificationPanel.svelte",
+        "line": 19
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingAccordion.svelte",
+      "to": "web/src/lib/managers/accordion-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingAccordion.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingAccordion.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingAccordion.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingAccordion.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingAccordion.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingInputField.svelte",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingInputField.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingInputField.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingInputField.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingInputField.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingInputField.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingInputField.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingInputField.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingSwitch.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingSwitch.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingSwitch.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingSwitch.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingSwitch.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingSwitch.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+      "to": "web/src/lib/components/shared-components/Combobox.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+      "to": "web/src/lib/utils/i18n.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SettingsLanguageSelector.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+      "to": "web/src/lib/queries/client.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+      "to": "web/src/lib/queries/config-admin.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+      "to": "@tanstack/svelte-query",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+      "to": "lodash-es",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/settings/SystemConfigButtonRow.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "maplibre-gl",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "pmtiles",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "web/src/lib/components/OnEvents.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "web/src/lib/managers/asset-viewer-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 13
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "web/src/lib/modals/MapSettingsModal.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 14
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "web/src/lib/queries/client.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 15
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "web/src/lib/queries/config-public.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 16
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 17
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 18
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 19
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 20
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 21
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "geojson",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 22
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "lodash-es",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 23
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "luxon",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 24
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 35
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 36
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "svelte-maplibre",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 49
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 50
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/map/Map.svelte",
+      "to": "web/src/lib/components/shared-components/map/types.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/map/Map.svelte",
+        "line": 51
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "to": "web/src/lib/actions/focus-outside.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "to": "web/src/lib/stores/search.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchBar.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+      "to": "web/src/lib/components/shared-components/Combobox.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+      "to": "web/src/lib/queries/search.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+      "to": "@tanstack/svelte-query",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+      "to": "luxon",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchDisplaySection.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchDisplaySection.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchDisplaySection.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchDisplaySection.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchDisplaySection.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchDisplaySection.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchDisplaySection.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchDisplaySection.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/queries/tag.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 17
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "@tanstack/svelte-query",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 18
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 19
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 20
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 22
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchCameraSection.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 23
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchDateSection.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 24
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchDisplaySection.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 25
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchHistorySection.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 26
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 27
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchMediaSection.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 28
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 29
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 30
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 31
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 32
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchFilters.svelte",
+        "line": 42
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchHistorySection.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchHistorySection.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchHistorySection.svelte",
+      "to": "web/src/lib/stores/search.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchHistorySection.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchHistorySection.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchHistorySection.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchHistorySection.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchHistorySection.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchHistorySection.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchHistorySection.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+      "to": "web/src/lib/components/shared-components/Combobox.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+      "to": "web/src/lib/queries/search.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+      "to": "@tanstack/svelte-query",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchLocationSection.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchMediaSection.svelte",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchMediaSection.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchMediaSection.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchMediaSection.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchMediaSection.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchMediaSection.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchMediaSection.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchMediaSection.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchMediaSection.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchMediaSection.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+      "to": "web/src/lib/components/assets/thumbnail/ImageThumbnail.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+      "to": "web/src/lib/components/shared-components/SingleGridRow.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+      "to": "web/src/lib/elements/SearchBar.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchPeopleSection.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchRatingsSection.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "to": "web/src/lib/components/shared-components/Combobox.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "to": "web/src/lib/queries/tag.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "to": "@tanstack/svelte-query",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTagsSection.svelte",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+      "to": "web/src/lib/managers/search-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+      "to": "web/src/lib/queries/client.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+      "to": "web/src/lib/queries/config-user.query.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/SearchButton.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+      "to": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/SearchTextSection.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "to": "web/src/lib/utils/handle-error.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "to": "luxon",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/search-bar/search-bar-utils.ts",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/progress-bar/ProgressBar.svelte",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/progress-bar/ProgressBar.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/progress-bar/ProgressBar.svelte",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/progress-bar/ProgressBar.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/progress-bar/ProgressBar.svelte",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/progress-bar/ProgressBar.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/IndividualPurchaseOptionCard.svelte",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/IndividualPurchaseOptionCard.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/IndividualPurchaseOptionCard.svelte",
+      "to": "web/src/lib/utils/license-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/IndividualPurchaseOptionCard.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/IndividualPurchaseOptionCard.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/IndividualPurchaseOptionCard.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/IndividualPurchaseOptionCard.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/IndividualPurchaseOptionCard.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/IndividualPurchaseOptionCard.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/IndividualPurchaseOptionCard.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+      "to": "web/src/lib/components/shared-components/settings/SettingSwitch.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+      "to": "web/src/lib/utils/purchase-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseActivationSuccess.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+      "to": "web/src/lib/utils/handle-error.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+      "to": "web/src/lib/utils/license-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+      "to": "web/src/lib/components/shared-components/purchasing/IndividualPurchaseOptionCard.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+      "to": "web/src/lib/components/shared-components/purchasing/ServerPurchaseOptionCard.svelte",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/PurchaseContent.svelte",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/ServerPurchaseOptionCard.svelte",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/ServerPurchaseOptionCard.svelte",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/ServerPurchaseOptionCard.svelte",
+      "to": "web/src/lib/utils/license-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/ServerPurchaseOptionCard.svelte",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/ServerPurchaseOptionCard.svelte",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/ServerPurchaseOptionCard.svelte",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/ServerPurchaseOptionCard.svelte",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/ServerPurchaseOptionCard.svelte",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/components/shared-components/purchasing/ServerPurchaseOptionCard.svelte",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/components/shared-components/purchasing/ServerPurchaseOptionCard.svelte",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/index.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "packages/cli/src/index.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/index.ts",
+      "to": "commander",
+      "evidence": {
+        "path": "packages/cli/src/index.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/index.ts",
+      "to": "node:os",
+      "evidence": {
+        "path": "packages/cli/src/index.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/index.ts",
+      "to": "node:path",
+      "evidence": {
+        "path": "packages/cli/src/index.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/index.ts",
+      "to": "packages/cli/src/commands/asset.ts",
+      "evidence": {
+        "path": "packages/cli/src/index.ts",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/index.ts",
+      "to": "packages/cli/src/commands/auth.ts",
+      "evidence": {
+        "path": "packages/cli/src/index.ts",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/index.ts",
+      "to": "packages/cli/src/commands/server-info.ts",
+      "evidence": {
+        "path": "packages/cli/src/index.ts",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/index.ts",
+      "to": "packages/cli/package.json",
+      "evidence": {
+        "path": "packages/cli/src/index.ts",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/queue.ts",
+      "to": "fastq",
+      "evidence": {
+        "path": "packages/cli/src/queue.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/queue.ts",
+      "to": "lodash-es",
+      "evidence": {
+        "path": "packages/cli/src/queue.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "packages/cli/src/utils.ts",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/utils.ts",
+      "to": "fast-glob",
+      "evidence": {
+        "path": "packages/cli/src/utils.ts",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/utils.ts",
+      "to": "node:crypto",
+      "evidence": {
+        "path": "packages/cli/src/utils.ts",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/utils.ts",
+      "to": "node:fs",
+      "evidence": {
+        "path": "packages/cli/src/utils.ts",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/utils.ts",
+      "to": "node:fs/promises",
+      "evidence": {
+        "path": "packages/cli/src/utils.ts",
+        "line": 13
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/utils.ts",
+      "to": "node:os",
+      "evidence": {
+        "path": "packages/cli/src/utils.ts",
+        "line": 14
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/utils.ts",
+      "to": "node:path",
+      "evidence": {
+        "path": "packages/cli/src/utils.ts",
+        "line": 15
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/utils.ts",
+      "to": "yaml",
+      "evidence": {
+        "path": "packages/cli/src/utils.ts",
+        "line": 16
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/asset.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "packages/cli/src/commands/asset.ts",
+        "line": 15
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/asset.ts",
+      "to": "byte-size",
+      "evidence": {
+        "path": "packages/cli/src/commands/asset.ts",
+        "line": 16
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/asset.ts",
+      "to": "chokidar",
+      "evidence": {
+        "path": "packages/cli/src/commands/asset.ts",
+        "line": 17
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/asset.ts",
+      "to": "cli-progress",
+      "evidence": {
+        "path": "packages/cli/src/commands/asset.ts",
+        "line": 18
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/asset.ts",
+      "to": "lodash-es",
+      "evidence": {
+        "path": "packages/cli/src/commands/asset.ts",
+        "line": 19
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/asset.ts",
+      "to": "micromatch",
+      "evidence": {
+        "path": "packages/cli/src/commands/asset.ts",
+        "line": 20
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/asset.ts",
+      "to": "node:fs",
+      "evidence": {
+        "path": "packages/cli/src/commands/asset.ts",
+        "line": 21
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/asset.ts",
+      "to": "node:fs/promises",
+      "evidence": {
+        "path": "packages/cli/src/commands/asset.ts",
+        "line": 22
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/asset.ts",
+      "to": "node:path",
+      "evidence": {
+        "path": "packages/cli/src/commands/asset.ts",
+        "line": 23
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/asset.ts",
+      "to": "packages/cli/src/queue.ts",
+      "evidence": {
+        "path": "packages/cli/src/commands/asset.ts",
+        "line": 24
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/asset.ts",
+      "to": "packages/cli/src/utils.ts",
+      "evidence": {
+        "path": "packages/cli/src/commands/asset.ts",
+        "line": 25
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/auth.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "packages/cli/src/commands/auth.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/auth.ts",
+      "to": "node:fs",
+      "evidence": {
+        "path": "packages/cli/src/commands/auth.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/auth.ts",
+      "to": "node:fs/promises",
+      "evidence": {
+        "path": "packages/cli/src/commands/auth.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/auth.ts",
+      "to": "packages/cli/src/utils.ts",
+      "evidence": {
+        "path": "packages/cli/src/commands/auth.ts",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/server-info.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "packages/cli/src/commands/server-info.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "packages/cli/src/commands/server-info.ts",
+      "to": "packages/cli/src/utils.ts",
+      "evidence": {
+        "path": "packages/cli/src/commands/server-info.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/actions.ts",
+      "to": "web/src/lib/managers/timeline-manager/timeline-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/actions.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/actions.ts",
+      "to": "web/src/lib/managers/timeline-manager/types.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/actions.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/actions.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/actions.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/actions.ts",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/utils/actions.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/actions.ts",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/utils/actions.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/actions.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/actions.ts",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/actions.ts",
+      "to": "web/src/lib/utils/handle-error.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/actions.ts",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/adaptive-image-loader.svelte.ts",
+      "to": "web/src/lib/actions/image-loader.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/adaptive-image-loader.svelte.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/adaptive-image-loader.svelte.ts",
+      "to": "web/src/lib/utils/sw-messaging.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/adaptive-image-loader.svelte.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/album-utils.ts",
+      "to": "web/src/lib/queries/album.query.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/album-utils.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/album-utils.ts",
+      "to": "web/src/lib/queries/client.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/album-utils.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/album-utils.ts",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/album-utils.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/album-utils.ts",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/album-utils.ts",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/album-utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/album-utils.ts",
+        "line": 13
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/album-utils.ts",
+      "to": "lodash-es",
+      "evidence": {
+        "path": "web/src/lib/utils/album-utils.ts",
+        "line": 14
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/album-utils.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/album-utils.ts",
+        "line": 15
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/album-utils.ts",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/utils/album-utils.ts",
+        "line": 16
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/managers/asset-multi-select-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/managers/download-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/managers/event-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/managers/timeline-manager/timeline-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/managers/timeline-manager/types.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/utils/byte-units.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/utils/i18n.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 10
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/utils/navigation.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 11
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/utils/shared-links.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 12
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/utils/timeline-util.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 13
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 24
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 25
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "luxon",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 26
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 27
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 28
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/asset-utils.ts",
+      "to": "web/src/lib/utils/handle-error.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/asset-utils.ts",
+        "line": 29
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/auth.ts",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/auth.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/auth.ts",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/auth.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/auth.ts",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/utils/auth.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/auth.ts",
+      "to": "luxon",
+      "evidence": {
+        "path": "web/src/lib/utils/auth.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/client.ts",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/client.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/client.ts",
+      "to": "web/src/lib/managers/feature-flags-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/client.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/client.ts",
+      "to": "web/src/lib/queries/client.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/client.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/client.ts",
+      "to": "web/src/lib/queries/config-public.query.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/client.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/client.ts",
+      "to": "web/src/lib/queries/server-info.query.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/client.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/client.ts",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/client.ts",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/client.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/client.ts",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/client.ts",
+      "to": "lodash-es",
+      "evidence": {
+        "path": "web/src/lib/utils/client.ts",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/date-time.ts",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/date-time.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/date-time.ts",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/date-time.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/date-time.ts",
+      "to": "luxon",
+      "evidence": {
+        "path": "web/src/lib/utils/date-time.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/date-time.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/date-time.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/duplicate-utils.ts",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/duplicate-utils.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/duplicate-utils.ts",
+      "to": "web/src/lib/utils/asset-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/duplicate-utils.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/duplicate-utils.ts",
+      "to": "web/src/lib/utils/timeline-util.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/duplicate-utils.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/duplicate-utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/duplicate-utils.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/duplicate-utils.ts",
+      "to": "@mdi/js",
+      "evidence": {
+        "path": "web/src/lib/utils/duplicate-utils.ts",
+        "line": 27
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/duplicate-utils.ts",
+      "to": "luxon",
+      "evidence": {
+        "path": "web/src/lib/utils/duplicate-utils.ts",
+        "line": 28
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/duplicate-utils.ts",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/utils/duplicate-utils.ts",
+        "line": 29
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/editor.ts",
+      "to": "web/src/lib/managers/edit/edit-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/editor.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/editor.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/editor.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/editor.ts",
+      "to": "transformation-matrix",
+      "evidence": {
+        "path": "web/src/lib/utils/editor.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/eventemitter.ts",
+      "to": "@socket.io/component-emitter",
+      "evidence": {
+        "path": "web/src/lib/utils/eventemitter.ts",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/eventemitter.ts",
+      "to": "socket.io-client",
+      "evidence": {
+        "path": "web/src/lib/utils/eventemitter.ts",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/executor-queue.ts",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/executor-queue.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "web/src/lib/managers/upload-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "web/src/lib/queries/album.query.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "web/src/lib/queries/client.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "web/src/lib/stores/upload.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "web/src/lib/types.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "web/src/lib/utils/executor-queue.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 8
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "web/src/lib/utils/shared-links.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 9
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 17
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 18
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 19
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 20
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/file-uploader.ts",
+      "to": "web/src/lib/utils/handle-error.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/file-uploader.ts",
+        "line": 22
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/focus-util.ts",
+      "to": "tabbable",
+      "evidence": {
+        "path": "web/src/lib/utils/focus-util.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/handle-error.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/handle-error.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/handle-error.ts",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/utils/handle-error.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/i18n.ts",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/i18n.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/i18n.ts",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/utils/i18n.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/i18n.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/i18n.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/invocationTracker.ts",
+      "to": "web/src/lib/utils/handle-error.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/invocationTracker.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/layout-utils.ts",
+      "to": "web/src/lib/managers/timeline-manager/types.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/layout-utils.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/layout-utils.ts",
+      "to": "web/src/lib/utils/asset-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/layout-utils.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/layout-utils.ts",
+      "to": "web/src/lib/utils/timeline-util.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/layout-utils.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/layout-utils.ts",
+      "to": "web/src/lib/utils/tunables.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/layout-utils.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/layout-utils.ts",
+      "to": "@immich/justified-layout-wasm",
+      "evidence": {
+        "path": "web/src/lib/utils/layout-utils.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/layout-utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/layout-utils.ts",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/layout-utils.ts",
+      "to": "justified-layout",
+      "evidence": {
+        "path": "web/src/lib/utils/layout-utils.ts",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/license-utils.ts",
+      "to": "web/src/lib/constants.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/license-utils.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/license-utils.ts",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/license-utils.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/license-utils.ts",
+      "to": "web/src/lib/queries/client.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/license-utils.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/license-utils.ts",
+      "to": "web/src/lib/queries/config-user.query.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/license-utils.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/license-utils.ts",
+      "to": "web/src/lib/queries/server-info.query.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/license-utils.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/license-utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/license-utils.ts",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/license-utils.ts",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/utils/license-utils.ts",
+        "line": 7
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/maintenance.ts",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/maintenance.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/maintenance.ts",
+      "to": "web/src/lib/stores/maintenance.store.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/maintenance.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/maintenance.ts",
+      "to": "web/src/lib/stores/websocket.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/maintenance.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/maintenance.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/maintenance.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/navigation.ts",
+      "to": "web/src/lib/managers/AssetCacheManager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/navigation.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/navigation.ts",
+      "to": "web/src/lib/route.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/navigation.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/navigation.ts",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/utils/navigation.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/ocr-utils.ts",
+      "to": "web/src/lib/stores/ocr.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/ocr-utils.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/ocr-utils.ts",
+      "to": "web/src/lib/utils/container-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/ocr-utils.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/ocr-utils.ts",
+      "to": "lodash-es",
+      "evidence": {
+        "path": "web/src/lib/utils/ocr-utils.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/people-utils.ts",
+      "to": "web/src/lib/managers/asset-viewer-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/people-utils.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/people-utils.ts",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/people-utils.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/people-utils.ts",
+      "to": "web/src/lib/utils/container-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/people-utils.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/people-utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/people-utils.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/persisted.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/persisted.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/persisted.ts",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/utils/persisted.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/person.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/person.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/person.ts",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/utils/person.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/person.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/person.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/person.ts",
+      "to": "web/src/lib/utils/string-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/person.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/places-utils.ts",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/places-utils.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/places-utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/places-utils.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/places-utils.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/places-utils.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/purchase-utils.ts",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/purchase-utils.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/purchase-utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/purchase-utils.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/purchase-utils.ts",
+      "to": "luxon",
+      "evidence": {
+        "path": "web/src/lib/utils/purchase-utils.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/shared-links.ts",
+      "to": "web/src/lib/utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/shared-links.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/shared-links.ts",
+      "to": "web/src/lib/utils/auth.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/shared-links.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/shared-links.ts",
+      "to": "web/src/lib/utils/i18n.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/shared-links.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/shared-links.ts",
+      "to": "web/src/lib/utils/navigation.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/shared-links.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/shared-links.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/shared-links.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/sw-messaging.ts",
+      "to": "web/src/lib/utils/sw-messenger.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/sw-messaging.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/thumbnail-util.ts",
+      "to": "web/src/lib/managers/timeline-manager/types.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/thumbnail-util.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/thumbnail-util.ts",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/thumbnail-util.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/thumbnail-util.ts",
+      "to": "web/src/lib/utils/timeline-util.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/thumbnail-util.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/thumbnail-util.ts",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/utils/thumbnail-util.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/thumbnail-util.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/thumbnail-util.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/timeline-util.ts",
+      "to": "web/src/lib/managers/timeline-manager/types.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/timeline-util.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/timeline-util.ts",
+      "to": "web/src/lib/stores/preferences.store.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/timeline-util.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/timeline-util.ts",
+      "to": "web/src/lib/utils/asset-utils.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/timeline-util.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/timeline-util.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/timeline-util.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/timeline-util.ts",
+      "to": "luxon",
+      "evidence": {
+        "path": "web/src/lib/utils/timeline-util.ts",
+        "line": 5
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/timeline-util.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/timeline-util.ts",
+        "line": 6
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/tree-utils.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/tree-utils.ts",
+        "line": 4
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/tunables.ts",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/utils/tunables.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/ui-translations.ts",
+      "to": "@immich/ui",
+      "evidence": {
+        "path": "web/src/lib/utils/ui-translations.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/ui-translations.ts",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/utils/ui-translations.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/wakelock.svelte.ts",
+      "to": "svelte",
+      "evidence": {
+        "path": "web/src/lib/utils/wakelock.svelte.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/wakelock.svelte.ts",
+      "to": "@sveltejs/kit",
+      "evidence": {
+        "path": "web/src/lib/utils/wakelock.svelte.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/workflow.ts",
+      "to": "web/src/lib/types.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/workflow.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/workflow.ts",
+      "to": "packages/sdk/src/index.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/workflow.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/workflow.ts",
+      "to": "svelte-i18n",
+      "evidence": {
+        "path": "web/src/lib/utils/workflow.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/cast/gcast-destination.svelte.ts",
+      "to": "web/src/lib/managers/auth-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/cast/gcast-destination.svelte.ts",
+        "line": 1
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/cast/gcast-destination.svelte.ts",
+      "to": "web/src/lib/managers/cast-manager.svelte.ts",
+      "evidence": {
+        "path": "web/src/lib/utils/cast/gcast-destination.svelte.ts",
+        "line": 2
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/cast/gcast-destination.svelte.ts",
+      "to": "chromecast-caf-sender",
+      "evidence": {
+        "path": "web/src/lib/utils/cast/gcast-destination.svelte.ts",
+        "line": 3
+      }
+    },
+    {
+      "type": "imports",
+      "from": "web/src/lib/utils/cast/gcast-destination.svelte.ts",
+      "to": "luxon",
+      "evidence": {
+        "path": "web/src/lib/utils/cast/gcast-destination.svelte.ts",
+        "line": 4
+      }
     }
   ],
   "outOfScope": [
@@ -2868,6 +7899,10 @@
     {
       "what": "Entity tables, repositories and calls",
       "reason": "Not labelled in this file yet."
+    },
+    {
+      "what": "import('x') used as a type (for example `children?: import('svelte').Snippet`)",
+      "reason": "A type reference, not a module load; the compiler does not emit it."
     }
   ]
 }
