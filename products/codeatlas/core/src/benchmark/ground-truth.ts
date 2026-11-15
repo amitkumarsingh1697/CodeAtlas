@@ -20,6 +20,7 @@ export const BENCHMARK_TYPES = [
   'writes_table',
   'calls',
   'imports',
+  'injects',
 ] as const;
 export type BenchmarkType = (typeof BENCHMARK_TYPES)[number];
 

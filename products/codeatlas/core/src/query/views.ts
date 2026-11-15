@@ -678,6 +678,8 @@ const IMPACT_KINDS = [
   'imports',
   'renders',
   'instantiates',
+  // A bean's impact is every bean it is injected into (JV-002).
+  'injects',
   'extends',
   'implements',
   'handled_by',

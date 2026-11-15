@@ -64,6 +64,12 @@ export const RULES = {
     description:
       'A repository or DAO typed by an entity reads and writes that entity table (for example Spring Data `Repository<T, ID>`).',
   },
+  'spring.injection': {
+    adapter: 'spring-beans',
+    labels: I,
+    description:
+      'A Spring bean is given another bean: a constructor, `@Autowired`/`@Inject`/`@Resource` field or setter, or `@Bean` method parameter whose type only that bean provides (or the one `@Qualifier`, `@Primary` or the parameter name picks). Inferred: Spring decides at run time, and profiles, conditions and library beans are not read.',
+  },
   'orm.jpa-query': {
     adapter: 'orm',
     labels: OI,
