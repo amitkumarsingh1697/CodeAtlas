@@ -7,4 +7,5 @@ One row per scored run. Figures from files that are not `adjudicated` are for en
 | 2026-11-15 | before this change | spring-petclinic @ `500158f` | claude-labelled | 100% / 100%      | 100% / 100%   | 100% / 100%       | 66.7% / 100% (1 FP) | FP: `VetRepository` → `vets` written, but it extends the bare `Repository` with finders only    |
 | 2026-11-15 | PR #5              | spring-petclinic @ `500158f` | claude-labelled | 100% / 100%      | 100% / 100%   | 100% / 100%       | 100% / 100%         | Read-only bare `Repository` fixed (`packages/orm/src/jvm.ts`); regression test in `orm.test.ts` |
 
-PetClinic is small and was the fixture the route adapter was built against, so these figures say little about other repositories. The NestJS and multi-module Spring files are next.
+| 2026-11-15 | after PR #5 | immich @ `e5d6eb7` | claude-labelled | 100% / 100% (315 routes: 269 observed, 46 inferred) | — | — | — | Labels from a separate script, but it reads decorators the same way the adapter does, so agreement does not test shared assumptions (no global prefix, literal or enum paths only) |
+PetClinic is small and was the fixture the route adapter was built against, so these figures say little about other repositories. Next: a multi-module Spring file, and Immich tables and repositories (Kysely).
