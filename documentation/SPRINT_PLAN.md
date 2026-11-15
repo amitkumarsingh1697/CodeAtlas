@@ -216,6 +216,18 @@ Per ADR 0030 the report generator (REP-002 rendering, REP-006 HTML, REP-007 reda
 
 **Status:** done 2026-11-15 for the items above. **Not done:** ACC-001 to ACC-004 (benchmark) wait on decision D-9, who adjudicates ground truth. Immich paths are not yet checked by hand.
 
+## Commercial roadmap Sprint 2b: benchmark tooling
+
+| ID      | Item                                       | Acceptance criteria                                                                                                                  |
+| ------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| ACC-001 | Ground-truth schema and adjudication guide | `groundTruthSchema` validated in tests; `documentation/benchmark/ADJUDICATION_GUIDE.md` (draft until founder approval and D-9)       |
+| ACC-002 | Pinned corpus                              | `CORPUS.md`: PetClinic and Immich pinned with licences; multi-module Spring app not yet chosen                                       |
+| ACC-003 | Labelled relationships (partial)           | PetClinic routes, entity tables and repository tables labelled from source (`claude-labelled`); Immich not yet labelled              |
+| ACC-004 | Scoring script and history                 | `scripts/score-benchmark.ts`, P/R/F1 by type and evidence class; unit tests in CI; `BENCHMARK_HISTORY.md` rows for each run          |
+| TS-006  | Fix benchmark defects (first)              | PetClinic false positive fixed: a bare Spring Data `Repository<T, ID>` with finders only no longer writes its table; regression test |
+
+**Status:** done 2026-11-15 for the tooling and the PetClinic file. Figures stay engineering-only until labels are reviewed (D-9).
+
 ## Blocked or external track (not sprint-scheduled)
 
 | Item                                                                  | Blocker                                       | Owner                                            |

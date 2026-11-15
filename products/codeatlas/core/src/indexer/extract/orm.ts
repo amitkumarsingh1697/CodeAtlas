@@ -228,12 +228,13 @@ export function addOrm(
         ...edge,
         confidence: 'inferred',
       });
-      graph.addEdge({
-        kind: 'writes_table',
-        method: 'orm.repository-table',
-        ...edge,
-        confidence: 'inferred',
-      });
+      if (m.access === 'reads-writes')
+        graph.addEdge({
+          kind: 'writes_table',
+          method: 'orm.repository-table',
+          ...edge,
+          confidence: 'inferred',
+        });
     }
     stats.mappings++;
   }

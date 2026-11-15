@@ -138,7 +138,8 @@ describe('assessment tables', () => {
     const owners = buildAssessment(db, r.repoId).architecture.tables.find(
       (t) => t.name === 'owners',
     );
-    expect(owners).toMatchObject({ columns: 2, accessedBy: { observed: 0, inferred: 2 } });
+    // A bare Repository<T, ID> with no write methods only reads its table (TS-006), so one link.
+    expect(owners).toMatchObject({ columns: 2, accessedBy: { observed: 0, inferred: 1 } });
     expect(owners?.path).toMatch(/^(db\/schema\.sql|src\/main\/java\/com\/acme\/Owner\.java)$/);
   });
 });

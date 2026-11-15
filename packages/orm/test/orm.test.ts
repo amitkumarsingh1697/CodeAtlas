@@ -493,6 +493,26 @@ describe('cross-file resolution', () => {
     expect(mapping(r, 'VetStarRepository')).toMatchObject({ table: 'vets' });
   });
 
+  it('marks a bare Repository<T, ID> with only finders as read-only (benchmark FP on PetClinic)', () => {
+    const entity =
+      'package vet;\nimport jakarta.persistence.*;\n@Entity\n@Table(name = "vets")\npublic class Vet {\n  @Id private Integer id;\n}\n';
+    const head = 'package vet;\nimport org.springframework.data.repository.Repository;\n';
+    const r = resolveOrm(
+      read({
+        'vet/Vet.java': entity,
+        'vet/VetRepository.java': `${head}public interface VetRepository extends Repository<Vet, Integer> {\n  java.util.Collection<Vet> findAll();\n  long countByName(String name);\n}\n`,
+        'vet/VetWriter.java': `${head}public interface VetWriter extends Repository<Vet, Integer> {\n  Vet save(Vet vet);\n}\n`,
+        'vet/VetPurger.java': `${head}public interface VetPurger extends Repository<Vet, Integer> {\n  @Modifying\n  @Query("update Vet v set v.name = ''")\n  int blank();\n}\n`,
+        'vet/VetCrud.java':
+          'package vet;\nimport org.springframework.data.repository.CrudRepository;\npublic interface VetCrud extends CrudRepository<Vet, Integer> {}\n',
+      }),
+    );
+    expect(mapping(r, 'VetRepository')).toMatchObject({ table: 'vets', access: 'reads' });
+    expect(mapping(r, 'VetWriter')).toMatchObject({ table: 'vets', access: 'reads-writes' });
+    expect(mapping(r, 'VetPurger')).toMatchObject({ table: 'vets', access: 'reads-writes' });
+    expect(mapping(r, 'VetCrud')).toMatchObject({ table: 'vets', access: 'reads-writes' });
+  });
+
   it('does not treat a home-made Repository<T> interface as Spring Data', () => {
     const r = resolveOrm(
       read({
