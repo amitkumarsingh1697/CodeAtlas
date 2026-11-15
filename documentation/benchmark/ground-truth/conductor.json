@@ -1,0 +1,1877 @@
+{
+  "version": 1,
+  "corpus": {
+    "name": "conductor-oss/conductor",
+    "url": "https://github.com/conductor-oss/conductor",
+    "commit": "1d268e4c9b0fe77c7122200dad5c60c61e94aa89",
+    "licence": "Apache-2.0"
+  },
+  "labelling": {
+    "status": "claude-labelled",
+    "labelledBy": "Claude (AI), from the source at the pinned commit",
+    "labelledOn": "2026-11-15",
+    "method": "A separate Python script (regular expressions, not CodeAtlas code) read settings.gradle (include lines, the rootProject.children rename to conductor-<name>, and projectDir overrides for the six scheduler projects) to map 51 projects to their folders, then read the dependencies { } blocks of each project's build.gradle, comments removed, and labelled one depends_on per distinct project(':x') a configuration names, including testFixtures(project(...)) and rootProject.project(':x').sourceSets.test.output. Its first run disagreed with CodeAtlas on 11 pairs; all 11 were labeller errors (it did not match the rootProject.project(...) form), fixed in the script. After the fix the two agree on all 199. Awaiting founder spot-check (decision D-9)."
+  },
+  "scope": [
+    {
+      "type": "depends_on",
+      "paths": [
+        "agentspan",
+        "ai",
+        "amqp",
+        "annotations-processor",
+        "awss3-storage",
+        "awssqs-event-queue",
+        "azureblob-storage",
+        "cassandra-persistence",
+        "common",
+        "common-persistence",
+        "core",
+        "es7-persistence",
+        "es8-persistence",
+        "file-storage",
+        "gcs-storage",
+        "grpc",
+        "grpc-client",
+        "grpc-server",
+        "http-task",
+        "json-jq-task",
+        "kafka",
+        "kafka-event-queue",
+        "mysql-persistence",
+        "nats",
+        "nats-streaming",
+        "os-persistence-v2",
+        "os-persistence-v3",
+        "postgres-external-storage",
+        "postgres-persistence",
+        "redis-concurrency-limit",
+        "redis-configuration",
+        "redis-lock",
+        "redis-persistence",
+        "rest",
+        "scheduler/cassandra-persistence",
+        "scheduler/core",
+        "scheduler/mysql-persistence",
+        "scheduler/postgres-persistence",
+        "scheduler/redis-persistence",
+        "scheduler/sqlite-persistence",
+        "server",
+        "sqlite-persistence",
+        "task-status-listener",
+        "test-harness",
+        "test-util",
+        "workflow-event-listener",
+        "build.gradle"
+      ],
+      "rule": "A Gradle project depends on another project of this build when its build.gradle names project(':x') in a dependencies block, under any configuration (implementation, api, testImplementation, compileOnly, custom configurations), including testFixtures(project(...)) and rootProject.project(':x'). One relationship per pair. Projects are named as settings.gradle names them after the rename."
+    }
+  ],
+  "relationships": [
+    {
+      "type": "depends_on",
+      "from": "conductor-agentspan",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "agentspan/build.gradle",
+        "line": 8
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-agentspan",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "agentspan/build.gradle",
+        "line": 9
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-agentspan",
+      "to": "conductor-ai",
+      "evidence": {
+        "path": "agentspan/build.gradle",
+        "line": 10
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-agentspan",
+      "to": "conductor-sqlite-persistence",
+      "evidence": {
+        "path": "agentspan/build.gradle",
+        "line": 16
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-ai",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "ai/build.gradle",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-ai",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "ai/build.gradle",
+        "line": 20
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-amqp",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "amqp/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-amqp",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "amqp/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-annotations-processor",
+      "to": "conductor-annotations",
+      "evidence": {
+        "path": "annotations-processor/build.gradle",
+        "line": 7
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-awss3-storage",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "awss3-storage/build.gradle",
+        "line": 15
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-awss3-storage",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "awss3-storage/build.gradle",
+        "line": 16
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-awssqs-event-queue",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "awssqs-event-queue/build.gradle",
+        "line": 5
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-awssqs-event-queue",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "awssqs-event-queue/build.gradle",
+        "line": 6
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-azureblob-storage",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "azureblob-storage/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-azureblob-storage",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "azureblob-storage/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-cassandra-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "cassandra-persistence/build.gradle",
+        "line": 20
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-cassandra-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "cassandra-persistence/build.gradle",
+        "line": 21
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-common",
+      "to": "conductor-annotations",
+      "evidence": {
+        "path": "common/build.gradle",
+        "line": 6
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-common",
+      "to": "conductor-annotations-processor",
+      "evidence": {
+        "path": "common/build.gradle",
+        "line": 7
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-common-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "common-persistence/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-common-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "common-persistence/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-core",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "core/build.gradle",
+        "line": 16
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-es7-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "es7-persistence/build.gradle",
+        "line": 16
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-es7-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "es7-persistence/build.gradle",
+        "line": 17
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-es7-persistence",
+      "to": "conductor-common-persistence",
+      "evidence": {
+        "path": "es7-persistence/build.gradle",
+        "line": 18
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-es7-persistence",
+      "to": "conductor-test-util",
+      "evidence": {
+        "path": "es7-persistence/build.gradle",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-es8-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "es8-persistence/build.gradle",
+        "line": 22
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-es8-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "es8-persistence/build.gradle",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-es8-persistence",
+      "to": "conductor-common-persistence",
+      "evidence": {
+        "path": "es8-persistence/build.gradle",
+        "line": 24
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-es8-persistence",
+      "to": "conductor-test-util",
+      "evidence": {
+        "path": "es8-persistence/build.gradle",
+        "line": 42
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-file-storage",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "file-storage/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-file-storage",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "file-storage/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-gcs-storage",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "gcs-storage/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-gcs-storage",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "gcs-storage/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-grpc",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "grpc/build.gradle",
+        "line": 31
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-grpc-client",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "grpc-client/build.gradle",
+        "line": 15
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-grpc-client",
+      "to": "conductor-grpc",
+      "evidence": {
+        "path": "grpc-client/build.gradle",
+        "line": 16
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-grpc-server",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "grpc-server/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-grpc-server",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "grpc-server/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-grpc-server",
+      "to": "conductor-grpc",
+      "evidence": {
+        "path": "grpc-server/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-http-task",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "http-task/build.gradle",
+        "line": 14
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-http-task",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "http-task/build.gradle",
+        "line": 15
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-json-jq-task",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "json-jq-task/build.gradle",
+        "line": 15
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-json-jq-task",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "json-jq-task/build.gradle",
+        "line": 16
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-kafka",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "kafka/build.gradle",
+        "line": 5
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-kafka",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "kafka/build.gradle",
+        "line": 6
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-kafka",
+      "to": "conductor-server",
+      "evidence": {
+        "path": "kafka/build.gradle",
+        "line": 25
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-kafka",
+      "to": "conductor-test-util",
+      "evidence": {
+        "path": "kafka/build.gradle",
+        "line": 26
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-kafka-event-queue",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "kafka-event-queue/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-kafka-event-queue",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "kafka-event-queue/build.gradle",
+        "line": 5
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-mysql-persistence",
+      "to": "conductor-common-persistence",
+      "evidence": {
+        "path": "mysql-persistence/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-mysql-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "mysql-persistence/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-mysql-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "mysql-persistence/build.gradle",
+        "line": 5
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-mysql-persistence",
+      "to": "conductor-server",
+      "evidence": {
+        "path": "mysql-persistence/build.gradle",
+        "line": 30
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-mysql-persistence",
+      "to": "conductor-grpc-client",
+      "evidence": {
+        "path": "mysql-persistence/build.gradle",
+        "line": 31
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-mysql-persistence",
+      "to": "conductor-es7-persistence",
+      "evidence": {
+        "path": "mysql-persistence/build.gradle",
+        "line": 32
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-mysql-persistence",
+      "to": "conductor-test-util",
+      "evidence": {
+        "path": "mysql-persistence/build.gradle",
+        "line": 34
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-nats",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "nats/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-nats",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "nats/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-nats-streaming",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "nats-streaming/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-nats-streaming",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "nats-streaming/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-os-persistence-v2",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "os-persistence-v2/build.gradle",
+        "line": 15
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-os-persistence-v2",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "os-persistence-v2/build.gradle",
+        "line": 16
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-os-persistence-v2",
+      "to": "conductor-common-persistence",
+      "evidence": {
+        "path": "os-persistence-v2/build.gradle",
+        "line": 17
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-os-persistence-v2",
+      "to": "conductor-test-util",
+      "evidence": {
+        "path": "os-persistence-v2/build.gradle",
+        "line": 36
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-os-persistence-v3",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "os-persistence-v3/build.gradle",
+        "line": 21
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-os-persistence-v3",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "os-persistence-v3/build.gradle",
+        "line": 22
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-os-persistence-v3",
+      "to": "conductor-common-persistence",
+      "evidence": {
+        "path": "os-persistence-v3/build.gradle",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-os-persistence-v3",
+      "to": "conductor-test-util",
+      "evidence": {
+        "path": "os-persistence-v3/build.gradle",
+        "line": 43
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-postgres-external-storage",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "postgres-external-storage/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-postgres-external-storage",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "postgres-external-storage/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-postgres-external-storage",
+      "to": "conductor-test-util",
+      "evidence": {
+        "path": "postgres-external-storage/build.gradle",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-postgres-persistence",
+      "to": "conductor-common-persistence",
+      "evidence": {
+        "path": "postgres-persistence/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-postgres-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "postgres-persistence/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-postgres-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "postgres-persistence/build.gradle",
+        "line": 5
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-postgres-persistence",
+      "to": "conductor-server",
+      "evidence": {
+        "path": "postgres-persistence/build.gradle",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-postgres-persistence",
+      "to": "conductor-grpc-client",
+      "evidence": {
+        "path": "postgres-persistence/build.gradle",
+        "line": 24
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-postgres-persistence",
+      "to": "conductor-es7-persistence",
+      "evidence": {
+        "path": "postgres-persistence/build.gradle",
+        "line": 25
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-postgres-persistence",
+      "to": "conductor-test-util",
+      "evidence": {
+        "path": "postgres-persistence/build.gradle",
+        "line": 30
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-redis-concurrency-limit",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "redis-concurrency-limit/build.gradle",
+        "line": 9
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-redis-concurrency-limit",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "redis-concurrency-limit/build.gradle",
+        "line": 10
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-redis-configuration",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "redis-configuration/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-redis-configuration",
+      "to": "conductor-redis-api",
+      "evidence": {
+        "path": "redis-configuration/build.gradle",
+        "line": 7
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-redis-lock",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "redis-lock/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-redis-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "redis-persistence/build.gradle",
+        "line": 16
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-redis-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "redis-persistence/build.gradle",
+        "line": 17
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-redis-persistence",
+      "to": "conductor-redis-configuration",
+      "evidence": {
+        "path": "redis-persistence/build.gradle",
+        "line": 18
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-redis-persistence",
+      "to": "conductor-redis-api",
+      "evidence": {
+        "path": "redis-persistence/build.gradle",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-redis-persistence",
+      "to": "conductor-common-persistence",
+      "evidence": {
+        "path": "redis-persistence/build.gradle",
+        "line": 33
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-rest",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "rest/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-rest",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "rest/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-cassandra-persistence",
+      "to": "conductor-scheduler-core",
+      "evidence": {
+        "path": "scheduler/cassandra-persistence/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-cassandra-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "scheduler/cassandra-persistence/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-cassandra-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "scheduler/cassandra-persistence/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-cassandra-persistence",
+      "to": "conductor-cassandra-persistence",
+      "evidence": {
+        "path": "scheduler/cassandra-persistence/build.gradle",
+        "line": 5
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-core",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "scheduler/core/build.gradle",
+        "line": 7
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-core",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "scheduler/core/build.gradle",
+        "line": 8
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-mysql-persistence",
+      "to": "conductor-scheduler-core",
+      "evidence": {
+        "path": "scheduler/mysql-persistence/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-mysql-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "scheduler/mysql-persistence/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-mysql-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "scheduler/mysql-persistence/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-mysql-persistence",
+      "to": "conductor-mysql-persistence",
+      "evidence": {
+        "path": "scheduler/mysql-persistence/build.gradle",
+        "line": 5
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-postgres-persistence",
+      "to": "conductor-scheduler-core",
+      "evidence": {
+        "path": "scheduler/postgres-persistence/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-postgres-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "scheduler/postgres-persistence/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-postgres-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "scheduler/postgres-persistence/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-postgres-persistence",
+      "to": "conductor-postgres-persistence",
+      "evidence": {
+        "path": "scheduler/postgres-persistence/build.gradle",
+        "line": 5
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-redis-persistence",
+      "to": "conductor-scheduler-core",
+      "evidence": {
+        "path": "scheduler/redis-persistence/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-redis-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "scheduler/redis-persistence/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-redis-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "scheduler/redis-persistence/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-redis-persistence",
+      "to": "conductor-redis-configuration",
+      "evidence": {
+        "path": "scheduler/redis-persistence/build.gradle",
+        "line": 5
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-redis-persistence",
+      "to": "conductor-redis-persistence",
+      "evidence": {
+        "path": "scheduler/redis-persistence/build.gradle",
+        "line": 6
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-redis-persistence",
+      "to": "conductor-redis-api",
+      "evidence": {
+        "path": "scheduler/redis-persistence/build.gradle",
+        "line": 14
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-sqlite-persistence",
+      "to": "conductor-scheduler-core",
+      "evidence": {
+        "path": "scheduler/sqlite-persistence/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-sqlite-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "scheduler/sqlite-persistence/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-scheduler-sqlite-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "scheduler/sqlite-persistence/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-rest",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 20
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-grpc-server",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 21
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-ai",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 22
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-agentspan",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 25
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-amqp",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-nats",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 29
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-nats-streaming",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 30
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-awssqs-event-queue",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 31
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-kafka-event-queue",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 32
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-azureblob-storage",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-postgres-external-storage",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 36
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-awss3-storage",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 37
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-file-storage",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 38
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-gcs-storage",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-redis-configuration",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 43
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-redis-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 44
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-cassandra-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 45
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-postgres-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 46
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-mysql-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 47
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-sqlite-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 48
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-os-persistence-v3",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 54
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-os-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 56
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-os-persistence-v2",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 57
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-es7-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 61
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-es8-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 63
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-redis-lock",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 67
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-redis-concurrency-limit",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 68
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-http-task",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 73
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-json-jq-task",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 74
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-kafka",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 75
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-scheduler-core",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 78
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-scheduler-postgres-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 79
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-scheduler-mysql-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 80
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-scheduler-cassandra-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 81
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-scheduler-redis-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 82
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-scheduler-sqlite-persistence",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 83
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-workflow-event-listener",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 98
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-server",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "server/build.gradle",
+        "line": 126
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-sqlite-persistence",
+      "to": "conductor-common-persistence",
+      "evidence": {
+        "path": "sqlite-persistence/build.gradle",
+        "line": 2
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-sqlite-persistence",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "sqlite-persistence/build.gradle",
+        "line": 3
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-sqlite-persistence",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "sqlite-persistence/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-sqlite-persistence",
+      "to": "conductor-server",
+      "evidence": {
+        "path": "sqlite-persistence/build.gradle",
+        "line": 27
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-sqlite-persistence",
+      "to": "conductor-grpc-client",
+      "evidence": {
+        "path": "sqlite-persistence/build.gradle",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-sqlite-persistence",
+      "to": "conductor-es7-persistence",
+      "evidence": {
+        "path": "sqlite-persistence/build.gradle",
+        "line": 29
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-sqlite-persistence",
+      "to": "conductor-test-util",
+      "evidence": {
+        "path": "sqlite-persistence/build.gradle",
+        "line": 31
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-task-status-listener",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "task-status-listener/build.gradle",
+        "line": 6
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-task-status-listener",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "task-status-listener/build.gradle",
+        "line": 7
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-task-status-listener",
+      "to": "conductor-redis-persistence",
+      "evidence": {
+        "path": "task-status-listener/build.gradle",
+        "line": 8
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-task-status-listener",
+      "to": "conductor-annotations",
+      "evidence": {
+        "path": "task-status-listener/build.gradle",
+        "line": 9
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-task-status-listener",
+      "to": "conductor-test-util",
+      "evidence": {
+        "path": "task-status-listener/build.gradle",
+        "line": 17
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-server",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 4
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 8
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-rest",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 9
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 10
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-redis-persistence",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 11
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-cassandra-persistence",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 12
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-es7-persistence",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 13
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-grpc-server",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 14
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-grpc-client",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 15
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-json-jq-task",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 16
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-http-task",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 17
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-scheduler-core",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 18
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-ai",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-agentspan",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 20
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-awss3-storage",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 57
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-azureblob-storage",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 58
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-gcs-storage",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 67
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-file-storage",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 68
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-awssqs-event-queue",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 69
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-harness",
+      "to": "conductor-workflow-event-listener",
+      "evidence": {
+        "path": "test-harness/build.gradle",
+        "line": 70
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-util",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "test-util/build.gradle",
+        "line": 7
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-util",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "test-util/build.gradle",
+        "line": 8
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-util",
+      "to": "conductor-server",
+      "evidence": {
+        "path": "test-util/build.gradle",
+        "line": 9
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-util",
+      "to": "conductor-rest",
+      "evidence": {
+        "path": "test-util/build.gradle",
+        "line": 10
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-util",
+      "to": "conductor-grpc-server",
+      "evidence": {
+        "path": "test-util/build.gradle",
+        "line": 11
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-util",
+      "to": "conductor-grpc-client",
+      "evidence": {
+        "path": "test-util/build.gradle",
+        "line": 12
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-test-util",
+      "to": "conductor-redis-persistence",
+      "evidence": {
+        "path": "test-util/build.gradle",
+        "line": 13
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-workflow-event-listener",
+      "to": "conductor-common",
+      "evidence": {
+        "path": "workflow-event-listener/build.gradle",
+        "line": 6
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-workflow-event-listener",
+      "to": "conductor-core",
+      "evidence": {
+        "path": "workflow-event-listener/build.gradle",
+        "line": 7
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-workflow-event-listener",
+      "to": "conductor-redis-persistence",
+      "evidence": {
+        "path": "workflow-event-listener/build.gradle",
+        "line": 8
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-workflow-event-listener",
+      "to": "conductor-task-status-listener",
+      "evidence": {
+        "path": "workflow-event-listener/build.gradle",
+        "line": 9
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-workflow-event-listener",
+      "to": "conductor-annotations",
+      "evidence": {
+        "path": "workflow-event-listener/build.gradle",
+        "line": 10
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-workflow-event-listener",
+      "to": "conductor-server",
+      "evidence": {
+        "path": "workflow-event-listener/build.gradle",
+        "line": 22
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "conductor-workflow-event-listener",
+      "to": "conductor-test-util",
+      "evidence": {
+        "path": "workflow-event-listener/build.gradle",
+        "line": 32
+      }
+    }
+  ],
+  "outOfScope": [
+    {
+      "what": "Dependencies added by the root build.gradle through configure() or subprojects blocks",
+      "reason": "Conductor's root build.gradle adds only external artifacts in its subprojects block (checked by reading it)."
+    },
+    {
+      "what": "External Maven artifacts (org.springframework..., the published conductor-client)",
+      "reason": "Not a project of this build."
+    },
+    {
+      "what": "The ui and ui-next npm packages",
+      "reason": "Not Gradle projects."
+    }
+  ]
+}

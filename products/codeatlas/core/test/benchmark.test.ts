@@ -246,4 +246,32 @@ describe('benchmark scoring (ACC-004)', () => {
       count('injects'),
     ]).toEqual([38, 5, 27, 5, 20]);
   });
+
+  it('scores module dependencies (depends_on) by module name, scoped by the build file', () => {
+    const gt: GroundTruth = {
+      ...truth,
+      scope: [{ type: 'depends_on', paths: ['core', 'build.gradle'], rule: 'project deps' }],
+      relationships: [
+        {
+          type: 'depends_on',
+          from: 'app-core',
+          to: 'app-common',
+          evidence: { path: 'core/build.gradle', line: 4 },
+        },
+      ],
+    };
+    const s = scoreBenchmark(gt, [
+      p('depends_on', 'app-core', 'app-common', 'observed', 'core/build.gradle'),
+      p('depends_on', 'app-web', 'app-core', 'observed', 'web/build.gradle'),
+    ]);
+    const t = s.types.find((x) => x.type === 'depends_on')!;
+    expect([t.truePositives, t.falsePositives, t.falseNegatives]).toEqual([1, 0, 0]);
+  });
+
+  it('the Conductor ground truth holds 199 Gradle project dependencies', () => {
+    const gt = groundTruthSchema.parse(
+      JSON.parse(readFileSync(join(GT_DIR, 'conductor.json'), 'utf8')),
+    );
+    expect(gt.relationships.filter((r) => r.type === 'depends_on')).toHaveLength(199);
+  });
 });

@@ -21,6 +21,7 @@ export const BENCHMARK_TYPES = [
   'calls',
   'imports',
   'injects',
+  'depends_on',
 ] as const;
 export type BenchmarkType = (typeof BENCHMARK_TYPES)[number];
 

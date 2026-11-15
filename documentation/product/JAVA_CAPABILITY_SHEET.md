@@ -14,13 +14,22 @@ Every figure below was measured on 2026-11-15 by running CodeAtlas with default 
 | `writes_table` (repository → table)         | 100% / 100% (2)                    | 100% / 100% (5)                       | inferred       |
 | `injects` (Spring bean → bean it is given)  | 100% / 100% (6)                    | 100% / 100% (20)                      | inferred       |
 
-Both repositories are small, single-module Spring Boot applications, and the route, ORM and bean readers were written with PetClinic open. These figures do not predict accuracy on a large or unusual codebase. A multi-module Maven or Gradle repository has not been benchmarked yet (JV-001).
+Both repositories are small, single-module Spring Boot applications, and the route, ORM and bean readers were written with PetClinic open. These figures do not predict accuracy on a large or unusual codebase. Module dependencies on two multi-module repositories were labelled later; see the module model below.
 
 \* The first JHipster run found 19 of 27 table reads. The 8 misses were JPQL association paths (6, such as `left join fetch bankAccount.user`) and `@EntityGraph` fetches (2). Rules `orm.jpa-path-join` and `orm.entity-graph` were then added and now find all 27. Because the fix was written against this benchmark, the 100% no longer measures them independently. On Keycloak, 10 of 10 sampled path-join links were correct when checked by hand against the named query text.
 
 The details and the per-run history are in [BENCHMARK_HISTORY.md](../benchmark/BENCHMARK_HISTORY.md).
 
-Module model (JV-001), measured but not labelled:
+Module model (JV-001). Declared module dependencies (`depends_on`) are labelled on two repositories ([conductor.json](../benchmark/ground-truth/conductor.json), [keycloak.json](../benchmark/ground-truth/keycloak.json)):
+
+| Repository @ commit          | Labels                                                    | Precision | Recall                         |
+| ---------------------------- | --------------------------------------------------------- | --------: | ------------------------------ |
+| conductor `1d268e4` (Gradle) | 199 project dependencies                                  |      100% | 100%                           |
+| keycloak `a29205c` (Maven)   | 339 module dependencies outside test code (Maven and npm) |      100% | 98.2% (93.8% before two fixes) |
+
+JV-001 was measured on both repositories while it was built, and the two Keycloak fixes were made against these labels, so neither figure is an independent test. The 6 Keycloak misses are modules in folders named `dist`, which CodeAtlas excludes as build output.
+
+Imports between modules, measured but not labelled:
 
 | Repository @ commit                                                    | Modules | Declared module dependencies | Cross-module imports that follow a declared dependency |
 | ---------------------------------------------------------------------- | ------: | ---------------------------: | -----------------------------------------------------: |

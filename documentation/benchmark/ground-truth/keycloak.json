@@ -1,0 +1,3185 @@
+{
+  "version": 1,
+  "corpus": {
+    "name": "keycloak/keycloak",
+    "url": "https://github.com/keycloak/keycloak",
+    "commit": "a29205c778402c02bad1d90b00c390f923d059ac",
+    "licence": "Apache-2.0"
+  },
+  "labelling": {
+    "status": "claude-labelled",
+    "labelledBy": "Claude (AI), from the source at the pinned commit",
+    "labelledOn": "2026-11-15",
+    "method": "Two separate Python scripts (xml.etree and regular expressions, not CodeAtlas code). The Maven script read all 187 pom.xml files outside .git, node_modules and target, took each module's groupId (its own or its parent's) and artifactId, and labelled one depends_on per <dependency> directly under <project> (not dependencyManagement, profiles, plugins or exclusions) that names a module of this repository, with ${project.groupId} resolved; a child also depends on the modules its in-repository parent POMs list, cited at the parent's line. A folder that also holds a package.json is one module named by its package name. The npm script labelled the 5 dependencies between the 8 workspace packages (dependencies, devDependencies, peerDependencies, optionalDependencies). The first comparison disagreed with CodeAtlas on 89 pairs. On reading the POMs, 62 were labeller errors (it took the groupId of an <exclusion>), fixed in the script; 20 were CodeAtlas defects, fixed in CodeAtlas: a folder with both a pom.xml and a package.json dropped its Maven dependencies (15), and dependencies inherited from a parent POM were used for the import check but not recorded as links (5). 7 remain CodeAtlas misses: quarkus/dist and docs/documentation/dist are real Maven modules in folders named dist, which CodeAtlas excludes as build output. The 5 npm dependencies were added after the first comparison, when CodeAtlas reported them. Labels whose module is test code (a test-support path, such as testsuite/ and the *-tests modules; adjudication guide \u00a73) were then removed, leaving 339 of 465; the counts of disagreements above are over all 465. Awaiting founder spot-check (decision D-9)."
+  },
+  "scope": [
+    {
+      "type": "depends_on",
+      "paths": [
+        "adapters/saml/core",
+        "adapters/saml/core-public",
+        "adapters/saml/wildfly-elytron",
+        "adapters/saml/wildfly/wildfly-subsystem",
+        "adapters/spi/jboss-adapter-core",
+        "authz/client",
+        "authz/policy/common",
+        "authzen/services",
+        "core",
+        "crypto/default",
+        "crypto/elytron",
+        "crypto/fips1402",
+        "dependencies/server-all",
+        "dependencies/server-min",
+        "distribution/api-docs-dist",
+        "distribution/galleon-feature-packs/saml-adapter-galleon-pack",
+        "distribution/galleon-feature-packs/saml-adapter-galleon-pack-layer-metadata-tests",
+        "distribution/saml-adapters/wildfly-adapter/wildfly-adapter-zip",
+        "distribution/saml-adapters/wildfly-adapter/wildfly-modules",
+        "docs/documentation/aggregation",
+        "docs/documentation/dist",
+        "docs/guides",
+        "docs/maven-plugin",
+        "federation/ipatuura",
+        "federation/kerberos",
+        "federation/ldap",
+        "federation/sssd",
+        "integration/admin-client",
+        "integration/admin-client-core",
+        "integration/admin-client-jackson3",
+        "integration/client-cli/admin-cli",
+        "integration/client-cli/client-cli-dist",
+        "integration/client-registration",
+        "js",
+        "js/apps/account-ui",
+        "js/apps/admin-ui",
+        "js/libs/ui-shared",
+        "model/infinispan",
+        "model/jpa",
+        "model/storage",
+        "model/storage-private",
+        "model/storage-services",
+        "operator",
+        "quarkus/config-api",
+        "quarkus/deployment",
+        "quarkus/dist",
+        "quarkus/runtime",
+        "quarkus/server",
+        "rest/admin-ui-ext",
+        "rest/admin-v2/api",
+        "rest/admin-v2/services",
+        "saml-core",
+        "saml-core-api",
+        "scim/client",
+        "scim/core",
+        "scim/model",
+        "scim/services",
+        "server-spi",
+        "server-spi-private",
+        "services",
+        "ssf/core",
+        "ssf/services",
+        "ssf/transmitter",
+        "test-framework/builders",
+        "test-framework/clustering",
+        "test-framework/conformance-runner",
+        "test-framework/core",
+        "test-framework/db-edb",
+        "test-framework/db-mariadb",
+        "test-framework/db-mssql",
+        "test-framework/db-mysql",
+        "test-framework/db-oracle",
+        "test-framework/db-postgres",
+        "test-framework/db-tidb",
+        "test-framework/email-server",
+        "test-framework/infinispan-server",
+        "test-framework/junit5-config",
+        "test-framework/oauth",
+        "test-framework/remote",
+        "test-framework/remote-providers",
+        "test-framework/test-containers",
+        "test-framework/test-providers",
+        "test-framework/ui",
+        "testsuite/integration-arquillian/servers/app-server/jboss/galleon",
+        "testsuite/integration-arquillian/servers/app-server/jboss/wildfly",
+        "testsuite/integration-arquillian/servers/auth-server/quarkus",
+        "testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers",
+        "testsuite/integration-arquillian/servers/auth-server/undertow",
+        "testsuite/integration-arquillian/test-apps/servlets",
+        "testsuite/integration-arquillian/util",
+        "testsuite/model",
+        "testsuite/utils",
+        "themes",
+        "util/embedded-ldap",
+        "pom.xml"
+      ],
+      "rule": "A Maven module depends on another module of this repository when a <dependency> directly under <project> (any scope) names it by groupId and artifactId, or when an in-repository parent POM's <dependencies> do. An npm workspace package depends on another when its package.json lists it in dependencies, devDependencies, peerDependencies or optionalDependencies. One relationship per pair; a folder with both files is one module, named by its package.json."
+    }
+  ],
+  "relationships": [
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-api-public",
+      "to": "keycloak-saml-core-public",
+      "evidence": {
+        "path": "adapters/saml/core-public/pom.xml",
+        "line": 41
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-api-public",
+      "to": "keycloak-saml-core",
+      "evidence": {
+        "path": "adapters/saml/core-public/pom.xml",
+        "line": 46
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-api-public",
+      "to": "keycloak-adapter-spi",
+      "evidence": {
+        "path": "adapters/saml/core-public/pom.xml",
+        "line": 51
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-api-public",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "adapters/saml/core-public/pom.xml",
+        "line": 56
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-core",
+      "to": "keycloak-saml-core-public",
+      "evidence": {
+        "path": "adapters/saml/core/pom.xml",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-core",
+      "to": "keycloak-saml-core",
+      "evidence": {
+        "path": "adapters/saml/core/pom.xml",
+        "line": 44
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-core",
+      "to": "keycloak-adapter-spi",
+      "evidence": {
+        "path": "adapters/saml/core/pom.xml",
+        "line": 49
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-core",
+      "to": "keycloak-saml-adapter-api-public",
+      "evidence": {
+        "path": "adapters/saml/core/pom.xml",
+        "line": 54
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-core",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "adapters/saml/core/pom.xml",
+        "line": 59
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-elytron-adapter",
+      "to": "keycloak-saml-core",
+      "evidence": {
+        "path": "adapters/saml/wildfly-elytron/pom.xml",
+        "line": 34
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-elytron-adapter",
+      "to": "keycloak-adapter-spi",
+      "evidence": {
+        "path": "adapters/saml/wildfly-elytron/pom.xml",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-elytron-adapter",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "adapters/saml/wildfly-elytron/pom.xml",
+        "line": 44
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-elytron-adapter",
+      "to": "keycloak-saml-adapter-api-public",
+      "evidence": {
+        "path": "adapters/saml/wildfly-elytron/pom.xml",
+        "line": 49
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-elytron-adapter",
+      "to": "keycloak-saml-adapter-core",
+      "evidence": {
+        "path": "adapters/saml/wildfly-elytron/pom.xml",
+        "line": 54
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-subsystem",
+      "to": "keycloak-saml-adapter-core",
+      "evidence": {
+        "path": "adapters/saml/wildfly/wildfly-subsystem/pom.xml",
+        "line": 105
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-subsystem",
+      "to": "keycloak-saml-wildfly-elytron-adapter",
+      "evidence": {
+        "path": "adapters/saml/wildfly/wildfly-subsystem/pom.xml",
+        "line": 110
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-jboss-adapter-core",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "adapters/spi/jboss-adapter-core/pom.xml",
+        "line": 44
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-jboss-adapter-core",
+      "to": "keycloak-adapter-spi",
+      "evidence": {
+        "path": "adapters/spi/jboss-adapter-core/pom.xml",
+        "line": 48
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-authz-client-tests",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "authz/client/pom.xml",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-authz-policy-common",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "authz/policy/common/pom.xml",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-authz-policy-common",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "authz/policy/common/pom.xml",
+        "line": 44
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-authz-policy-common",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "authz/policy/common/pom.xml",
+        "line": 49
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-authzen-services",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "authzen/services/pom.xml",
+        "line": 17
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-authzen-services",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "authzen/services/pom.xml",
+        "line": 21
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-authzen-services",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "authzen/services/pom.xml",
+        "line": 25
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-core",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "core/pom.xml",
+        "line": 42
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-crypto-default",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "crypto/default/pom.xml",
+        "line": 34
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-crypto-default",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "crypto/default/pom.xml",
+        "line": 44
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-crypto-default",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "crypto/default/pom.xml",
+        "line": 48
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-crypto-elytron",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "crypto/elytron/pom.xml",
+        "line": 34
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-crypto-elytron",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "crypto/elytron/pom.xml",
+        "line": 45
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-crypto-elytron",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "crypto/elytron/pom.xml",
+        "line": 49
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-crypto-fips1402",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "crypto/fips1402/pom.xml",
+        "line": 40
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-crypto-fips1402",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "crypto/fips1402/pom.xml",
+        "line": 50
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-crypto-fips1402",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "crypto/fips1402/pom.xml",
+        "line": 54
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-crypto-fips1402",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "crypto/fips1402/pom.xml",
+        "line": 58
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-dependencies-server-min",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 34
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-model-jpa",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-model-storage",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 43
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-model-storage-private",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 47
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-model-storage-services",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 51
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-model-infinispan",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 55
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-ldap-federation",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 65
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-kerberos-federation",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 69
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-saml-core",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 74
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-sssd-federation",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 85
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-ipatuura-federation",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 89
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-all",
+      "to": "keycloak-authz-policy-common",
+      "evidence": {
+        "path": "dependencies/server-all/pom.xml",
+        "line": 95
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-min",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "dependencies/server-min/pom.xml",
+        "line": 34
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-min",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "dependencies/server-min/pom.xml",
+        "line": 38
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-min",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "dependencies/server-min/pom.xml",
+        "line": 50
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-min",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "dependencies/server-min/pom.xml",
+        "line": 58
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-min",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "dependencies/server-min/pom.xml",
+        "line": 62
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-dependencies-server-min",
+      "to": "keycloak-themes",
+      "evidence": {
+        "path": "dependencies/server-min/pom.xml",
+        "line": 72
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-api-docs-dist",
+      "to": "keycloak-dependencies-server-all",
+      "evidence": {
+        "path": "distribution/api-docs-dist/pom.xml",
+        "line": 37
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-api-docs-dist",
+      "to": "keycloak-admin-client-internal",
+      "evidence": {
+        "path": "distribution/api-docs-dist/pom.xml",
+        "line": 53
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-api-docs-dist",
+      "to": "keycloak-authz-client-tests",
+      "evidence": {
+        "path": "distribution/api-docs-dist/pom.xml",
+        "line": 57
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack-layers-metadata-tests",
+      "to": "keycloak-saml-adapter-galleon-pack",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack-layer-metadata-tests/pom.xml",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack",
+      "to": "keycloak-adapter-spi",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack/pom.xml",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack/pom.xml",
+        "line": 50
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack/pom.xml",
+        "line": 61
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack",
+      "to": "keycloak-crypto-default",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack/pom.xml",
+        "line": 72
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack",
+      "to": "keycloak-jboss-adapter-core",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack/pom.xml",
+        "line": 83
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack",
+      "to": "keycloak-saml-adapter-api-public",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack/pom.xml",
+        "line": 94
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack",
+      "to": "keycloak-saml-adapter-core",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack/pom.xml",
+        "line": 105
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack",
+      "to": "keycloak-saml-core",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack/pom.xml",
+        "line": 116
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack",
+      "to": "keycloak-saml-core-public",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack/pom.xml",
+        "line": 127
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack",
+      "to": "keycloak-saml-wildfly-elytron-adapter",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack/pom.xml",
+        "line": 138
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-adapter-galleon-pack",
+      "to": "keycloak-saml-wildfly-subsystem",
+      "evidence": {
+        "path": "distribution/galleon-feature-packs/saml-adapter-galleon-pack/pom.xml",
+        "line": 149
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-adapter-dist",
+      "to": "keycloak-saml-wildfly-modules",
+      "evidence": {
+        "path": "distribution/saml-adapters/wildfly-adapter/wildfly-adapter-zip/pom.xml",
+        "line": 34
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-modules",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "distribution/saml-adapters/wildfly-adapter/wildfly-modules/pom.xml",
+        "line": 38
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-modules",
+      "to": "keycloak-adapter-spi",
+      "evidence": {
+        "path": "distribution/saml-adapters/wildfly-adapter/wildfly-modules/pom.xml",
+        "line": 48
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-modules",
+      "to": "keycloak-saml-core",
+      "evidence": {
+        "path": "distribution/saml-adapters/wildfly-adapter/wildfly-modules/pom.xml",
+        "line": 58
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-modules",
+      "to": "keycloak-saml-adapter-api-public",
+      "evidence": {
+        "path": "distribution/saml-adapters/wildfly-adapter/wildfly-modules/pom.xml",
+        "line": 68
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-modules",
+      "to": "keycloak-saml-adapter-core",
+      "evidence": {
+        "path": "distribution/saml-adapters/wildfly-adapter/wildfly-modules/pom.xml",
+        "line": 78
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-modules",
+      "to": "keycloak-jboss-adapter-core",
+      "evidence": {
+        "path": "distribution/saml-adapters/wildfly-adapter/wildfly-modules/pom.xml",
+        "line": 88
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-modules",
+      "to": "keycloak-saml-core-public",
+      "evidence": {
+        "path": "distribution/saml-adapters/wildfly-adapter/wildfly-modules/pom.xml",
+        "line": 98
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-modules",
+      "to": "keycloak-saml-wildfly-elytron-adapter",
+      "evidence": {
+        "path": "distribution/saml-adapters/wildfly-adapter/wildfly-modules/pom.xml",
+        "line": 108
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-modules",
+      "to": "keycloak-saml-wildfly-subsystem",
+      "evidence": {
+        "path": "distribution/saml-adapters/wildfly-adapter/wildfly-modules/pom.xml",
+        "line": 118
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-wildfly-modules",
+      "to": "keycloak-saml-adapter-galleon-pack",
+      "evidence": {
+        "path": "distribution/saml-adapters/wildfly-adapter/wildfly-modules/pom.xml",
+        "line": 128
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "aggregation",
+      "to": "api-documentation",
+      "evidence": {
+        "path": "docs/documentation/aggregation/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "aggregation",
+      "to": "authorization-services",
+      "evidence": {
+        "path": "docs/documentation/aggregation/pom.xml",
+        "line": 25
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "aggregation",
+      "to": "server-admin",
+      "evidence": {
+        "path": "docs/documentation/aggregation/pom.xml",
+        "line": 31
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "aggregation",
+      "to": "server-development",
+      "evidence": {
+        "path": "docs/documentation/aggregation/pom.xml",
+        "line": 37
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "aggregation",
+      "to": "release-notes",
+      "evidence": {
+        "path": "docs/documentation/aggregation/pom.xml",
+        "line": 43
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-documentation",
+      "to": "aggregation",
+      "evidence": {
+        "path": "docs/documentation/dist/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-guides",
+      "to": "keycloak-guides-maven-plugin",
+      "evidence": {
+        "path": "docs/guides/pom.xml",
+        "line": 37
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-guides-maven-plugin",
+      "to": "keycloak-quarkus-server-deployment",
+      "evidence": {
+        "path": "docs/maven-plugin/pom.xml",
+        "line": 53
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-guides-maven-plugin",
+      "to": "keycloak-admin-v2-services",
+      "evidence": {
+        "path": "docs/maven-plugin/pom.xml",
+        "line": 58
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-guides-maven-plugin",
+      "to": "keycloak-admin-cli",
+      "evidence": {
+        "path": "docs/maven-plugin/pom.xml",
+        "line": 68
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-guides-maven-plugin",
+      "to": "root",
+      "evidence": {
+        "path": "docs/maven-plugin/pom.xml",
+        "line": 78
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ipatuura-federation",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "federation/ipatuura/pom.xml",
+        "line": 33
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ipatuura-federation",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "federation/ipatuura/pom.xml",
+        "line": 38
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ipatuura-federation",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "federation/ipatuura/pom.xml",
+        "line": 43
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ipatuura-federation",
+      "to": "keycloak-model-storage-private",
+      "evidence": {
+        "path": "federation/ipatuura/pom.xml",
+        "line": 48
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ipatuura-federation",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "federation/ipatuura/pom.xml",
+        "line": 58
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-kerberos-federation",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "federation/kerberos/pom.xml",
+        "line": 33
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-kerberos-federation",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "federation/kerberos/pom.xml",
+        "line": 38
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-kerberos-federation",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "federation/kerberos/pom.xml",
+        "line": 43
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-kerberos-federation",
+      "to": "keycloak-model-storage-private",
+      "evidence": {
+        "path": "federation/kerberos/pom.xml",
+        "line": 48
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ldap-federation",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "federation/ldap/pom.xml",
+        "line": 33
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ldap-federation",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "federation/ldap/pom.xml",
+        "line": 38
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ldap-federation",
+      "to": "keycloak-model-storage",
+      "evidence": {
+        "path": "federation/ldap/pom.xml",
+        "line": 43
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ldap-federation",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "federation/ldap/pom.xml",
+        "line": 48
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ldap-federation",
+      "to": "keycloak-kerberos-federation",
+      "evidence": {
+        "path": "federation/ldap/pom.xml",
+        "line": 53
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ldap-federation",
+      "to": "keycloak-model-storage-private",
+      "evidence": {
+        "path": "federation/ldap/pom.xml",
+        "line": 88
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ldap-federation",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "federation/ldap/pom.xml",
+        "line": 93
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-sssd-federation",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "federation/sssd/pom.xml",
+        "line": 88
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-sssd-federation",
+      "to": "keycloak-model-storage-private",
+      "evidence": {
+        "path": "federation/sssd/pom.xml",
+        "line": 93
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-sssd-federation",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "federation/sssd/pom.xml",
+        "line": 98
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-sssd-federation",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "federation/sssd/pom.xml",
+        "line": 103
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-client-core",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "integration/admin-client-core/pom.xml",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-client-core",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "integration/admin-client-core/pom.xml",
+        "line": 33
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-client-jackson3-internal",
+      "to": "keycloak-admin-client-core",
+      "evidence": {
+        "path": "integration/admin-client-jackson3/pom.xml",
+        "line": 25
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-client-internal",
+      "to": "keycloak-admin-client-core",
+      "evidence": {
+        "path": "integration/admin-client/pom.xml",
+        "line": 42
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-cli",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "integration/client-cli/admin-cli/pom.xml",
+        "line": 37
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-cli",
+      "to": "keycloak-admin-v2-services",
+      "evidence": {
+        "path": "integration/client-cli/admin-cli/pom.xml",
+        "line": 55
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-client-cli-dist",
+      "to": "keycloak-admin-cli",
+      "evidence": {
+        "path": "integration/client-cli/client-cli-dist/pom.xml",
+        "line": 33
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-client-cli-dist",
+      "to": "keycloak-crypto-default",
+      "evidence": {
+        "path": "integration/client-cli/client-cli-dist/pom.xml",
+        "line": 37
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-client-cli-dist",
+      "to": "keycloak-crypto-fips1402",
+      "evidence": {
+        "path": "integration/client-cli/client-cli-dist/pom.xml",
+        "line": 47
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-client-registration-api",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "integration/client-registration/pom.xml",
+        "line": 33
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "@keycloak/keycloak-account-ui",
+      "to": "keycloak-admin-v2-services",
+      "evidence": {
+        "path": "js/pom.xml",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "@keycloak/keycloak-admin-ui",
+      "to": "keycloak-admin-v2-services",
+      "evidence": {
+        "path": "js/pom.xml",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "@keycloak/keycloak-admin-client",
+      "to": "keycloak-admin-v2-services",
+      "evidence": {
+        "path": "js/pom.xml",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "@keycloak/keycloak-ui-shared",
+      "to": "keycloak-admin-v2-services",
+      "evidence": {
+        "path": "js/pom.xml",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "root",
+      "to": "keycloak-admin-v2-services",
+      "evidence": {
+        "path": "js/pom.xml",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "themes-vendor",
+      "to": "keycloak-admin-v2-services",
+      "evidence": {
+        "path": "js/pom.xml",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-infinispan",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "model/infinispan/pom.xml",
+        "line": 34
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-infinispan",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "model/infinispan/pom.xml",
+        "line": 38
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-infinispan",
+      "to": "keycloak-model-storage",
+      "evidence": {
+        "path": "model/infinispan/pom.xml",
+        "line": 42
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-infinispan",
+      "to": "keycloak-model-jpa",
+      "evidence": {
+        "path": "model/infinispan/pom.xml",
+        "line": 46
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-infinispan",
+      "to": "keycloak-model-storage-private",
+      "evidence": {
+        "path": "model/infinispan/pom.xml",
+        "line": 50
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-infinispan",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "model/infinispan/pom.xml",
+        "line": 54
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-infinispan",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "model/infinispan/pom.xml",
+        "line": 59
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-jpa",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "model/jpa/pom.xml",
+        "line": 46
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-jpa",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "model/jpa/pom.xml",
+        "line": 50
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-jpa",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "model/jpa/pom.xml",
+        "line": 54
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-jpa",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "model/jpa/pom.xml",
+        "line": 58
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-jpa",
+      "to": "keycloak-model-storage",
+      "evidence": {
+        "path": "model/jpa/pom.xml",
+        "line": 62
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-jpa",
+      "to": "keycloak-model-storage-private",
+      "evidence": {
+        "path": "model/jpa/pom.xml",
+        "line": 66
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-storage-private",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "model/storage-private/pom.xml",
+        "line": 21
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-storage-private",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "model/storage-private/pom.xml",
+        "line": 25
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-storage-private",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "model/storage-private/pom.xml",
+        "line": 29
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-storage-private",
+      "to": "keycloak-model-storage",
+      "evidence": {
+        "path": "model/storage-private/pom.xml",
+        "line": 33
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-storage-services",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "model/storage-services/pom.xml",
+        "line": 15
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-storage-services",
+      "to": "keycloak-model-storage-private",
+      "evidence": {
+        "path": "model/storage-services/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-storage-services",
+      "to": "keycloak-ldap-federation",
+      "evidence": {
+        "path": "model/storage-services/pom.xml",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-storage",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "model/storage/pom.xml",
+        "line": 15
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-storage",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "model/storage/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-storage",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "model/storage/pom.xml",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-operator",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "operator/pom.xml",
+        "line": 123
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-operator",
+      "to": "keycloak-admin-client-internal",
+      "evidence": {
+        "path": "operator/pom.xml",
+        "line": 127
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-operator",
+      "to": "keycloak-admin-v2-api",
+      "evidence": {
+        "path": "operator/pom.xml",
+        "line": 135
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-config-api",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "quarkus/config-api/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server-deployment",
+      "to": "keycloak-quarkus-server",
+      "evidence": {
+        "path": "quarkus/deployment/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server-deployment",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "quarkus/deployment/pom.xml",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-dist",
+      "to": "keycloak-quarkus-server-app",
+      "evidence": {
+        "path": "quarkus/dist/pom.xml",
+        "line": 33
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-dist",
+      "to": "keycloak-quarkus-server-deployment",
+      "evidence": {
+        "path": "quarkus/dist/pom.xml",
+        "line": 38
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-dist",
+      "to": "keycloak-client-cli-dist",
+      "evidence": {
+        "path": "quarkus/dist/pom.xml",
+        "line": 43
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 166
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 176
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 186
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-crypto-default",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 196
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-crypto-fips1402",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 200
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 210
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 220
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-themes",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 230
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "themes-vendor",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 240
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-saml-core-public",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 250
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-saml-core",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 260
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-model-jpa",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 270
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-model-infinispan",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 280
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-model-storage",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 290
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-model-storage-private",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 300
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-model-storage-services",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 310
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-authz-policy-common",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 320
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-kerberos-federation",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 330
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-sssd-federation",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 340
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-ldap-federation",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 350
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-ipatuura-federation",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 360
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-config-api",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 370
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "@keycloak/keycloak-account-ui",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 380
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "@keycloak/keycloak-admin-ui",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 390
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-rest-admin-ui-ext",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 401
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-admin-v2-api",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 412
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-admin-v2-services",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 423
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-scim-services",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 434
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-authzen-services",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 444
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-scim-core",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 454
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-scim-model",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 464
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-ssf-core",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 475
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-ssf-transmitter",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 485
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server",
+      "to": "keycloak-ssf-services",
+      "evidence": {
+        "path": "quarkus/runtime/pom.xml",
+        "line": 495
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server-app",
+      "to": "keycloak-quarkus-server",
+      "evidence": {
+        "path": "quarkus/server/pom.xml",
+        "line": 20
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-quarkus-server-app",
+      "to": "keycloak-quarkus-server-deployment",
+      "evidence": {
+        "path": "quarkus/server/pom.xml",
+        "line": 25
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-rest-admin-ui-ext",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "rest/admin-ui-ext/pom.xml",
+        "line": 33
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-rest-admin-ui-ext",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "rest/admin-ui-ext/pom.xml",
+        "line": 37
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-rest-admin-ui-ext",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "rest/admin-ui-ext/pom.xml",
+        "line": 41
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-v2-api",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "rest/admin-v2/api/pom.xml",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-v2-services",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "rest/admin-v2/services/pom.xml",
+        "line": 25
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-v2-services",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "rest/admin-v2/services/pom.xml",
+        "line": 30
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-v2-services",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "rest/admin-v2/services/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-v2-services",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "rest/admin-v2/services/pom.xml",
+        "line": 40
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-v2-services",
+      "to": "keycloak-admin-v2-api",
+      "evidence": {
+        "path": "rest/admin-v2/services/pom.xml",
+        "line": 60
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-v2-services",
+      "to": "keycloak-scim-core",
+      "evidence": {
+        "path": "rest/admin-v2/services/pom.xml",
+        "line": 64
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-admin-v2-services",
+      "to": "keycloak-scim-model",
+      "evidence": {
+        "path": "rest/admin-v2/services/pom.xml",
+        "line": 68
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-core-public",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "saml-core-api/pom.xml",
+        "line": 45
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-core",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "saml-core/pom.xml",
+        "line": 52
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-saml-core",
+      "to": "keycloak-saml-core-public",
+      "evidence": {
+        "path": "saml-core/pom.xml",
+        "line": 57
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-client",
+      "to": "keycloak-scim-core",
+      "evidence": {
+        "path": "scim/client/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-client",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "scim/client/pom.xml",
+        "line": 26
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-client",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "scim/client/pom.xml",
+        "line": 30
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-core",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "scim/core/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-core",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "scim/core/pom.xml",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-core",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "scim/core/pom.xml",
+        "line": 27
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-model",
+      "to": "keycloak-scim-core",
+      "evidence": {
+        "path": "scim/model/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-model",
+      "to": "keycloak-model-jpa",
+      "evidence": {
+        "path": "scim/model/pom.xml",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-services",
+      "to": "keycloak-scim-core",
+      "evidence": {
+        "path": "scim/services/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-services",
+      "to": "keycloak-scim-model",
+      "evidence": {
+        "path": "scim/services/pom.xml",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-services",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "scim/services/pom.xml",
+        "line": 27
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-services",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "scim/services/pom.xml",
+        "line": 31
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-scim-services",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "scim/services/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-server-spi-private",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "server-spi-private/pom.xml",
+        "line": 34
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-server-spi-private",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "server-spi-private/pom.xml",
+        "line": 59
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-server-spi",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "server-spi/pom.xml",
+        "line": 44
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-services",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "services/pom.xml",
+        "line": 40
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-services",
+      "to": "keycloak-common",
+      "evidence": {
+        "path": "services/pom.xml",
+        "line": 68
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-services",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "services/pom.xml",
+        "line": 72
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-services",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "services/pom.xml",
+        "line": 77
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-services",
+      "to": "keycloak-saml-core-public",
+      "evidence": {
+        "path": "services/pom.xml",
+        "line": 211
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-services",
+      "to": "keycloak-saml-core",
+      "evidence": {
+        "path": "services/pom.xml",
+        "line": 216
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-services",
+      "to": "keycloak-model-storage-private",
+      "evidence": {
+        "path": "services/pom.xml",
+        "line": 290
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-services",
+      "to": "keycloak-config-api",
+      "evidence": {
+        "path": "services/pom.xml",
+        "line": 294
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-core",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "ssf/core/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-core",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "ssf/core/pom.xml",
+        "line": 23
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-core",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "ssf/core/pom.xml",
+        "line": 27
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-core",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "ssf/core/pom.xml",
+        "line": 31
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-services",
+      "to": "keycloak-ssf-core",
+      "evidence": {
+        "path": "ssf/services/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-services",
+      "to": "keycloak-ssf-transmitter",
+      "evidence": {
+        "path": "ssf/services/pom.xml",
+        "line": 24
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-services",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "ssf/services/pom.xml",
+        "line": 29
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-services",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "ssf/services/pom.xml",
+        "line": 33
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-transmitter",
+      "to": "keycloak-ssf-core",
+      "evidence": {
+        "path": "ssf/transmitter/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-transmitter",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "ssf/transmitter/pom.xml",
+        "line": 24
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-transmitter",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "ssf/transmitter/pom.xml",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-transmitter",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "ssf/transmitter/pom.xml",
+        "line": 32
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-transmitter",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "ssf/transmitter/pom.xml",
+        "line": 36
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-ssf-transmitter",
+      "to": "keycloak-model-jpa",
+      "evidence": {
+        "path": "ssf/transmitter/pom.xml",
+        "line": 45
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-builders",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "test-framework/builders/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-builders",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "test-framework/builders/pom.xml",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-builders",
+      "to": "keycloak-model-jpa",
+      "evidence": {
+        "path": "test-framework/builders/pom.xml",
+        "line": 43
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-clustering",
+      "to": "keycloak-test-framework-test-containers",
+      "evidence": {
+        "path": "test-framework/clustering/pom.xml",
+        "line": 19
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-conformance-runner",
+      "to": "keycloak-test-framework-test-containers",
+      "evidence": {
+        "path": "test-framework/conformance-runner/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-core",
+      "to": "keycloak-admin-client-internal",
+      "evidence": {
+        "path": "test-framework/core/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-core",
+      "to": "keycloak-test-framework-builders",
+      "evidence": {
+        "path": "test-framework/core/pom.xml",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-core",
+      "to": "keycloak-junit5",
+      "evidence": {
+        "path": "test-framework/core/pom.xml",
+        "line": 44
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-core",
+      "to": "keycloak-quarkus-server",
+      "evidence": {
+        "path": "test-framework/core/pom.xml",
+        "line": 64
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-core",
+      "to": "keycloak-quarkus-dist",
+      "evidence": {
+        "path": "test-framework/core/pom.xml",
+        "line": 68
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-db-edb",
+      "to": "keycloak-test-framework-test-containers",
+      "evidence": {
+        "path": "test-framework/db-edb/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-db-mariadb",
+      "to": "keycloak-test-framework-test-containers",
+      "evidence": {
+        "path": "test-framework/db-mariadb/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-db-mssql",
+      "to": "keycloak-test-framework-test-containers",
+      "evidence": {
+        "path": "test-framework/db-mssql/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-db-mysql",
+      "to": "keycloak-test-framework-test-containers",
+      "evidence": {
+        "path": "test-framework/db-mysql/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-db-oracle",
+      "to": "keycloak-test-framework-test-containers",
+      "evidence": {
+        "path": "test-framework/db-oracle/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-db-postgres",
+      "to": "keycloak-test-framework-test-containers",
+      "evidence": {
+        "path": "test-framework/db-postgres/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-db-tidb",
+      "to": "keycloak-test-framework-test-containers",
+      "evidence": {
+        "path": "test-framework/db-tidb/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-email-server",
+      "to": "keycloak-test-framework-core",
+      "evidence": {
+        "path": "test-framework/email-server/pom.xml",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-infinispan-server",
+      "to": "keycloak-test-framework-test-containers",
+      "evidence": {
+        "path": "test-framework/infinispan-server/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-junit5-config",
+      "to": "keycloak-test-framework-core",
+      "evidence": {
+        "path": "test-framework/junit5-config/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-oauth",
+      "to": "keycloak-client-registration-api",
+      "evidence": {
+        "path": "test-framework/oauth/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-oauth",
+      "to": "keycloak-test-framework-core",
+      "evidence": {
+        "path": "test-framework/oauth/pom.xml",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-oauth",
+      "to": "keycloak-test-framework-ui",
+      "evidence": {
+        "path": "test-framework/oauth/pom.xml",
+        "line": 44
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-oauth",
+      "to": "keycloak-tests-utils-shared",
+      "evidence": {
+        "path": "test-framework/oauth/pom.xml",
+        "line": 49
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-remote-providers",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "test-framework/remote-providers/pom.xml",
+        "line": 36
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-remote-providers",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "test-framework/remote-providers/pom.xml",
+        "line": 41
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-remote-providers",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "test-framework/remote-providers/pom.xml",
+        "line": 46
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-remote-providers",
+      "to": "keycloak-model-infinispan",
+      "evidence": {
+        "path": "test-framework/remote-providers/pom.xml",
+        "line": 51
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-remote",
+      "to": "keycloak-test-framework-core",
+      "evidence": {
+        "path": "test-framework/remote/pom.xml",
+        "line": 36
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-remote",
+      "to": "keycloak-test-framework-remote-providers",
+      "evidence": {
+        "path": "test-framework/remote/pom.xml",
+        "line": 41
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-test-containers",
+      "to": "keycloak-test-framework-core",
+      "evidence": {
+        "path": "test-framework/test-containers/pom.xml",
+        "line": 35
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-test-providers",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "test-framework/test-providers/pom.xml",
+        "line": 20
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-test-providers",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "test-framework/test-providers/pom.xml",
+        "line": 25
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-test-providers",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "test-framework/test-providers/pom.xml",
+        "line": 30
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-test-providers",
+      "to": "keycloak-test-framework-core",
+      "evidence": {
+        "path": "test-framework/test-providers/pom.xml",
+        "line": 39
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-test-framework-ui",
+      "to": "keycloak-test-framework-core",
+      "evidence": {
+        "path": "test-framework/ui/pom.xml",
+        "line": 40
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-servers-app-server-jboss-galleon",
+      "to": "integration-arquillian-servers-app-server-spi",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/app-server/jboss/galleon/pom.xml",
+        "line": 34
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-servers-app-server-jboss-galleon",
+      "to": "integration-arquillian-util",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/app-server/jboss/galleon/pom.xml",
+        "line": 43
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-servers-app-server-wildfly",
+      "to": "integration-arquillian-servers-app-server-spi",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/app-server/jboss/wildfly/pom.xml",
+        "line": 44
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-servers-app-server-wildfly",
+      "to": "integration-arquillian-util",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/app-server/jboss/wildfly/pom.xml",
+        "line": 53
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-servers-auth-server-quarkus",
+      "to": "keycloak-quarkus-dist",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/quarkus/pom.xml",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-testsuite-providers",
+      "to": "keycloak-dependencies-server-all",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/pom.xml",
+        "line": 37
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-testsuite-providers",
+      "to": "keycloak-test-framework-remote-providers",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/pom.xml",
+        "line": 43
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-testsuite-providers",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/pom.xml",
+        "line": 48
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-testsuite-providers",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/pom.xml",
+        "line": 52
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-testsuite-providers",
+      "to": "keycloak-model-storage-services",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/pom.xml",
+        "line": 56
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-testsuite-providers",
+      "to": "integration-arquillian-testsuite-providers-deployment",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/services/testsuite-providers/pom.xml",
+        "line": 69
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-servers-auth-server-undertow",
+      "to": "keycloak-testsuite-utils",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/undertow/pom.xml",
+        "line": 36
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-servers-auth-server-undertow",
+      "to": "integration-arquillian-util",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/undertow/pom.xml",
+        "line": 40
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-servers-auth-server-undertow",
+      "to": "keycloak-dependencies-server-all",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/undertow/pom.xml",
+        "line": 63
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-servers-auth-server-undertow",
+      "to": "integration-arquillian-testsuite-providers",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/undertow/pom.xml",
+        "line": 68
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-servers-auth-server-undertow",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/servers/auth-server/undertow/pom.xml",
+        "line": 73
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-test-apps-servlets",
+      "to": "integration-arquillian-util",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/test-apps/servlets/pom.xml",
+        "line": 25
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-test-apps-servlets",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/test-apps/servlets/pom.xml",
+        "line": 30
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-test-apps-servlets",
+      "to": "keycloak-adapter-spi",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/test-apps/servlets/pom.xml",
+        "line": 38
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-test-apps-servlets",
+      "to": "keycloak-saml-adapter-api-public",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/test-apps/servlets/pom.xml",
+        "line": 42
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-test-apps-servlets",
+      "to": "keycloak-saml-core",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/test-apps/servlets/pom.xml",
+        "line": 58
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-test-apps-servlets",
+      "to": "keycloak-saml-adapter-core",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/test-apps/servlets/pom.xml",
+        "line": 62
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-test-apps-servlets",
+      "to": "keycloak-saml-core-public",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/test-apps/servlets/pom.xml",
+        "line": 66
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-util",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/util/pom.xml",
+        "line": 37
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-util",
+      "to": "integration-arquillian-testsuite-providers",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/util/pom.xml",
+        "line": 41
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "integration-arquillian-util",
+      "to": "keycloak-adapter-spi",
+      "evidence": {
+        "path": "testsuite/integration-arquillian/util/pom.xml",
+        "line": 89
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-test",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "testsuite/model/pom.xml",
+        "line": 54
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-test",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "testsuite/model/pom.xml",
+        "line": 64
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-test",
+      "to": "keycloak-server-spi",
+      "evidence": {
+        "path": "testsuite/model/pom.xml",
+        "line": 68
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-test",
+      "to": "integration-arquillian-tests-base",
+      "evidence": {
+        "path": "testsuite/model/pom.xml",
+        "line": 72
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-test",
+      "to": "keycloak-model-jpa",
+      "evidence": {
+        "path": "testsuite/model/pom.xml",
+        "line": 89
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-test",
+      "to": "keycloak-model-infinispan",
+      "evidence": {
+        "path": "testsuite/model/pom.xml",
+        "line": 93
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-model-test",
+      "to": "integration-arquillian-testsuite-providers",
+      "evidence": {
+        "path": "testsuite/model/pom.xml",
+        "line": 97
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "keycloak-dependencies-server-all",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 54
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "keycloak-services",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 59
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "keycloak-rest-admin-ui-ext",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 64
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "keycloak-admin-client-internal",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 68
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "@keycloak/keycloak-admin-ui",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 72
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "@keycloak/keycloak-account-ui",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 76
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "keycloak-server-spi-private",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 146
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "keycloak-ldap-federation",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 154
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "keycloak-kerberos-federation",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 158
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "keycloak-saml-adapter-api-public",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 166
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "keycloak-saml-adapter-core",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 170
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "keycloak-authz-client-tests",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 174
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "integration-arquillian-testsuite-providers",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 179
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-testsuite-utils",
+      "to": "keycloak-util-embedded-ldap",
+      "evidence": {
+        "path": "testsuite/utils/pom.xml",
+        "line": 232
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-themes",
+      "to": "@keycloak/keycloak-admin-ui",
+      "evidence": {
+        "path": "themes/pom.xml",
+        "line": 16
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-themes",
+      "to": "@keycloak/keycloak-account-ui",
+      "evidence": {
+        "path": "themes/pom.xml",
+        "line": 20
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-themes",
+      "to": "themes-vendor",
+      "evidence": {
+        "path": "themes/pom.xml",
+        "line": 24
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "keycloak-util-embedded-ldap",
+      "to": "keycloak-core",
+      "evidence": {
+        "path": "util/embedded-ldap/pom.xml",
+        "line": 34
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "@keycloak/keycloak-account-ui",
+      "to": "@keycloak/keycloak-ui-shared",
+      "evidence": {
+        "path": "js/apps/account-ui/package.json",
+        "line": 28
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "@keycloak/keycloak-account-ui",
+      "to": "@keycloak/keycloak-admin-client",
+      "evidence": {
+        "path": "js/apps/account-ui/package.json",
+        "line": 44
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "@keycloak/keycloak-admin-ui",
+      "to": "@keycloak/keycloak-admin-client",
+      "evidence": {
+        "path": "js/apps/admin-ui/package.json",
+        "line": 91
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "@keycloak/keycloak-admin-ui",
+      "to": "@keycloak/keycloak-ui-shared",
+      "evidence": {
+        "path": "js/apps/admin-ui/package.json",
+        "line": 92
+      }
+    },
+    {
+      "type": "depends_on",
+      "from": "@keycloak/keycloak-ui-shared",
+      "to": "@keycloak/keycloak-admin-client",
+      "evidence": {
+        "path": "js/libs/ui-shared/package.json",
+        "line": 55
+      }
+    }
+  ],
+  "outOfScope": [
+    {
+      "what": "Dependencies inside <profiles>",
+      "reason": "Active only when the profile is; CodeAtlas does not read profiles."
+    },
+    {
+      "what": "<dependencyManagement> and plugin dependencies",
+      "reason": "They declare versions or build tooling, not a module dependency."
+    },
+    {
+      "what": "Published artifacts with the same coordinates (for example keycloak-authz-client from Maven Central)",
+      "reason": "Not a module of this repository."
+    }
+  ]
+}

@@ -311,7 +311,7 @@ export const RULES = {
     adapter: 'build',
     labels: OI,
     description:
-      "A Maven or Gradle dependency names a module built in this repository: the dependency links to that build file, and the module `depends_on` that module (JV-001). Maven: observed on an exact `groupId:artifactId` match, inferred on a unique artifactId when the groupId is a property. Gradle: observed for a `project(':p')` path written as declared, inferred for type-safe accessors, renamed projects and dependencies declared in `subprojects {}` or `allprojects {}`.",
+      "A Maven or Gradle dependency names a module built in this repository: the dependency links to that build file, and the module `depends_on` that module (JV-001). Maven: observed on an exact `groupId:artifactId` match, inferred on a unique artifactId when the groupId is a property. Gradle: observed for a `project(':p')` path written as declared, inferred for type-safe accessors, renamed projects and dependencies declared in `subprojects {}` or `allprojects {}`. A child POM also depends on the modules its in-repository parent POMs list (cited at the parent's line); a folder that is also an npm package keeps one module, named by its package.json.",
   },
   'structured.nesting': {
     adapter: 'structured',
