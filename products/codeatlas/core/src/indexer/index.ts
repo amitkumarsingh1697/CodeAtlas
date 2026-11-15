@@ -8,6 +8,7 @@ import { indexMarkdown } from './docs';
 import { addSchema, parsePrismaSchema, parseSqlSchema } from './schema';
 import { addOrm, readOrmFiles, type OrmStats } from './extract/orm';
 import { addJpaQueries } from './extract/jpa-query';
+import { addSpringBeans, type SpringBeanStats } from './frameworks/spring-beans';
 import {
   addSqlObjects,
   analyseSql,
@@ -153,6 +154,8 @@ export interface CoverageReport {
   };
   /** Tables, keys and model-to-table links read from ORM models and migrations. */
   orm: OrmStats;
+  /** Spring beans, their injection points, and how many were linked or left as gaps (JV-002). */
+  springBeans?: SpringBeanStats;
 }
 
 export interface IndexOptions {
@@ -512,6 +515,8 @@ function buildAndPersist(
   const orm = ormResult.stats;
   // JPQL and native queries in Java and Kotlin, linked through the entity mappings just resolved.
   orm.jpaQueries = addJpaQueries(graph, disc.files, texts, ormResult.schema.mappings);
+  // Spring bean wiring: which bean each bean is given (JV-002).
+  const springBeans = addSpringBeans(graph, disc.files, texts);
 
   // Entry points declared in package.json (observed: they are declared).
   for (const p of packages) {
@@ -795,6 +800,7 @@ function buildAndPersist(
       links: sqlLinks,
     },
     orm,
+    springBeans,
     manifests: findManifests([
       ...disc.files.map((f) => f.path),
       ...disc.skipped

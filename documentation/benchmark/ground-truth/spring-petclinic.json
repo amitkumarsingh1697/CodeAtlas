@@ -32,6 +32,11 @@
       "type": "writes_table",
       "paths": ["src/main/java"],
       "rule": "A Spring Data repository writes its aggregate table only when it declares or inherits a write method (save, delete); Repository<T, ID> with only finders does not."
+    },
+    {
+      "type": "injects",
+      "paths": ["src/main/java"],
+      "rule": "A Spring bean (stereotype class) is given another bean of this repository through its constructor, an @Autowired field or setter, or a @Bean method parameter."
     }
   ],
   "relationships": [
@@ -296,6 +301,60 @@
       "evidence": {
         "path": "src/main/java/org/springframework/samples/petclinic/owner/PetTypeRepository.java",
         "line": 36
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java#OwnerController",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java#OwnerRepository",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java",
+        "line": 55
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java#PetController",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java#OwnerRepository",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java",
+        "line": 57
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java#PetController",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/PetTypeRepository.java#PetTypeRepository",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/PetController.java",
+        "line": 57
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/VisitController.java#VisitController",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java#OwnerRepository",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/VisitController.java",
+        "line": 47
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/PetTypeFormatter.java#PetTypeFormatter",
+      "to": "src/main/java/org/springframework/samples/petclinic/owner/PetTypeRepository.java#PetTypeRepository",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/PetTypeFormatter.java",
+        "line": 41
+      }
+    },
+    {
+      "type": "injects",
+      "from": "src/main/java/org/springframework/samples/petclinic/vet/VetController.java#VetController",
+      "to": "src/main/java/org/springframework/samples/petclinic/vet/VetRepository.java#VetRepository",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/vet/VetController.java",
+        "line": 41
       }
     }
   ],

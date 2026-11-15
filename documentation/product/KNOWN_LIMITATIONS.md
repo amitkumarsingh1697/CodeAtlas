@@ -23,7 +23,8 @@ Honest list of what does not work, or was not verified, in the current build.
 - Module overviews written by a model have not been evaluated with a real model.
 - Dynamic patterns (dependency injection containers, string-based dispatch, reflection) show up as unresolved or inferred edges, not observed ones.
 - JPA queries (JV-004) are read when their text is a literal at the annotation or call. Text built at run time, held in a constant, or made with the Criteria API is recorded as a `query` gap. JPQL path joins (`join o.pets p`) are not followed, and `em.find(Entity.class)` is not read. Named queries are matched by name across the repository, so a repository with several persistence units can link the wrong one; these links are labelled inferred.
-- At most 5,000 unresolved references of each kind (call, import, route handler, heritage, config, query) are stored per index. The rest are counted, by kind, in the coverage report and the assessment's `unresolved.byKind[].dropped`. On Keycloak, 6,987 call gaps were counted but not stored.
+- Spring bean wiring (JV-002) is read from Java source only (not Kotlin). Beans defined in XML, by libraries or auto-configuration, or by custom stereotype annotations are not seen, and profiles, `@Conditional` and `@Fallback` are not applied, so every `injects` link is inferred. Supertypes are matched by simple name.
+- At most 5,000 unresolved references of each kind (call, import, route handler, heritage, config, query, injection) are stored per index. The rest are counted, by kind, in the coverage report and the assessment's `unresolved.byKind[].dropped`. On Keycloak, 6,987 call gaps were counted but not stored.
 - Route detection covers Next.js app router and Express-style `app.get(...)` / `router.post(...)` calls; other frameworks are not recognised.
 - Ownership and churn need git history; a repository without commits (such as this monorepo today) has no ownership data.
 - Secret detection is pattern-based.

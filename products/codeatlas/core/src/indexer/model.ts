@@ -46,7 +46,7 @@ export interface EdgeRec {
 export interface UnresolvedRec {
   filePath: string;
   line: number;
-  kind: 'import' | 'call' | 'route_handler' | 'heritage' | 'config' | 'query';
+  kind: 'import' | 'call' | 'route_handler' | 'heritage' | 'config' | 'query' | 'injection';
   text: string;
   reason: string;
 }
