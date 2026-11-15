@@ -43,7 +43,9 @@ describe('restart survival (DATA-9-01)', () => {
 
     const second = await startService([investigationRoutes()], {}, first.home);
     try {
-      expect(second.ctx.token).toBe(token);
+      // PKG-002: the data survives a restart; the session token does not.
+      expect(second.ctx.token).not.toBe(token);
+      expect((await second.api('/api/repos', { token })).status).toBe(401);
       expect((await second.api('/api/repos')).body).toEqual(before.repos);
       expect((await second.api(`/api/repos/${id}/views/modules`)).body).toEqual(before.modules);
       expect((await second.api(`/api/repos/${id}/views/risk`)).body).toEqual(before.risk);

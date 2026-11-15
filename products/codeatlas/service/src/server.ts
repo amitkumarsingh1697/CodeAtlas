@@ -5,6 +5,7 @@ import {
   mkdirSync,
   readFileSync,
   realpathSync,
+  rmSync,
   statSync,
   writeFileSync,
 } from 'node:fs';
@@ -115,17 +116,26 @@ function trackJob(ctx: ServiceContext, job: Job): void {
   }
 }
 
-export function loadOrCreateToken(home: string): string {
+/**
+ * PKG-002: a new session token on every start, so a token copied from an earlier session or
+ * left on disk stops working. The file exists only while the service runs, for the user's own
+ * tools (the end-to-end tests read it); it is created fresh with owner-only permissions, never
+ * reused, and the data folder is kept owner-only.
+ */
+export function createSessionToken(home: string): string {
   mkdirSync(home, { recursive: true, mode: 0o700 });
+  if (statSync(home).mode & 0o077) chmodSync(home, 0o700);
   const file = join(home, 'token');
-  if (existsSync(file)) {
-    const t = readFileSync(file, 'utf8').trim();
-    if (t.length >= 32) return t;
-  }
   const t = randomBytes(32).toString('base64url');
-  writeFileSync(file, `${t}\n`, { mode: 0o600 });
-  chmodSync(file, 0o600);
+  rmSync(file, { force: true });
+  writeFileSync(file, `${t}\n`, { mode: 0o600, flag: 'wx' });
   return t;
+}
+
+/** Removes the token file when it still holds this service's token (a newer start may own it). */
+export function removeSessionToken(home: string, token: string): void {
+  const file = join(home, 'token');
+  if (existsSync(file) && readFileSync(file, 'utf8').trim() === token) rmSync(file);
 }
 
 function intParam(v: string | undefined, name: string): number {
@@ -487,7 +497,7 @@ export function createService(
     cfg,
     db,
     dbPath,
-    token: loadOrCreateToken(cfg.home),
+    token: createSessionToken(cfg.home),
     jobs: new JobRunner(dbPath, (job) => trackJob(ctx, job)),
     router: new Router(),
     log: createLogger({ name: 'codeatlas' }),
@@ -555,7 +565,10 @@ export function createService(
       }
     }
   });
-  server.on('close', () => db.close());
+  server.on('close', () => {
+    removeSessionToken(cfg.home, ctx.token);
+    db.close();
+  });
   return { server, ctx };
 }
 

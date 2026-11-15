@@ -178,13 +178,13 @@ pnpm --filter @nexora/codeatlas-service skill           # rebuild the bundled in
 
 CodeAtlas reads its environment directly (see [`products/codeatlas/service/.env.example`](products/codeatlas/service/.env.example)):
 
-| Variable                                                             | Purpose                                                             |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `CODEATLAS_HOME`                                                     | Data folder (default `~/.codeatlas`)                                |
-| `CODEATLAS_PORT`                                                     | Port on 127.0.0.1 (default 4317)                                    |
-| `CODEATLAS_ALLOWED_ROOTS`                                            | Folders repositories may be registered from (empty: any local path) |
-| `AI_PROVIDER`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`                     | Local model                                                         |
-| `OPENAI_COMPAT_BASE_URL`, `OPENAI_COMPAT_MODEL`, `AI_REMOTE_CONSENT` | Hosted model; source is sent only when `AI_REMOTE_CONSENT=true`     |
+| Variable                                                             | Purpose                                                                                                                                         |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CODEATLAS_HOME`                                                     | Data folder (default `~/.codeatlas`)                                                                                                            |
+| `CODEATLAS_PORT`                                                     | Port on 127.0.0.1 (default 4317)                                                                                                                |
+| `CODEATLAS_ALLOWED_ROOTS`                                            | Folders repositories may be registered from (empty: any local path; a packaged install with `CODEATLAS_PACKAGED=1` defaults to the home folder) |
+| `AI_PROVIDER`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`                     | Local model                                                                                                                                     |
+| `OPENAI_COMPAT_BASE_URL`, `OPENAI_COMPAT_MODEL`, `AI_REMOTE_CONSENT` | Hosted model; source is sent only when `AI_REMOTE_CONSENT=true`                                                                                 |
 
 `infrastructure/local-development/docker-compose.yml` starts Ollama on 127.0.0.1 if you want a local model in Docker.
 
