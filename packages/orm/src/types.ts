@@ -157,6 +157,12 @@ export interface OrmModel {
   /** A concrete parent whose table this one joins by key (Django multi-table inheritance). */
   parentLink?: (parent: { table: string; model: string; pk: string }) => OrmField;
   fields: OrmField[];
+  /**
+   * Every association attribute and the class it points at (JPA \`@ManyToOne\`, \`@OneToOne\`,
+   * \`@OneToMany\`, \`@ManyToMany\`, including the \`mappedBy\` side, which has no column), for
+   * following query paths such as \`join o.pets\`.
+   */
+  associations?: { field: string; target: string }[];
   /** Added when, after inheritance, no field is a primary key. */
   implicitPk?: OrmField;
   /** Columns added when, after inheritance, they are not already present (timestamps). */

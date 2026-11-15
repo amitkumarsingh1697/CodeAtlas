@@ -561,6 +561,20 @@ describe('cross-file resolution', () => {
     expect(derived.every((f) => f.confidence === 'inferred')).toBe(true);
   });
 
+  it('lists every JPA association with its target class, including the mappedBy side', () => {
+    const files = read({
+      'Owner.java':
+        'import jakarta.persistence.*;\nimport java.util.*;\n@Entity\npublic class Owner {\n  @Id private Integer id;\n  @OneToMany(mappedBy = "owner") private Set<Pet> pets;\n  @ManyToMany private Map<String, Tag> tagsByName;\n  @OneToOne(mappedBy = "owner") private Address address;\n  @ManyToOne(targetEntity = City.class) private Place city;\n  @Transient private Pet favourite;\n  private static Pet SAMPLE;\n  private String name;\n}\n',
+    });
+    const owner = files.flatMap((f) => f.models).find((m) => m.model === 'Owner');
+    expect(owner?.associations).toEqual([
+      { field: 'pets', target: 'Pet' },
+      { field: 'tagsByName', target: 'Tag' },
+      { field: 'address', target: 'Address' },
+      { field: 'city', target: 'City' },
+    ]);
+  });
+
   it('writes default column names in snake_case only where the existing table does', () => {
     const files = read({
       'Owner.java':

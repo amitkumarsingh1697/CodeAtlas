@@ -82,6 +82,18 @@ export const RULES = {
     description:
       'A method runs a JPQL or native SQL query written as a literal (`@Query`, `createQuery`, `createNativeQuery`); the entities or tables it names are read or written. Observed when the table name is written in the source, inferred when it is a naming default.',
   },
+  'orm.jpa-path-join': {
+    adapter: 'orm',
+    labels: I,
+    description:
+      'A JPQL query follows an association path from an alias (`join fetch o.pets p`, `p.owner.city`): it also reads the table of each entity the path reaches. Associations are read from the entity classes and their `@MappedSuperclass` bases, matched by simple class name.',
+  },
+  'orm.entity-graph': {
+    adapter: 'orm',
+    labels: I,
+    description:
+      "A Spring Data repository method with `@EntityGraph(attributePaths = …)` reads the tables of the associations its paths reach from the repository's entity. Named entity graphs are not read.",
+  },
   'orm.jpa-named-query': {
     adapter: 'orm',
     labels: I,
