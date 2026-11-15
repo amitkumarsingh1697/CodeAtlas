@@ -70,6 +70,12 @@ export const RULES = {
     description:
       'A Spring bean is given another bean: a constructor, `@Autowired`/`@Inject`/`@Resource` field or setter, or `@Bean` method parameter whose type only that bean provides (or the one `@Qualifier`, `@Primary` or the parameter name picks). Inferred: Spring decides at run time, and profiles, conditions and library beans are not read.',
   },
+  'spring-data.derived-query': {
+    adapter: 'orm',
+    labels: I,
+    description:
+      'A method declared in a Spring Data repository whose name is a derived query (`findByLastName`, `countBy…`, `deleteBy…`) reads, or deletes from, the table of the repository entity.',
+  },
   'orm.jpa-query': {
     adapter: 'orm',
     labels: OI,
@@ -303,6 +309,12 @@ export const RULES = {
     labels: I,
     description:
       '`x.m()` where the source states the type of x (declared type, `new T` or field), resolved to that type or an inherited member.',
+  },
+  'syntax.call.library-member': {
+    adapter: 'tree-sitter',
+    labels: I,
+    description:
+      "`x.m()` where the source states the type of x, m is not declared in the repository, and that type extends a library type: linked to the class (for example a Spring Data repository's inherited `save`).",
   },
   'syntax.call.self-member': {
     adapter: 'tree-sitter',

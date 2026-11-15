@@ -39,6 +39,10 @@ export interface OrmStats {
 }
 
 const LIQUIBASE_PATH = /\.(xml|ya?ml|json)$/i;
+/** Spring Data query derivation subjects (R45): find…By, read…By and the rest read; delete…By and remove…By delete. */
+const DERIVED_READ =
+  /^(find|read|get|query|search|stream|count|exists)[A-Z\w]*By[A-Z]|^(find|read|get|query|search|stream|count)(All|First\d*|Top\d*|Distinct)?$/u;
+const DERIVED_DELETE = /^(delete|remove)[A-Z\w]*By[A-Z]/u;
 
 /** Reads every file that uses an ORM this build reads. */
 export function readOrmFiles(
@@ -240,6 +244,32 @@ export function addOrm(
         });
     }
     stats.mappings++;
+  }
+  // Spring Data derived queries (find…By, count…By, delete…By): each declared method reads, or
+  // deletes from, its repository's entity table, so a flow that reaches the method reaches the table.
+  for (const m of schema.mappings) {
+    if (m.framework !== 'spring-data' || isTestSupportPath(m.path)) continue;
+    const table: NodeRef = { kind: 'table', key: `table:${tableKey(m.table)}` };
+    if (!graph.has(table)) continue;
+    for (const n of byFile.get(m.path) ?? []) {
+      if (!n.name.startsWith(`${m.owner}.`) || n.symbolKind !== 'method') continue;
+      const name = n.name.slice(m.owner.length + 1);
+      const op = DERIVED_READ.test(name) ? 'reads' : DERIVED_DELETE.test(name) ? 'deletes' : null;
+      if (!op) continue;
+      // A method with @Query is linked by what its query says (orm.jpa-query), not by its name.
+      if (/@Query\b/u.test(String(n.data?.signature ?? ''))) continue;
+      const edge = {
+        method: 'spring-data.derived-query' as const,
+        src: { kind: n.kind, key: n.key },
+        dst: table,
+        confidence: 'inferred' as const,
+        evidencePath: m.path,
+        evidenceLine: n.startLine,
+        detail: `${m.owner}.${name}: a Spring Data derived query that ${op === 'reads' ? 'reads' : 'deletes from'} ${m.table}`,
+      };
+      graph.addEdge({ kind: 'reads_table', ...edge });
+      if (op === 'deletes') graph.addEdge({ kind: 'writes_table', ...edge });
+    }
   }
   for (const u of schema.unresolved.slice(0, 500))
     graph.addUnresolved({

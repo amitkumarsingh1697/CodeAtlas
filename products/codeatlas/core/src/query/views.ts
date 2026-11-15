@@ -209,7 +209,16 @@ export function dependencyView(
   };
 }
 
-const FLOW_KINDS = ['handled_by', 'starts_at', 'calls', 'instantiates', 'renders'];
+// Table links end a flow at the data it reads or writes (JV-005: controller → service → repository → table).
+const FLOW_KINDS = [
+  'handled_by',
+  'starts_at',
+  'calls',
+  'instantiates',
+  'renders',
+  'reads_table',
+  'writes_table',
+];
 
 export function flowStarts(db: Db, repoId: number): NodeRow[] {
   return allNodes(db, repoId, ['route', 'entrypoint']).sort((a, b) => a.key.localeCompare(b.key));
