@@ -27,6 +27,19 @@ jobs:
       - run: pnpm test
       - run: node skills/archlens/scripts/check.mjs
       - run: pnpm audit --prod
+      - name: Third-party notices are current (LIC-001)
+        run: node scripts/third-party-notices.mjs --check
+      - name: SBOM and checksums (PKG-005)
+        run: |
+          mkdir -p dist/supply-chain
+          node scripts/sbom.mjs --out dist/supply-chain/sbom.cdx.json --checksum \
+            skills/archlens/scripts/brain/brain.mjs skills/archlens/scripts/brain/runtime.pack.gz \
+            skills/archlens/scripts/brain/web-tree-sitter.wasm
+          (cd dist/supply-chain && sha256sum -c SHA256SUMS)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: dist/supply-chain
       - run: pnpm --filter @nexora/codeatlas-web build
       - run: pnpm exec playwright install --with-deps chromium
         working-directory: products/codeatlas/web
