@@ -73,7 +73,17 @@ export const assessmentModelSchema = z.strictObject({
   }),
   architecture: z.strictObject({
     modules: z.array(
-      z.strictObject({ name: z.string(), files: z.number().int(), codeSymbols: z.number().int() }),
+      z.strictObject({
+        name: z.string(),
+        files: z.number().int(),
+        codeSymbols: z.number().int(),
+        /** What declares the module (TS-005, JV-001): a package.json, a POM or a Gradle build, or the repository itself. */
+        kind: z.enum(['npm', 'maven', 'gradle', 'repository']).optional(),
+        /** The module's folder, repository-relative ('' for the root). */
+        dir: z.string().optional(),
+        /** Modules of this repository it declares a dependency on (`depends_on`). */
+        dependsOn: z.array(z.string()).optional(),
+      }),
     ),
     entryPoints: z.array(location.extend({ name: z.string(), evidence })),
     routes: z.array(
