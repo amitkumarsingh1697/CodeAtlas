@@ -19,3 +19,7 @@
 | Investigation command refused (403)                              | Not in the allowlist                                                             | Only `test`, `typecheck`, `lint`, `build`, `check` (+ `:suffix`) scripts and `install --ignore-scripts` run. Run anything else yourself in the worktree.                                      |
 | Commit refused with `HASH_MISMATCH`                              | The worktree changed after approval                                              | Re-propose or re-approve the current patch.                                                                                                                                                   |
 | `pkill` in a script kills the calling shell                      | The pattern matches the script's own command line                                | Use a bracket pattern, e.g. `pkill -f "[s]rc/cli.ts serve"`.                                                                                                                                  |
+
+## Support bundle (PKG-007)
+
+Run `node --import tsx src/cli.ts support-bundle --out support.json` from `products/codeatlas/service` and attach the file to a support request after reading it. It lists versions, settings, the data folder's state and, per repository, counts and the last ten index runs. It never includes source text, repository names, paths, the session token, API keys or model endpoints. Error messages keep their first line, with paths and secret-looking values replaced by `<path>` and `<redacted>`.

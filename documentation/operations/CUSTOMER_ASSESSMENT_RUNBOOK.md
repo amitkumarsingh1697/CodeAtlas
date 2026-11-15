@@ -93,4 +93,6 @@ Keep or delete `assessment.json`, `brain.json` and `brain.html` as the statement
 
 **Rehearsal:** sections 3 to 6 were run on 2026-11-15 on a worktree copy of this repository with one folder deleted: both commands exited 0, the data folder was 0700, the assessment recorded the commit and 33 uncommitted files, and `egress-check.sh` recorded 0 outbound attempts (530 files analysed). This was a rehearsal on our own code, not a client run.
 
-Not yet available, and tracked separately: an installer (PKG-001), an exclusion option, and a support bundle with redacted diagnostics (PKG-007).
+**Support bundle.** For any problem, `node --import tsx src/cli.ts support-bundle --out support.json` writes versions, settings, the data folder's state and, per repository, counts and the last ten index-run outcomes. It holds no source text, repository names, paths, token, API keys or model endpoints, and error messages keep only their first line with paths and secret-looking values removed. Read it before sending it.
+
+Not yet available, and tracked separately: an installer (PKG-001) and an exclusion option.
