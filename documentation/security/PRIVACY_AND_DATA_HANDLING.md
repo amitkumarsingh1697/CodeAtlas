@@ -36,7 +36,7 @@ CodeAtlas sends no telemetry and no usage data anywhere. It makes outbound conne
 2. **Cloning a public repository.** When the user pastes a repository URL, git connects to that host. Only `https`, public addresses, no credentials (risks S-07 and S-08).
 3. **A repository's own scripts.** When the user asks an investigation to validate a patch, CodeAtlas runs the repository's allowlisted scripts (for example `test`). Those scripts can do anything the repository's authors wrote, including network access. CodeAtlas limits which scripts run, not what they do ([SECURITY.md](../../SECURITY.md)).
 
-The web UI loads no fonts, scripts or images from other sites, and the offline brain HTML file contains everything it needs.
+The web UI loads no fonts, scripts or images from other sites, and the offline brain HTML file contains everything it needs. A network-denied test checks on every change that indexing, the assessment and the brain make no outbound connection; see [DATA_FLOW.md](DATA_FLOW.md).
 
 ## ArchLens
 
