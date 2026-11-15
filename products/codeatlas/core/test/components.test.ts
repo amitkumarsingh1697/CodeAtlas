@@ -198,6 +198,10 @@ describe('component reader', () => {
     expect(rewriteStores('$state(1); $count; $$props; a.$b; count').code).toBe(
       '$state(1); count; $$props; a.$b; count',
     );
+    // A module specifier such as `$app/state` is a string, not a store read (TS-001).
+    expect(rewriteStores("import { page } from '$app/state'; const app = 1; $app;").code).toBe(
+      "import { page } from '$app/state'; const app = 1; app;",
+    );
   });
 
   it('ignores scripts that are not code', () => {

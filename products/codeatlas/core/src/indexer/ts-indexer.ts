@@ -151,6 +151,105 @@ interface Ctx {
   virtual: Map<string, string>;
   /** Component path → offsets of component-tag references in its virtual module. */
   componentTags: Map<string, Set<number>>;
+  /** The repository's package.json manifests (outside node_modules), by directory. */
+  manifests: Map<string, Manifest>;
+  /** Workspace package name → its directory. */
+  workspace: Map<string, string>;
+  /** Workspace packages whose files were not read (beyond the file limit). */
+  unreadWorkspace: Set<string>;
+}
+
+interface Manifest {
+  name?: string;
+  main?: unknown;
+  module?: unknown;
+  types?: unknown;
+  typings?: unknown;
+  exports?: unknown;
+  imports?: unknown;
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+}
+
+/** Reads every package.json in the repository (TS-001): workspace names and `imports` maps. */
+function readManifests(
+  root: string,
+  allPaths: Set<string>,
+  notRead: Set<string> = new Set(),
+): {
+  manifests: Map<string, Manifest>;
+  workspace: Map<string, string>;
+  unreadWorkspace: Set<string>;
+} {
+  const manifests = new Map<string, Manifest>();
+  const workspace = new Map<string, string>();
+  const unreadWorkspace = new Set<string>();
+  const dup = new Set<string>();
+  for (const p of [...allPaths, ...notRead]) {
+    if (!(p === 'package.json' || p.endsWith('/package.json')) || p.includes('node_modules/'))
+      continue;
+    let m: Manifest;
+    try {
+      m = JSON.parse(readFileSync(join(root, p), 'utf8')) as Manifest;
+    } catch {
+      continue; // not JSON (a template or a broken file): no manifest to use
+    }
+    if (!m || typeof m !== 'object') continue;
+    const dir = p === 'package.json' ? '' : p.slice(0, -'/package.json'.length);
+    // A manifest beyond the file limit only names its package: its files were not read.
+    if (notRead.has(p)) {
+      if (typeof m.name === 'string' && m.name) unreadWorkspace.add(m.name);
+      continue;
+    }
+    manifests.set(dir, m);
+    if (typeof m.name === 'string' && m.name) {
+      if (workspace.has(m.name)) dup.add(m.name);
+      workspace.set(m.name, dir);
+    }
+  }
+  // Two packages of one name: neither is taken, so no import is linked to the wrong one.
+  for (const n of dup) workspace.delete(n);
+  for (const n of workspace.keys()) unreadWorkspace.delete(n);
+  return { manifests, workspace, unreadWorkspace };
+}
+
+/** The directory of the nearest package.json above a repository path. */
+function manifestDirOf(ctx: Ctx, path: string): string | undefined {
+  for (let d = dirname(path); ; d = dirname(d)) {
+    const k = d === '.' ? '' : d;
+    if (ctx.manifests.has(k)) return k;
+    if (k === '') return undefined;
+  }
+}
+
+/** The file strings a package.json `exports`, `types`, `module` or `main` entry names, in order. */
+function entryTargets(m: Manifest, sub: string): string[] {
+  const out: string[] = [];
+  const add = (v: unknown, depth = 0) => {
+    if (typeof v === 'string') out.push(v);
+    else if (v && typeof v === 'object' && depth < 4 && !Array.isArray(v))
+      for (const k of [
+        'types',
+        'typings',
+        'source',
+        'import',
+        'module',
+        'default',
+        'require',
+        'node',
+      ])
+        add((v as Record<string, unknown>)[k], depth + 1);
+  };
+  const ex = m.exports;
+  const key = sub ? `./${sub}` : '.';
+  if (typeof ex === 'string' && !sub) add(ex);
+  else if (ex && typeof ex === 'object' && !Array.isArray(ex)) {
+    const o = ex as Record<string, unknown>;
+    if (key in o) add(o[key]);
+    else if (!sub && !Object.keys(o).some((k) => k.startsWith('.'))) add(o);
+  }
+  if (!sub) for (const v of [m.types, m.typings, m.module, m.main]) add(v);
+  return out;
 }
 
 function rel(ctx: Ctx, abs: string): string | null {
@@ -411,6 +510,7 @@ export function indexTypeScript(
   graph: GraphBuilder,
   moduleOf: (p: string) => string,
   cache?: { previous: TsCacheState | null },
+  notRead?: Set<string>,
 ): TsIndexStats & { cache: TsCacheState; incremental: IncrementalInfo } {
   const stats: TsIndexStats = {
     programs: 0,
@@ -442,6 +542,7 @@ export function indexTypeScript(
     pendingInferred: [],
     virtual: new Map(),
     componentTags: new Map(),
+    ...readManifests(realpathSync(root), allPaths, notRead),
   };
   const code = files.filter((f) => f.lang === 'typescript' || f.lang === 'javascript');
   // Svelte, Vue and Astro components: each is compiled as a virtual TypeScript module.
@@ -976,6 +1077,169 @@ function collectImports(
       return;
     }
     // Not resolvable by the compiler.
+    const edge = (
+      method:
+        | 'typescript.import-workspace'
+        | 'typescript.import-subpath'
+        | 'typescript.import-framework-module',
+      dst: NodeRef,
+      confidence: Confidence,
+      note: string,
+    ) => {
+      ctx.graph.addEdge({
+        method,
+        kind: 'imports',
+        src: fileRef,
+        dst,
+        confidence,
+        evidencePath: path,
+        evidenceLine: line,
+        detail: `${typeOnly ? 'type-only: ' : ''}${detail} (${note})`,
+      });
+      if (dst.kind === 'file') ctx.stats.imports.internal++;
+      else ctx.stats.imports.external++;
+    };
+    // A path relative to a directory, resolved the way the compiler resolves relative imports
+    // (extensions and index files tried, components through their virtual modules).
+    const resolveIn = (dir: string, target: string): string | null => {
+      const t = target.replace(/^\.\//, '');
+      if (ctx.repoFiles.has(join(dir, t).replace(/\\/g, '/')) && !/\.[cm]?[jt]sx?$/.test(t))
+        return toPosix(join(dir, t));
+      const r = ts.resolveModuleName(
+        `./${t}`,
+        join(ctx.root, dir, '__codeatlas_import.ts'),
+        options,
+        host,
+      ).resolvedModule;
+      return r ? rel(ctx, r.resolvedFileName) : null;
+    };
+    // package.json `imports` (`#lib/*`): the compiler applies them as Node does, with no extension
+    // tried; bundlers such as Vite try extensions, so the target is resolved like a relative import.
+    if (spec.startsWith('#')) {
+      const dir = manifestDirOf(ctx, path);
+      const map = dir !== undefined ? ctx.manifests.get(dir)?.imports : undefined;
+      if (dir !== undefined && map && typeof map === 'object') {
+        let target: string | undefined;
+        for (const [k, v] of Object.entries(map as Record<string, unknown>)) {
+          const tv = entryTargets({ exports: { '.': v } }, '')[0];
+          if (!tv) continue;
+          if (k === spec) target = tv;
+          else if (k.includes('*')) {
+            const [pre, post] = k.split('*') as [string, string];
+            if (
+              spec.startsWith(pre) &&
+              spec.endsWith(post) &&
+              spec.length >= pre.length + post.length
+            )
+              target = tv.replace('*', spec.slice(pre.length, spec.length - post.length));
+          }
+          if (target) break;
+        }
+        if (target !== undefined) {
+          // A bundler query (`?url`, `?raw`) names how the file is loaded, not another file.
+          const hit = resolveIn(dir, target.replace(/\?[^/]*$/, ''));
+          if (hit) {
+            edge(
+              'typescript.import-subpath',
+              { kind: 'file', key: hit },
+              'inferred',
+              `package.json imports, extensions tried as a bundler does`,
+            );
+            return;
+          }
+          ctx.stats.imports.unresolved++;
+          ctx.graph.addUnresolved({
+            filePath: path,
+            line,
+            kind: 'import',
+            text: spec,
+            reason: 'package.json imports entry matched, but no file was found',
+          });
+          return;
+        }
+      }
+    }
+    // SvelteKit's own modules ($app/navigation, $env/static/public…) exist only when it builds.
+    if (/^\$(app|env)\/|^\$service-worker$/.test(spec)) {
+      const dir = manifestDirOf(ctx, path);
+      const m = dir !== undefined ? ctx.manifests.get(dir) : undefined;
+      if (m?.dependencies?.['@sveltejs/kit'] || m?.devDependencies?.['@sveltejs/kit']) {
+        edge(
+          'typescript.import-framework-module',
+          ctx.graph.addNode({
+            kind: 'external',
+            key: '@sveltejs/kit',
+            name: '@sveltejs/kit',
+            data: { installed: false },
+          }),
+          'observed',
+          'a module SvelteKit provides',
+        );
+        return;
+      }
+    }
+    // A package of this repository's workspace, when node_modules does not link it.
+    if (!spec.startsWith('.') && !spec.startsWith('/')) {
+      const name = packageNameOfSpecifier(spec);
+      if (ctx.unreadWorkspace.has(name)) {
+        ctx.stats.imports.unresolved++;
+        ctx.graph.addUnresolved({
+          filePath: path,
+          line,
+          kind: 'import',
+          text: spec,
+          reason: 'a workspace package of this repository whose files were not read (file limit)',
+        });
+        return;
+      }
+      const dir = ctx.workspace.get(name);
+      const m = dir !== undefined ? ctx.manifests.get(dir) : undefined;
+      if (dir !== undefined && m) {
+        const sub = spec.slice(name.length).replace(/^\//, '');
+        const written = entryTargets(m, sub);
+        for (const t of sub ? [...written, sub] : written) {
+          const hit = resolveIn(dir, t);
+          if (hit) {
+            edge(
+              'typescript.import-workspace',
+              { kind: 'file', key: hit },
+              'observed',
+              `workspace package ${name}`,
+            );
+            return;
+          }
+        }
+        // The entry is build output the clone does not have: its source, by the usual layout.
+        const guesses = [...written, ...(sub ? [sub] : [])]
+          .map((t) =>
+            t
+              .replace(/^\.\//, '')
+              .replace(/^(build|dist|lib|out|esm|cjs)\//, 'src/')
+              .replace(/(\.d)?\.[cm]?[jt]sx?$/, ''),
+          )
+          .concat(sub ? [] : ['src/index', 'index']);
+        for (const t of guesses) {
+          const hit = resolveIn(dir, t);
+          if (hit) {
+            edge(
+              'typescript.import-workspace',
+              { kind: 'file', key: hit },
+              'inferred',
+              `workspace package ${name}; its built entry is not in the repository, so its source is assumed`,
+            );
+            return;
+          }
+        }
+        const manifest = dir ? `${dir}/package.json` : 'package.json';
+        edge(
+          'typescript.import-workspace',
+          { kind: 'file', key: manifest },
+          'inferred',
+          `workspace package ${name}; no entry file found`,
+        );
+        return;
+      }
+    }
     if (spec.startsWith('.') || spec.startsWith('/')) {
       const candidate = toPosix(join(dirname(path), spec));
       if (ctx.repoFiles.has(candidate)) {

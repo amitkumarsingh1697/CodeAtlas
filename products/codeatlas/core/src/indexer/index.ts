@@ -459,7 +459,13 @@ function buildAndPersist(
   progress(`Analysing code (${adapters.map((a) => a.id).join(', ')})`);
   const tsStats = runAdapters(
     adapters,
-    { root: repo.root, allPaths: paths, graph, moduleOf },
+    {
+      root: repo.root,
+      allPaths: paths,
+      notRead: new Set(disc.skipped.filter((s) => s.reason === 'limit').map((s) => s.path)),
+      graph,
+      moduleOf,
+    },
     disc.files.filter((f) => texts.has(f.path)),
     incremental ? { previous: loadCaches(db, repo.id) } : undefined,
   );

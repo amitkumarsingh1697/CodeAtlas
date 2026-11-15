@@ -623,18 +623,22 @@ export function maskComponent(path: string, text: string): MaskedComponent | nul
 
 /**
  * `$name` → `name` where `name` occurs elsewhere as an identifier and `$name` is not a rune
- * (Svelte forbids declaring `$`-prefixed names, so `$name` can only be a store read).
+ * (Svelte forbids declaring `$`-prefixed names, so `$name` can only be a store read). A `$` that
+ * opens a string (`'$app/state'`) is left alone.
  * Returns the new text and a function mapping an old offset to its new one.
  */
 export function rewriteStores(code: string): { code: string; shift: (offset: number) => number } {
   const names = new Set<string>();
   for (const m of code.matchAll(/(?<![\w$])[A-Za-z_][\w]*/g)) names.add(m[0]);
   const removed: number[] = [];
-  const next = code.replace(/(?<![\w$.])\$([A-Za-z_]\w*)/g, (whole, name: string, at: number) => {
-    if (SVELTE_RUNES.has(whole) || !names.has(name)) return whole;
-    removed.push(at);
-    return name;
-  });
+  const next = code.replace(
+    /(?<![\w$.'"`])\$([A-Za-z_]\w*)/g,
+    (whole, name: string, at: number) => {
+      if (SVELTE_RUNES.has(whole) || !names.has(name)) return whole;
+      removed.push(at);
+      return name;
+    },
+  );
   const shift = (offset: number) => {
     let n = 0;
     while (n < removed.length && removed[n]! < offset) n++;
