@@ -204,6 +204,18 @@ Per ADR 0030 the report generator (REP-002 rendering, REP-006 HTML, REP-007 reda
 
 **Status:** done 2026-11-15. **Blocked:** REP-002, REP-006 to REP-008 until the private repository exists (founder action).
 
+## Commercial roadmap Sprint 2: routes and impact evidence (engine side)
+
+| ID      | Item                                      | Acceptance criteria                                                                                                                                          |
+| ------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| FW-001  | Framework route adapter interface         | `RouteAdapter` in `core/src/indexer/frameworks/`; adapters run after the symbol pass; partial: Next.js and Express stay in the TypeScript indexer (ADR 0025) |
+| JV-003  | Spring MVC routes                         | Spring PetClinic 17 of 17 method mappings found with class prefix and handler link                                                                           |
+| TS-002  | NestJS routes                             | Immich: 315 routes against 317 decorators in `server/src` (the other 2 in a `.spec.ts` class); enum-prefixed paths labelled inferred                         |
+| IMP-001 | Impact carries the weakest evidence class | Each affected node, route and test carries the evidence of its strongest path; groups observed and inferred; caveat in API and Node panel; E2E step          |
+| IMP-002 | Impact reaches tables (partial)           | Impact follows `reads_table`, `writes_table` and `maps_to`; export and the report's 3 to 5 impact examples wait on the report repository                     |
+
+**Status:** done 2026-11-15 for the items above. **Not done:** ACC-001 to ACC-004 (benchmark) wait on decision D-9, who adjudicates ground truth. Immich paths are not yet checked by hand.
+
 ## Blocked or external track (not sprint-scheduled)
 
 | Item                                                                  | Blocker                                       | Owner                                            |

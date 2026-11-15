@@ -7,16 +7,18 @@ This is the single tracker required by spec §19.
 
 ## Last evidence run
 
-**Date:** 2026-11-15, in the build container, for commercial Sprint 1 (engine side). Sprint 0 figures from 2026-11-14 are kept below where still current.
+**Date:** 2026-11-15, in the build container, for commercial Sprint 2 (engine side). Sprint 0 figures from 2026-11-14 are kept below where still current.
 
-| Command                                   | Result                                                                                                                                           |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `pnpm check` (typecheck, lint, tests)     | pass: 654 tests (2026-11-14)                                                                                                                     |
-| `pnpm format:check`                       | clean (2026-11-14)                                                                                                                               |
-| `pnpm audit --prod`                       | no known vulnerabilities (2026-11-14)                                                                                                            |
-| `pnpm --filter @nexora/codeatlas-web e2e` | 1 journey passed (2026-11-14)                                                                                                                    |
-| `cli index` on Spring PetClinic           | 260 code symbols (6,995 SVG/XML elements counted separately); 98 analysed files in both blocks; 3 of 3 Spring Data repositories linked to tables |
-| `cli index` on Twenty (default limit)     | stderr and summary warn that only 20,000 of 44,522 files were read; `fileLimit.filesBeyondLimit` 23,730                                          |
+| Command                                      | Result                                                                                                                                           |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `pnpm check` (typecheck, lint, tests)        | pass: 654 tests (2026-11-14)                                                                                                                     |
+| `pnpm format:check`                          | clean (2026-11-14)                                                                                                                               |
+| `pnpm audit --prod`                          | no known vulnerabilities (2026-11-14)                                                                                                            |
+| `pnpm --filter @nexora/codeatlas-web e2e`    | 1 journey passed (2026-11-14)                                                                                                                    |
+| `cli index` on Spring PetClinic              | 260 code symbols (6,995 SVG/XML elements counted separately); 98 analysed files in both blocks; 3 of 3 Spring Data repositories linked to tables |
+| `cli index` on Twenty (default limit)        | stderr and summary warn that only 20,000 of 44,522 files were read; `fileLimit.filesBeyondLimit` 23,730                                          |
+| `cli index` on Spring PetClinic (2026-11-15) | 17 of 17 method mappings as routes with class prefix and handler                                                                                 |
+| `cli index` on Immich `e5d6eb7` (2026-11-15) | 315 routes (269 observed, 46 inferred from enum prefixes), 0 adapter gaps; 317 decorators in `server/src`, 2 of them in a `.spec.ts` class       |
 
 ## Previous evidence run
 
@@ -81,6 +83,7 @@ Counts are taken from REQUIREMENTS_TRACEABILITY.md.
 | Sprint 3: CodeAtlas depth, plus CVForge hardening                           | **Done** 2026-11-04 | All 7 items plus PDF isolation, optional SMTP and email confirmation; evidence below and in `reports/SPRINT_3_REPORT.md`                                                      |
 | Commercial Sprint 0: truth and security fixes                               | **Done** 2026-11-14 | SEC-001, SEC-002, ACC-007, ACC-009, JV-008, DOC-001; `pnpm check` 654 tests and the E2E journey pass; see SPRINT_PLAN and `docs/audit/CAPABILITY_MATRIX.md` §Sprint 0 updates |
 | Commercial Sprint 1 (engine side): rule catalogue and assessment data model | **Done** 2026-11-15 | GRAPH-001, REP-001 and the data for REP-003 to REP-005; `pnpm check` 671 tests and the E2E journey pass; report rendering blocked on the private repository (ADR 0030)        |
+| Commercial Sprint 2 (engine side): routes and impact evidence               | **Done** 2026-11-15 | FW-001 (partial), JV-003, TS-002, IMP-001, IMP-002 (partial); PetClinic 17 of 17 routes, Immich 315; benchmark (ACC-001 to ACC-004) waits on decision D-9                     |
 
 ## Sprint 1 items
 

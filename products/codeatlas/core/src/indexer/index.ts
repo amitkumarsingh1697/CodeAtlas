@@ -38,6 +38,7 @@ import {
 import { readGitHistory } from './git';
 import { countSymbolsByCategory, type SymbolCategory } from './symbol-category';
 import { adapterOf } from './rules';
+import { runRouteAdapters, type RouteAdapterStats } from './frameworks';
 import { runMetadata } from '../assessment/run-metadata';
 import type { RunMetadata } from '../assessment/model';
 import { detectFrameworks, findManifests, type Framework, type Manifest } from './manifests';
@@ -102,6 +103,8 @@ export interface CoverageReport {
   };
   routes: number;
   docs: number;
+  /** Framework route adapters: files read, routes found, and declarations they could not read. */
+  routeAdapters: RouteAdapterStats[];
   /** Language adapters that ran, and how many files each analysed structurally (AB-5.3-06). */
   adapters: AdapterCoverage[];
   /** Source files in languages no adapter supports, by language. Indexed as text only. */
@@ -449,6 +452,11 @@ function buildAndPersist(
     texts,
     adapterFiles,
   );
+
+  // Framework routes (Spring MVC, NestJS) from the declarations both analysers just stored.
+  progress('Reading framework routes');
+  const routeAdapters = runRouteAdapters(graph, disc.files, texts, moduleOf);
+  const frameworkRoutes = routeAdapters.reduce((t, a) => t + a.routes, 0);
 
   // Database schemas in SQL files (migrations, schema.sql) and Prisma schema files. A SQL
   // file's other objects (views, routines, triggers, indexes…) are linked once every table is known.
@@ -798,7 +806,8 @@ function buildAndPersist(
     symbols: symbolsByCategory.code,
     symbolsByCategory,
     fileLimit,
-    routes: tsStats.routes,
+    routes: tsStats.routes + frameworkRoutes,
+    routeAdapters,
     docs,
     imports: tsStats.imports,
     calls: {

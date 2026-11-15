@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { api } from '../api';
-import type { EdgeWithOther, NodeDetail, NodeRow } from '../types';
+import type { Confidence, EdgeWithOther, NodeDetail, NodeRow } from '../types';
 import { Source } from './Source';
 import { Button, ConfidenceBadge, ErrorBox, Spinner, useAsync } from './ui';
 
 interface Impact {
-  affected: (NodeRow & { distance: number; via: string })[];
-  routes: NodeRow[];
-  tests: NodeRow[];
+  affected: (NodeRow & { distance: number; via: string; evidence: Confidence })[];
+  groups: Record<Confidence, number>;
+  routes: (NodeRow & { evidence: Confidence })[];
+  tests: (NodeRow & { evidence: Confidence })[];
+  caveat: string;
   truncated: boolean;
 }
 
@@ -214,6 +216,15 @@ export function NodePanel({
                     {impact.affected.length} dependent nodes{impact.truncated ? ' (truncated)' : ''}
                     , {impact.routes.length} routes, {impact.tests.length} test files.
                   </p>
+                  <p data-testid="impact-groups">
+                    {impact.groups.observed} reached only through observed links,{' '}
+                    {impact.groups.inferred} through at least one inferred link
+                    {impact.groups.unknown
+                      ? `, ${impact.groups.unknown} through an unknown link`
+                      : ''}
+                    .
+                  </p>
+                  <p className="text-muted">{impact.caveat}</p>
                   {impact.routes.length > 0 && (
                     <p className="text-muted">
                       Routes: {impact.routes.map((r) => r.key).join(', ')}
@@ -233,6 +244,7 @@ export function NodePanel({
                         >
                           {label(n)}
                         </button>{' '}
+                        <ConfidenceBadge c={n.evidence} />{' '}
                         <span className="text-muted">
                           · distance {n.distance} via {n.via}
                         </span>
