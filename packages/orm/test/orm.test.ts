@@ -11,6 +11,7 @@ import {
   railsTableName,
   readLiquibaseTree,
   readOrm,
+  repositoryContext,
   resolveOrm,
   sequelizePlural,
   typeormSnake,
@@ -415,6 +416,118 @@ describe('Liquibase', () => {
     const r = resolveOrm([readLiquibaseTree('c.xml', root)]);
     expect(col(r, 'a', 'id')).toMatchObject({ primaryKey: true, nullable: false, line: 3 });
     expect(table(r, 'ghost')).toBeUndefined();
+  });
+});
+
+describe('@immich/sql-tools table declarations (TS-003)', () => {
+  const files: Record<string, string> = {
+    'src/decorators.ts': [
+      "import { Column, ColumnOptions } from '@immich/sql-tools';",
+      'const GeneratedUuidV7Column = (options: Omit<ColumnOptions, "type"> = {}) =>',
+      "  Column({ ...options, type: 'uuid', nullable: false, default: () => 'uuid_v7()' });",
+      'export const UpdateIdColumn = (options: Omit<ColumnOptions, "type"> = {}) =>',
+      '  GeneratedUuidV7Column(options);',
+      'export const PrimaryGeneratedUuidV7Column = () => GeneratedUuidV7Column({ primary: true });',
+      '',
+    ].join('\n'),
+    'src/schema/tables/user.table.ts': [
+      "import { Column, CreateDateColumn, PrimaryGeneratedColumn, Table } from '@immich/sql-tools';",
+      "@Table('user')",
+      'export class UserTable {',
+      '  @PrimaryGeneratedColumn()',
+      '  id!: string;',
+      '  @Column({ unique: true })',
+      '  email!: string;',
+      '  @CreateDateColumn()',
+      '  createdAt!: Date;',
+      '}',
+      '',
+    ].join('\n'),
+    'src/schema/tables/album.table.ts': [
+      "import { Column, DeleteDateColumn, ForeignKeyColumn, Table } from '@immich/sql-tools';",
+      "import { PrimaryGeneratedUuidV7Column, UpdateIdColumn } from 'src/decorators';",
+      "import { UserTable } from 'src/schema/tables/user.table';",
+      "@Table({ name: 'album' })",
+      'export class AlbumTable {',
+      '  @PrimaryGeneratedUuidV7Column()',
+      '  id!: string;',
+      "  @Column({ name: 'album_name', default: 'Untitled' })",
+      '  albumName!: string;',
+      "  @ForeignKeyColumn(() => UserTable, { onDelete: 'CASCADE' })",
+      '  ownerId!: string;',
+      "  @Column({ type: 'text', nullable: true })",
+      '  description!: string | null;',
+      '  @DeleteDateColumn()',
+      '  deletedAt!: Date | null;',
+      '  @UpdateIdColumn({ index: true })',
+      '  updateId!: string;',
+      '  notAColumn?: string;',
+      '}',
+      '',
+    ].join('\n'),
+    // No name written: the class name in snake_case.
+    'src/schema/tables/session-token.table.ts': [
+      "import { Column, PrimaryColumn, Table } from '@immich/sql-tools';",
+      '@Table()',
+      'export class SessionToken {',
+      '  @PrimaryColumn()',
+      '  token!: string;',
+      "  @Column({ type: 'integer' })",
+      '  uses!: number;',
+      '}',
+      '',
+    ].join('\n'),
+  };
+  const ctx = repositoryContext(Object.values(files));
+  const r = resolveOrm(
+    Object.entries(files)
+      .map(([path, text]) => readOrm(path, 'TypeScript', text, ctx))
+      .filter((x): x is OrmFile => x !== null),
+  );
+
+  it('reads each @Table class as a table, with the names the package gives it', () => {
+    expect(table(r, 'user')).toMatchObject({ naming: 'explicit', framework: 'sql-tools' });
+    expect(table(r, 'session_token')).toMatchObject({ naming: 'default' });
+    expect(table(r, 'user')?.columns.map((c) => [c.name, c.type, c.nullable])).toEqual([
+      ['id', 'uuid', false],
+      ['email', 'character varying', false],
+      ['createdAt', 'timestamp with time zone', false],
+    ]);
+    expect(col(r, 'user', 'id')).toMatchObject({ primaryKey: true });
+    expect(col(r, 'user', 'email')).toMatchObject({ unique: true });
+    expect(col(r, 'session_token', 'token')).toMatchObject({
+      primaryKey: true,
+      type: 'character varying',
+    });
+  });
+
+  it('follows decorators the repository builds on the package, and reads foreign key columns', () => {
+    expect(table(r, 'album')?.columns.map((c) => [c.name, c.type, c.nullable])).toEqual([
+      ['id', 'uuid', false],
+      ['album_name', 'character varying', false],
+      ['ownerId', 'ForeignKeyColumn', false],
+      ['description', 'text', true],
+      ['deletedAt', 'timestamp with time zone', true],
+      ['updateId', 'uuid', false],
+    ]);
+    expect(col(r, 'album', 'id')).toMatchObject({ primaryKey: true });
+    expect(col(r, 'album', 'album_name')).toMatchObject({ field: 'albumName' });
+    expect(fk(r, 'album', 'ownerId')).toMatchObject({
+      refTable: 'user',
+      refColumn: 'id',
+      confidence: 'observed',
+    });
+    expect(mapping(r, 'AlbumTable')).toMatchObject({ table: 'album', access: 'maps' });
+  });
+
+  it('reads nothing from a @Table class in a file that does not import the package', () => {
+    const other = readOrm(
+      'src/x.ts',
+      'TypeScript',
+      "import { Table } from 'other';\n@Table('x')\nclass X { @Column() a!: string; }\n",
+      ctx,
+    );
+    expect(other).toBeNull();
   });
 });
 

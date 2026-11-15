@@ -183,7 +183,7 @@ CodeAtlas needs Node.js 22.13 or later with SQLite full-text search (FTS5). If y
 CodeAtlas identifies every file in the repository and reads each one as deeply as it can. **Overview → Languages & files** shows, for every file, whether it was fully analysed, partially analysed, read as text only, or not read, and why.
 
 - **Code:** TypeScript and JavaScript (with Svelte, Vue and Astro components) through the TypeScript compiler, and 71 more languages through tree-sitter grammars: classes, methods with their parameters and return types, imports and calls.
-- **Databases:** tables, columns, views, procedures, functions and triggers from SQL files, and models and migrations from 23 ORM frameworks.
+- **Databases:** tables, columns, views, procedures, functions and triggers from SQL files, and models and migrations from 24 ORM frameworks (including `@immich/sql-tools` table classes).
 - **Build and configuration:** every key of JSON, YAML and TOML files and every element of XML files, with their lines but never their values. Maven, Gradle and npm dependencies, plugins and tasks; a dependency on a module the repository builds is linked to it. Class names in Spring and other XML files are linked to their Java classes.
 - **Documentation:** every Markdown heading as a section, with links to the files and code it mentions. AsciiDoc and reStructuredText headings and includes are read too.
 

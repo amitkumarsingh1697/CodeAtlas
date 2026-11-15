@@ -149,3 +149,96 @@ describe('schema migrations replayed in order (TS-003)', () => {
     expect(n.n).toBe(1);
   });
 });
+
+describe('tables declared with @immich/sql-tools (TS-003)', () => {
+  const T = 'server/src/schema/tables';
+  const { db, repoId } = index({
+    // An old migration creates `assets`; a later one renames it with a name built at run time.
+    [`${M}/1700000000001-Initial.ts`]: j(
+      "import { Kysely, sql } from 'kysely';",
+      'export async function up(db: Kysely<any>): Promise<void> {',
+      '  await sql`CREATE TABLE "assets" ("id" uuid PRIMARY KEY);`.execute(db);',
+      '  await sql`CREATE TABLE "migration_overrides" ("name" text PRIMARY KEY);`.execute(db);',
+      '}',
+    ),
+    [`${M}/1700000000002-Standardize.ts`]: j(
+      "import { Kysely, sql } from 'kysely';",
+      "const renames = [['assets', 'asset']];",
+      'export async function up(db: Kysely<any>): Promise<void> {',
+      '  for (const [a, b] of renames) {',
+      '    await sql`ALTER TABLE ${sql.raw(a)} RENAME TO ${sql.raw(b)};`.execute(db);',
+      '  }',
+      '}',
+    ),
+    'server/src/decorators.ts': j(
+      "import { Column, ColumnOptions } from '@immich/sql-tools';",
+      "export const UpdateIdColumn = (options: ColumnOptions = {}) => Column({ ...options, type: 'uuid' });",
+    ),
+    [`${T}/user.table.ts`]: j(
+      "import { PrimaryGeneratedColumn, Table } from '@immich/sql-tools';",
+      "@Table('user')",
+      'export class UserTable {',
+      '  @PrimaryGeneratedColumn()',
+      '  id!: string;',
+      '}',
+    ),
+    [`${T}/asset.table.ts`]: j(
+      "import { Column, ForeignKeyColumn, PrimaryGeneratedColumn, Table } from '@immich/sql-tools';",
+      "import { UpdateIdColumn } from 'src/decorators';",
+      "import { UserTable } from 'src/schema/tables/user.table';",
+      "@Table('asset')",
+      'export class AssetTable {',
+      '  @PrimaryGeneratedColumn()',
+      '  id!: string;',
+      "  @ForeignKeyColumn(() => UserTable, { onDelete: 'CASCADE' })",
+      '  ownerId!: string;',
+      '  @Column()',
+      '  originalPath!: string;',
+      '  @UpdateIdColumn()',
+      '  updateId!: string;',
+      '}',
+    ),
+    'server/src/repositories/asset.repository.ts': j(
+      "import { Kysely } from 'kysely';",
+      'export class AssetRepository {',
+      '  constructor(private db: Kysely<any>) {}',
+      "  get() { return this.db.selectFrom('asset').selectAll(); }",
+      '}',
+    ),
+  });
+  const node = (name: string) => {
+    const r = db
+      .prepare("SELECT data FROM nodes WHERE repo_id = ? AND kind = 'table' AND key = ?")
+      .get(repoId, `table:${name}`) as { data: string } | undefined;
+    return r ? (JSON.parse(r.data) as Record<string, unknown>) : undefined;
+  };
+
+  it('reads the declared tables and columns, and links them to the queries that use them', () => {
+    const asset = node('asset')!;
+    expect((asset.columns as { name: string }[]).map((c) => c.name)).toEqual([
+      'id',
+      'ownerId',
+      'originalPath',
+      'updateId',
+    ]);
+    expect(asset.undeclared).toBeUndefined();
+    const n = db
+      .prepare(
+        `SELECT
+           (SELECT COUNT(*) FROM edges e JOIN nodes d ON d.id = e.dst
+             WHERE e.repo_id = ? AND e.kind = 'reads_table' AND d.key = 'table:asset') reads,
+           (SELECT COUNT(*) FROM edges e JOIN nodes s ON s.id = e.src JOIN nodes d ON d.id = e.dst
+             WHERE e.repo_id = ? AND e.kind = 'references' AND s.key = 'table:asset' AND d.key = 'table:user') fks`,
+      )
+      .get(repoId, repoId) as { reads: number; fks: number };
+    expect(n).toEqual({ reads: 1, fks: 1 });
+  });
+
+  it('says when a table the migrations leave is not among the declared tables', () => {
+    expect(node('assets')?.undeclared).toBe(
+      'not among the tables this repository declares with @immich/sql-tools; 1 migration statement whose table name is built at run time may have renamed or dropped it',
+    );
+    expect(node('migration_overrides')?.undeclared).toBeDefined();
+    expect(node('user')?.undeclared).toBeUndefined();
+  });
+});
