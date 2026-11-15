@@ -80,7 +80,14 @@ export class GraphBuilder {
   readonly unresolved: UnresolvedRec[] = [];
   readonly chunks: ChunkRec[] = [];
   unresolvedDropped = 0;
-  static readonly MAX_UNRESOLVED = 5000;
+  /** Dropped references by kind, so a report can say which kind of gap is incomplete. */
+  readonly unresolvedDroppedByKind: Partial<Record<UnresolvedRec['kind'], number>> = {};
+  /**
+   * Each kind has its own cap (risk T-11): before this, call gaps filled a shared 5,000-entry
+   * list on large repositories and every route gap after them was dropped.
+   */
+  static readonly MAX_UNRESOLVED_PER_KIND = 5000;
+  private readonly unresolvedPerKind = new Map<string, number>();
   /** When set, every change is also appended here (copied), so it can be replayed later. */
   recorder: GraphOp[] | null = null;
 
@@ -153,8 +160,14 @@ export class GraphBuilder {
 
   addUnresolved(u: UnresolvedRec): void {
     this.recorder?.push({ t: 'u', u: { ...u } });
-    if (this.unresolved.length >= GraphBuilder.MAX_UNRESOLVED) this.unresolvedDropped++;
-    else this.unresolved.push({ ...u, text: u.text.slice(0, 200) });
+    const n = this.unresolvedPerKind.get(u.kind) ?? 0;
+    if (n >= GraphBuilder.MAX_UNRESOLVED_PER_KIND) {
+      this.unresolvedDropped++;
+      this.unresolvedDroppedByKind[u.kind] = (this.unresolvedDroppedByKind[u.kind] ?? 0) + 1;
+      return;
+    }
+    this.unresolvedPerKind.set(u.kind, n + 1);
+    this.unresolved.push({ ...u, text: u.text.slice(0, 200) });
   }
 }
 

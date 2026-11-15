@@ -98,6 +98,7 @@ describe('assessment data model v1', () => {
     expect(m.coverage.limitations).toEqual(report.limitations);
     expect(m.unresolved.recorded).toBe(report.unresolvedRecorded);
     expect(m.unresolved.capped).toBe(false);
+    expect(m.unresolved.byKind.every((k) => k.dropped === 0)).toBe(true);
   });
 
   it('never includes the absolute path of the checkout', () => {

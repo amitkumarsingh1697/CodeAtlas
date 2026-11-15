@@ -107,7 +107,10 @@ export const assessmentModelSchema = z.strictObject({
     /** Unresolved references beyond the stored cap; when above 0 the total is at least recorded + dropped. */
     dropped: z.number().int(),
     capped: z.boolean(),
-    byKind: z.array(z.strictObject({ kind: z.string(), count: z.number().int() })),
+    /** `count` is stored; `dropped` went past that kind's cap (each kind is capped on its own). */
+    byKind: z.array(
+      z.strictObject({ kind: z.string(), count: z.number().int(), dropped: z.number().int() }),
+    ),
   }),
 });
 export type AssessmentModel = z.infer<typeof assessmentModelSchema>;

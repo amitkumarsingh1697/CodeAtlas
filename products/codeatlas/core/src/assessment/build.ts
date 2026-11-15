@@ -186,6 +186,14 @@ export function buildAssessment(db: Db, repoId: number, now: Date = new Date()):
       'SELECT kind, COUNT(*) AS count FROM unresolved WHERE repo_id = ? GROUP BY kind ORDER BY count DESC',
     )
     .all(repoId) as { kind: string; count: number }[];
+  // Runs indexed before per-kind caps have no breakdown of what was dropped.
+  const droppedByKind = c.unresolvedDroppedByKind ?? {};
+  const unresolvedKinds = [
+    ...unresolvedByKind.map((k) => ({ ...k, dropped: droppedByKind[k.kind] ?? 0 })),
+    ...Object.entries(droppedByKind)
+      .filter(([kind]) => !unresolvedByKind.some((k) => k.kind === kind))
+      .map(([kind, dropped]) => ({ kind, count: 0, dropped: dropped ?? 0 })),
+  ];
 
   const inv = c.inventory;
   const model: AssessmentModel = {
@@ -240,7 +248,7 @@ export function buildAssessment(db: Db, repoId: number, now: Date = new Date()):
       recorded: c.unresolvedRecorded,
       dropped: c.unresolvedDropped,
       capped: c.unresolvedDropped > 0,
-      byKind: unresolvedByKind,
+      byKind: unresolvedKinds,
     },
   };
   return assessmentModelSchema.parse(model);

@@ -125,6 +125,8 @@ export interface CoverageReport {
   };
   unresolvedRecorded: number;
   unresolvedDropped: number;
+  /** Of `unresolvedDropped`, how many of each kind (each kind is capped separately). */
+  unresolvedDroppedByKind: Partial<Record<string, number>>;
   limitations: string[];
   /**
    * Every listed path with what was done to it, summarised (one status per file, counts add up
@@ -821,6 +823,7 @@ function buildAndPersist(
     integrations,
     unresolvedRecorded: graph.unresolved.length,
     unresolvedDropped: graph.unresolvedDropped,
+    unresolvedDroppedByKind: { ...graph.unresolvedDroppedByKind },
     limitations,
   };
   db.prepare('UPDATE repos SET last_indexed_at = ?, head_commit = ?, branch = ? WHERE id = ?').run(
