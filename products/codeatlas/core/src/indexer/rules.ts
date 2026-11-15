@@ -224,6 +224,18 @@ export const RULES = {
     description:
       'A `@GetMapping`, `@PostMapping`, `@PutMapping`, `@DeleteMapping`, `@PatchMapping` or `@RequestMapping` on a method of a `@Controller` or `@RestController` class, joined to the class `@RequestMapping` prefix. Observed for string-literal paths; inferred when a path is a constant declared once elsewhere in the repository.',
   },
+  'jaxrs.resource-method': {
+    adapter: 'jax-rs',
+    labels: OI,
+    description:
+      'A JAX-RS `@GET`, `@POST`, `@PUT`, `@DELETE`, `@PATCH`, `@HEAD` or `@OPTIONS` method of a root resource (a class with `@Path`), joined to the class path; inferred when a path is a constant declared elsewhere. `@ApplicationPath` is not included.',
+  },
+  'jaxrs.sub-resource': {
+    adapter: 'jax-rs',
+    labels: I,
+    description:
+      'A JAX-RS resource method reached through one or more sub-resource locators (a `@Path` method with no verb), followed by the declared return type; inferred because the locator may return another object at run time.',
+  },
   'nestjs.controller-route': {
     adapter: 'nestjs',
     labels: OI,

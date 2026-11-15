@@ -191,3 +191,96 @@ describe('NestJS adapter (TS-002)', () => {
     });
   });
 });
+
+describe('JAX-RS adapter (JX-001)', () => {
+  const imp = 'import jakarta.ws.rs.*;\n';
+  const files = {
+    'src/main/java/app/RealmsResource.java':
+      'package app;\n' +
+      imp +
+      '@Path("/admin/realms")\n' +
+      'public class RealmsResource {\n' +
+      '    @GET\n' +
+      '    public String list() { return ""; }\n' +
+      '    @Path("{realm}")\n' +
+      '    public RealmResource realm(@PathParam("realm") String name) { return new RealmResource(); }\n' +
+      '    @Path("ext/{id: [a-z]+}")\n' +
+      '    public Object extension() { return null; }\n' +
+      '}\n',
+    'src/main/java/app/RealmResource.java':
+      'package app;\n' +
+      imp +
+      'import jakarta.ws.rs.core.Response;\n' +
+      'public class RealmResource {\n' +
+      '    @GET\n' +
+      '    @Produces("application/json")\n' +
+      '    public String get() { return ""; }\n' +
+      '    @DELETE\n' +
+      '    public Response delete() { return null; }\n' +
+      '    @Path("users")\n' +
+      '    public UsersResource users() { return new UsersResource(); }\n' +
+      '}\n',
+    'src/main/java/app/UsersResource.java':
+      'package app;\n' +
+      imp +
+      'public class UsersResource {\n' +
+      '    @GET\n' +
+      '    @Path("{id: [0-9a-f-]+}")\n' +
+      '    public String user() { return ""; }\n' +
+      '    @POST\n' +
+      '    public void create() {}\n' +
+      '}\n',
+    'src/main/java/app/Orphan.java':
+      'package app;\n' +
+      imp +
+      'public class Orphan {\n    @GET\n    public String x() { return ""; }\n}\n',
+  };
+
+  it('joins root paths, follows sub-resource locators across files and normalises templates', () => {
+    const { routes } = routesOf(files);
+    expect(routes.map((r) => [r.route, r.handler, r.confidence, r.method])).toEqual([
+      ['DELETE /admin/realms/{realm}', 'RealmResource.delete', 'inferred', 'jaxrs.sub-resource'],
+      ['GET /admin/realms', 'RealmsResource.list', 'observed', 'jaxrs.resource-method'],
+      ['GET /admin/realms/{realm}', 'RealmResource.get', 'inferred', 'jaxrs.sub-resource'],
+      [
+        'GET /admin/realms/{realm}/users/{id}',
+        'UsersResource.user',
+        'inferred',
+        'jaxrs.sub-resource',
+      ],
+      [
+        'POST /admin/realms/{realm}/users',
+        'UsersResource.create',
+        'inferred',
+        'jaxrs.sub-resource',
+      ],
+    ]);
+  });
+
+  it('reports a locator returning Object and a resource no locator reaches as gaps', () => {
+    const { gaps } = routesOf(files);
+    expect(gaps.map((g) => g.reason)).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('locator returns Object'),
+        expect.stringContaining('no followed sub-resource locator returns'),
+      ]),
+    );
+    expect(gaps).toHaveLength(2);
+  });
+
+  it('stops on a locator cycle and ignores files without a JAX-RS import', () => {
+    const { routes } = routesOf({
+      'src/main/java/c/Loop.java':
+        'package c;\n' +
+        imp +
+        '@Path("/loop")\npublic class Loop {\n    @GET\n    public String get() { return ""; }\n' +
+        '    @Path("again")\n    public Loop again() { return this; }\n}\n',
+      'src/main/java/c/NotRest.java':
+        'package c;\n@Path("/x")\npublic class NotRest {\n    @GET\n    public String get() { return ""; }\n}\n',
+    });
+    const paths = routes.map((r) => r.route);
+    expect(paths[0]).toBe('GET /loop');
+    expect(paths.length).toBeLessThanOrEqual(13); // root plus at most MAX_DEPTH locator steps
+    expect(paths.every((p) => p.startsWith('GET /loop'))).toBe(true);
+  });
+});

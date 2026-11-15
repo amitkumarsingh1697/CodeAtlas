@@ -20,5 +20,6 @@ The audit found 0 of 17 Spring PetClinic endpoints and 0 of about 317 Immich Nes
 ## Consequences
 
 - Measured on 2026-11-15: Spring PetClinic 17 of 17 method mappings with the right prefix and handler; Immich 315 routes against 317 decorators in `server/src`, the other 2 inside a class in a `.spec.ts` file. Immich paths have not been checked by hand; that waits for the benchmark ground truth (D-9).
-- JAX-RS (JX-001, Keycloak) and WebFlux functional routes are not covered yet.
+- WebFlux functional routes are not covered yet.
+- Amendment, 2026-11-15 (JX-001): a `RepositoryRouteAdapter` variant sees every file it applies to at once, for frameworks whose routes span files. The JAX-RS adapter uses it to follow sub-resource locators (a `@Path` method with no verb) by their declared return type, resolved by unique class name, then import, then package. Routes on root resources are observed (`jaxrs.resource-method`); routes reached through a locator are inferred (`jaxrs.sub-resource`). Chains are cut at 12 locators and 64 prefixes per class. Keycloak `a29205c`: 485 routes to 408 handlers in 250 files, 103 gaps (resources mounted by run-time providers, locators returning `Object`, constant paths not in the repository).
 - Adding a framework means adding an adapter and a catalogue rule, with a fixture test.
