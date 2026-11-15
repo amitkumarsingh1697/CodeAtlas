@@ -62,7 +62,17 @@ export type CallRule =
   | 'module-import'
   | 'class-member'
   | 'unique-name'
+  | 'library-member'
   | 'unresolved';
+
+/** JDK interfaces that add no callable members worth linking: not a sign of a library supertype. */
+const MARKER_INTERFACES = new Set([
+  'Serializable',
+  'Cloneable',
+  'Comparable',
+  'AutoCloseable',
+  'Closeable',
+]);
 
 /** Languages where a bare call inside a class body can name a member of that class. */
 const IMPLICIT_MEMBER = new Set([
@@ -225,6 +235,20 @@ export function resolveCalls(files: ResolveFile[]): CallLink[] {
         }
     }
     return undefined;
+  };
+  /** The class, or a repository base of it, extends a type that is not declared in the repository. */
+  const hasLibraryBase = (cls: string, lang: string, seen = new Set<string>()): boolean => {
+    if (seen.has(cls) || seen.size > 8) return false;
+    seen.add(cls);
+    for (const c of containersByName.get(`${lang}\0${cls}`) ?? [])
+      for (const b of decl(c).bases ?? []) {
+        const bn = typeName(b.replace(/\(.*$/s, ''));
+        if (!bn) continue;
+        if (MARKER_INTERFACES.has(bn)) continue;
+        if (!containersByName.has(`${lang}\0${bn}`)) return true;
+        if (hasLibraryBase(bn, lang, seen)) return true;
+      }
+    return false;
   };
   const one = (refs: DeclRef[]) => (refs.length === 1 ? refs[0] : undefined);
 
@@ -404,7 +428,23 @@ export function resolveCalls(files: ResolveFile[]): CallLink[] {
                   'receiver-type',
                 ),
               );
-            } else
+            } else if (
+              // The declared type itself, not a wrapper around it (Optional<Owner>.orElseThrow).
+              typeName(t.type.replace(/<.*$/su, '')) === decl(cls).name &&
+              hasLibraryBase(decl(cls).name, L)
+            )
+              // The method is inherited from a library type (Spring Data's save, findById):
+              // the call is linked to the class, which is what the repository can show.
+              out.push({
+                ...link(
+                  cls,
+                  'inferred',
+                  `${c.receiver} is ${t.declared ? 'declared as' : 'assigned a new'} ${t.type} (${t.via}); ${c.name} is not declared in the repository, so it comes from a library supertype of ${t.type}`,
+                  'library-member',
+                ),
+                kind: 'calls',
+              });
+            else
               out.push(
                 link(
                   undefined,

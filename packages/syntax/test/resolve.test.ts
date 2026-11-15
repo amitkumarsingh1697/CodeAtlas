@@ -146,6 +146,54 @@ describe('call resolution', () => {
     expect(len[0]!.detail).toMatch(/also a method of Ruby's built-in types/);
   });
 
+  it('Java: a method inherited from a library supertype links to the class, not through a wrapper', () => {
+    const repo = file(
+      'src/a/OwnerRepository.java',
+      'Java',
+      'package a;\nimport org.springframework.data.jpa.repository.JpaRepository;\ninterface OwnerRepository extends JpaRepository<Owner, Integer> {\n  Owner findByName(String n);\n}\n',
+    );
+    const owner = file(
+      'src/a/Owner.java',
+      'Java',
+      'package a;\nclass Owner implements java.io.Serializable {\n  String name;\n}\n',
+    );
+    const plain = file('src/a/Plain.java', 'Java', 'package a;\nclass Plain {\n}\n');
+    const svc = file(
+      'src/a/Svc.java',
+      'Java',
+      [
+        'package a;',
+        'import java.util.Optional;',
+        'class Svc {',
+        '  private OwnerRepository owners;',
+        '  void run(Plain p) {',
+        '    owners.save(null);',
+        '    owners.findByName("x");',
+        '    Optional<Owner> o = owners.findById(1);',
+        '    o.orElseThrow();',
+        '    p.missing();',
+        '  }',
+        '}',
+        '',
+      ].join('\n'),
+    );
+    const files = [repo, owner, plain, svc];
+    const links = resolveCalls(files).filter((l) => l.file === 'src/a/Svc.java');
+    expect(show(files, links)).toEqual([
+      'save@6 calls inferred -> src/a/OwnerRepository.java:OwnerRepository@3',
+      'findByName@7 calls inferred -> src/a/OwnerRepository.java:findByName@4',
+      'findById@8 calls inferred -> src/a/OwnerRepository.java:OwnerRepository@3',
+      // Optional<Owner> is a wrapper, and Owner's only supertype is a JDK marker: unresolved.
+      'orElseThrow@9 calls unresolved',
+      // Plain has no supertype outside the repository, so a missing member stays unresolved.
+      'missing@10 calls unresolved',
+    ]);
+    expect(links.filter((l) => l.rule === 'library-member').map((l) => l.name)).toEqual([
+      'save',
+      'findById',
+    ]);
+  });
+
   it('Java: calls on typed parameters, locals and fields resolve to that class, including inherited methods', () => {
     const base = file('src/a/Base.java', 'Java', 'package a;\nclass Base {\n  void ping() {}\n}\n');
     const store = file(
