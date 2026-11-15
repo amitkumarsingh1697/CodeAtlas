@@ -746,7 +746,28 @@ const DRIZZLE_WRITE = new Set(['insert', 'update', 'delete']);
  * Kysely builder methods whose first argument names a table, checked against kysely 0.28.8 and 0.29.9
  * (`QueryCreator` in dist/esm/query-creator.d.ts and the `SelectQueryBuilder` joins).
  */
-const KYSELY_READ = new Set(['selectFrom', 'innerJoin', 'leftJoin', 'rightJoin', 'fullJoin']);
+const KYSELY_READ = new Set([
+  'selectFrom',
+  'innerJoin',
+  'leftJoin',
+  'rightJoin',
+  'fullJoin',
+  'crossJoin',
+  'innerJoinLateral',
+  'leftJoinLateral',
+  'crossJoinLateral',
+]);
+/**
+ * Read methods that only name a table on one builder: `DeleteQueryBuilder.using` and
+ * `UpdateQueryBuilder.from` (kysely 0.28.8 and 0.29.9). Schema builders also have `using`
+ * (an index type), so these count only in a chain that starts with the matching statement.
+ */
+const KYSELY_CHAIN_READ = new Map([
+  ['using', 'deleteFrom'],
+  ['from', 'updateTable'],
+]);
+/** Methods that name a common table expression: `with('name', …)` or `with((cte) => cte('name'), …)`. */
+const KYSELY_WITH = new Set(['with', 'withRecursive']);
 const KYSELY_WRITE = new Set([
   'insertInto',
   'updateTable',
@@ -755,7 +776,87 @@ const KYSELY_WRITE = new Set([
   'mergeInto',
 ]);
 /** Methods whose table argument may be a list (`TableExpressionOrList`). */
-const KYSELY_LISTS = new Set(['selectFrom', 'updateTable', 'deleteFrom']);
+const KYSELY_LISTS = new Set(['selectFrom', 'updateTable', 'deleteFrom', 'using', 'from']);
+
+/** The method name of a call such as `x.selectFrom(…)`, or undefined. */
+function calledMethod(n: ts.Node): string | undefined {
+  return ts.isCallExpression(n) && ts.isPropertyAccessExpression(n.expression)
+    ? n.expression.name.text
+    : undefined;
+}
+
+/** The name a `with` call gives its CTE: `'jennifers(id, age)'` → `jennifers`. */
+function cteName(call: ts.CallExpression): string | undefined {
+  const a = call.arguments[0];
+  if (!a) return undefined;
+  if (ts.isStringLiteral(a) || ts.isNoSubstitutionTemplateLiteral(a))
+    return a.text.split('(')[0]!.trim();
+  if (!(ts.isArrowFunction(a) || ts.isFunctionExpression(a))) return undefined;
+  const param = a.parameters[0]?.name;
+  if (!param || !ts.isIdentifier(param)) return undefined;
+  let found: string | undefined;
+  const walk = (n: ts.Node): void => {
+    if (found) return;
+    if (
+      ts.isCallExpression(n) &&
+      ts.isIdentifier(n.expression) &&
+      n.expression.text === param.text
+    ) {
+      const lit = n.arguments[0];
+      if (lit && (ts.isStringLiteral(lit) || ts.isNoSubstitutionTemplateLiteral(lit)))
+        found = lit.text.split('(')[0]!.trim();
+    }
+    ts.forEachChild(n, walk);
+  };
+  walk(a.body);
+  return found;
+}
+
+/** The calls before `call` in its builder chain (`a.b().c()` → c's receivers b, then a). */
+function* receivers(call: ts.CallExpression): Generator<ts.CallExpression> {
+  let e: ts.Expression = (call.expression as ts.PropertyAccessExpression).expression;
+  for (;;) {
+    if (ts.isCallExpression(e)) {
+      yield e;
+      e = e.expression;
+    } else if (
+      ts.isPropertyAccessExpression(e) ||
+      ts.isNonNullExpression(e) ||
+      ts.isParenthesizedExpression(e)
+    )
+      e = e.expression;
+    else return;
+  }
+}
+
+/**
+ * Whether the table name `name` in Kysely call `call` refers to a CTE rather than a table. A CTE
+ * named earlier in the same chain, or in an enclosing chain, wins over a table of the same name;
+ * inside its own body a CTE names the real table, unless it is recursive.
+ */
+function isCteReference(call: ts.CallExpression, name: string): boolean {
+  let x: ts.Node = call;
+  for (;;) {
+    if (ts.isCallExpression(x) && ts.isPropertyAccessExpression(x.expression))
+      for (const r of receivers(x)) {
+        const m = calledMethod(r);
+        if (m && KYSELY_WITH.has(m) && cteName(r) === name) return true;
+      }
+    // Step out to the call whose arguments hold `x`.
+    let p: ts.Node | undefined = x.parent;
+    let child: ts.Node = x;
+    while (p && !(ts.isCallExpression(p) && p.arguments.includes(child as ts.Expression))) {
+      if (ts.isSourceFile(p) || ts.isClassLike(p)) return false;
+      child = p;
+      p = p.parent;
+    }
+    if (!p) return false;
+    const m = calledMethod(p);
+    if (m && KYSELY_WITH.has(m) && cteName(p as ts.CallExpression) === name)
+      return m === 'withRecursive';
+    x = p;
+  }
+}
 /** `'asset as a'` → `asset`; `'public.asset'` keeps its schema. */
 function kyselyTableName(t: string): string | null {
   const name = t
@@ -956,7 +1057,14 @@ export class SchemaDetector {
       const callee = node.expression;
       if (!ts.isPropertyAccessExpression(callee)) return;
       const verb = callee.name.text;
-      if ((KYSELY_READ.has(verb) || KYSELY_WRITE.has(verb)) && this.importsKysely(sf)) {
+      const chainStart = KYSELY_CHAIN_READ.get(verb);
+      if (
+        (KYSELY_READ.has(verb) ||
+          KYSELY_WRITE.has(verb) ||
+          (chainStart !== undefined &&
+            [...receivers(node)].some((r) => calledMethod(r) === chainStart))) &&
+        this.importsKysely(sf)
+      ) {
         this.kyselyCall(node, verb, sf, path, checker, ownerOf);
         return;
       }
@@ -1055,7 +1163,7 @@ export class SchemaDetector {
     );
     const write = KYSELY_WRITE.has(verb);
     for (const name of names)
-      if (name)
+      if (name && !isCteReference(node, name))
         this.useEdge(
           'schema.kysely-query',
           write ? 'writes_table' : 'reads_table',
