@@ -301,6 +301,12 @@ export const RULES = {
     labels: I,
     description: 'Configuration (XML, YAML, properties) names a class found by its package path.',
   },
+  'npm.workspace-dependency': {
+    adapter: 'build',
+    labels: O,
+    description:
+      'A package.json lists another package of this repository in dependencies, devDependencies, peerDependencies or optionalDependencies (TS-005).',
+  },
   'build.module-dependency': {
     adapter: 'build',
     labels: OI,

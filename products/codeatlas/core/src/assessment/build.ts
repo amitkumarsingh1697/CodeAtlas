@@ -83,6 +83,28 @@ export function buildAssessment(db: Db, repoId: number, now: Date = new Date()):
     modules.set(name, m);
   }
 
+  // Module declarations and their declared dependencies on each other.
+  const declaredBy = new Map<
+    string,
+    { kind: 'npm' | 'maven' | 'gradle' | 'repository'; dir: string }
+  >();
+  for (const r of db
+    .prepare("SELECT key, data FROM nodes WHERE repo_id = ? AND kind = 'module'")
+    .all(repoId) as { key: string; data: string | null }[]) {
+    const d = (r.data ? JSON.parse(r.data) : {}) as { build?: string; dir?: string };
+    const kind =
+      d.build === 'npm' || d.build === 'maven' || d.build === 'gradle' ? d.build : 'repository';
+    declaredBy.set(r.key, { kind, dir: d.dir ?? '' });
+  }
+  const dependsOn = new Map<string, Set<string>>();
+  for (const r of db
+    .prepare(
+      `SELECT s.key s, d.key d FROM edges e JOIN nodes s ON s.id = e.src JOIN nodes d ON d.id = e.dst
+        WHERE e.repo_id = ? AND e.kind = 'depends_on' AND s.kind = 'module' AND d.kind = 'module'`,
+    )
+    .all(repoId) as { s: string; d: string }[])
+    dependsOn.set(r.s, (dependsOn.get(r.s) ?? new Set()).add(r.d));
+
   const entryPoints = (
     db
       .prepare(
@@ -237,7 +259,20 @@ export function buildAssessment(db: Db, repoId: number, now: Date = new Date()):
     },
     architecture: {
       modules: [...modules]
-        .map(([name, m]) => ({ name, ...m }))
+        .map(([name, m]) => {
+          const decl = declaredBy.get(name);
+          return {
+            name,
+            ...m,
+            ...(decl
+              ? {
+                  kind: decl.kind,
+                  dir: decl.dir,
+                  dependsOn: [...(dependsOn.get(name) ?? [])].sort(),
+                }
+              : {}),
+          };
+        })
         .sort((a, b) => b.files - a.files || a.name.localeCompare(b.name)),
       entryPoints,
       routes,

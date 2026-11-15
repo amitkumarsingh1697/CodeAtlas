@@ -14,6 +14,7 @@ import {
 } from './schema';
 import { isTestSupportPath } from './test-paths';
 import { addOrm, readOrmFiles, type OrmStats } from './extract/orm';
+import { addWorkspaceLinks, type WorkspaceStats } from './workspace-links';
 import { addJpaQueries } from './extract/jpa-query';
 import { addSpringBeans, type SpringBeanStats } from './frameworks/spring-beans';
 import {
@@ -174,6 +175,8 @@ export interface CoverageReport {
   schemaReplay?: SchemaReplayStats;
   /** Maven and Gradle modules, their declared dependencies, and whether imports follow them (JV-001). */
   buildModules?: BuildModuleStats;
+  /** npm/pnpm/Yarn workspace packages (TS-005), when the repository has more than one. */
+  workspacePackages?: WorkspaceStats;
 }
 
 export interface IndexOptions {
@@ -193,6 +196,13 @@ export interface IndexOptions {
 const CHUNK_MAX_LINES = 150;
 const WINDOW_LINES = 80;
 
+const DEP_SCOPES = [
+  'dependencies',
+  'devDependencies',
+  'peerDependencies',
+  'optionalDependencies',
+] as const;
+
 function readPackages(files: DiscoveredFile[], texts: Map<string, string>): PackageInfo[] {
   const out: PackageInfo[] = [];
   for (const f of files) {
@@ -204,11 +214,27 @@ function readPackages(files: DiscoveredFile[], texts: Map<string, string>): Pack
         name?: string;
         bin?: string | Record<string, string>;
         main?: string;
-      };
+      } & Partial<Record<(typeof DEP_SCOPES)[number], Record<string, unknown>>>;
       const dir = f.path === 'package.json' ? '' : f.path.slice(0, -'/package.json'.length);
       const name = pkg.name ?? (dir || 'root');
       const bin = typeof pkg.bin === 'string' ? { [name]: pkg.bin } : (pkg.bin ?? {});
-      out.push({ dir, name, bin, main: pkg.main });
+      const lines = text.split('\n');
+      const deps: NonNullable<PackageInfo['deps']> = [];
+      for (const scope of DEP_SCOPES) {
+        const block = pkg[scope];
+        if (!block || typeof block !== 'object') continue;
+        const start = lines.findIndex((l) => l.includes(`"${scope}"`));
+        for (const [dep, spec] of Object.entries(block)) {
+          const at = lines.findIndex((l, i) => i > start && l.includes(`"${dep}"`));
+          deps.push({
+            name: dep,
+            scope,
+            spec: typeof spec === 'string' ? spec : JSON.stringify(spec),
+            line: at >= 0 ? at + 1 : Math.max(start + 1, 1),
+          });
+        }
+      }
+      out.push({ dir, name, bin, main: pkg.main, deps });
     } catch {
       // invalid package.json: ignore
     }
@@ -387,7 +413,7 @@ function buildAndPersist(
       name: p.name,
       filePath: p.dir ? `${p.dir}/package.json` : 'package.json',
       module: p.name,
-      data: { dir: p.dir },
+      data: { dir: p.dir, build: 'npm' },
     });
   for (const b of buildNodes)
     graph.addNode({
@@ -587,6 +613,8 @@ function buildAndPersist(
     texts,
     buildNodes.length ? buildNearness(buildModel, buildNodes, moduleOf) : undefined,
   );
+  // Workspace packages: declared dependencies between them, checked against imports (TS-005).
+  const workspacePackages = packages.length > 1 ? addWorkspaceLinks(graph, packages) : undefined;
   // Declared module dependencies, and whether cross-module imports follow them (JV-001).
   const buildModules = buildNodes.length
     ? addBuildModuleLinks(graph, buildModel, buildNodes)
@@ -878,6 +906,7 @@ function buildAndPersist(
     springBeans,
     schemaReplay,
     ...(buildModules ? { buildModules } : {}),
+    ...(workspacePackages ? { workspacePackages } : {}),
     manifests: findManifests([
       ...disc.files.map((f) => f.path),
       ...disc.skipped

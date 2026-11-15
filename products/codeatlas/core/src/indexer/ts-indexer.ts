@@ -57,6 +57,8 @@ export interface PackageInfo {
   name: string;
   bin: Record<string, string>;
   main?: string;
+  /** Declared dependencies (any scope), with the package.json line that names each. */
+  deps?: { name: string; scope: string; spec: string; line: number }[];
 }
 
 /** Runtime globals (Node, browsers, extensions). Calls to these are builtin, not unresolved. */
