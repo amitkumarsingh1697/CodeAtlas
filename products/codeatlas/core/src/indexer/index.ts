@@ -5,7 +5,14 @@ import { basename, extname } from 'node:path';
 import type { Db } from '../store/db';
 import { tx } from '../store/db';
 import { indexMarkdown } from './docs';
-import { addSchema, parsePrismaSchema, parseSqlSchema } from './schema';
+import {
+  addSchema,
+  parsePrismaSchema,
+  parseSqlSchema,
+  replaySqlSchema,
+  type SchemaReplayStats,
+} from './schema';
+import { isTestSupportPath } from './test-paths';
 import { addOrm, readOrmFiles, type OrmStats } from './extract/orm';
 import { addJpaQueries } from './extract/jpa-query';
 import { addSpringBeans, type SpringBeanStats } from './frameworks/spring-beans';
@@ -163,6 +170,8 @@ export interface CoverageReport {
   orm: OrmStats;
   /** Spring beans, their injection points, and how many were linked or left as gaps (JV-002). */
   springBeans?: SpringBeanStats;
+  /** SQL migrations replayed in order: renames, drops and DDL built at run time (TS-003). */
+  schemaReplay?: SchemaReplayStats;
   /** Maven and Gradle modules, their declared dependencies, and whether imports follow them (JV-001). */
   buildModules?: BuildModuleStats;
 }
@@ -514,8 +523,10 @@ function buildAndPersist(
       if (isSql) {
         const tables = parseSqlSchema(text);
         const sql = analyseSql(text, f.language);
-        tables.tables.push(...extraTables(sql, tables.tables));
-        addSchema(graph, f.path, tables);
+        // Tables the SQL analyser read that the schema parser did not (replayed after the rest).
+        for (const t of extraTables(sql, tables.tables))
+          tables.ops.push({ op: 'create', table: t, pos: Number.MAX_SAFE_INTEGER, line: t.line });
+        if (!isTestSupportPath(f.path)) graph.addSqlSchema({ path: f.path, parsed: tables });
         sqlFiles.push(addSqlObjects(graph, f.path, f.language, moduleOf(f.path), sql));
         const rec = records.get(f.path);
         if (rec) {
@@ -542,6 +553,9 @@ function buildAndPersist(
     }
   }
 
+  // Every SQL schema batch is read (SQL files above, SQL strings during the TypeScript pass):
+  // replay them in migration order, so renamed and dropped tables and columns are not left behind.
+  const schemaReplay = replaySqlSchema(graph);
   const sqlLinks = linkSqlObjects(graph, sqlFiles);
 
   // ORM models and migrations (Django, SQLAlchemy, JPA, EF Core, Rails, Laravel, GORM,
@@ -855,6 +869,7 @@ function buildAndPersist(
     },
     orm,
     springBeans,
+    schemaReplay,
     ...(buildModules ? { buildModules } : {}),
     manifests: findManifests([
       ...disc.files.map((f) => f.path),
