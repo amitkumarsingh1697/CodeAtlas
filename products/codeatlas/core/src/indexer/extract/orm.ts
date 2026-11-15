@@ -25,6 +25,7 @@ import {
 import type { GraphBuilder, NodeRef, NodeRec } from '../model';
 import { addSchema, type ColumnDef, type TableDef } from '../schema';
 import { isTestSupportPath } from '../test-paths';
+import type { JpaQueryStats } from './jpa-query';
 
 export interface OrmStats {
   files: number;
@@ -33,6 +34,8 @@ export interface OrmStats {
   mappings: number;
   foreignKeys: number;
   unresolved: number;
+  /** JPA queries (JV-004): sites read, sites linked to a table, sites recorded as gaps. */
+  jpaQueries?: JpaQueryStats;
 }
 
 const LIQUIBASE_PATH = /\.(xml|ya?ml|json)$/i;

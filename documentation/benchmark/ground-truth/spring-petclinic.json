@@ -26,7 +26,7 @@
     {
       "type": "reads_table",
       "paths": ["src/main/java"],
-      "rule": "A Spring Data repository reads the primary table of its aggregate type argument."
+      "rule": "A Spring Data repository reads the primary table of its aggregate type argument; a repository method whose @Query (JPQL or SQL) names an entity or table reads that table."
     },
     {
       "type": "writes_table",
@@ -288,15 +288,24 @@
         "path": "src/main/java/org/springframework/samples/petclinic/vet/VetRepository.java",
         "line": 38
       }
+    },
+    {
+      "type": "reads_table",
+      "from": "src/main/java/org/springframework/samples/petclinic/owner/PetTypeRepository.java#PetTypeRepository.findPetTypes",
+      "to": "table:types",
+      "evidence": {
+        "path": "src/main/java/org/springframework/samples/petclinic/owner/PetTypeRepository.java",
+        "line": 36
+      }
     }
   ],
   "outOfScope": [
     {
-      "what": "Vet \u2192 vet_specialties join table (@JoinTable)",
+      "what": "Vet → vet_specialties join table (@JoinTable)",
       "reason": "Join tables are not maps_to in ground truth v1; they need their own relationship type."
     },
     {
-      "what": "Tables reached through cascades or eager fetches (for example OwnerRepository \u2192 pets)",
+      "what": "Tables reached through cascades or eager fetches (for example OwnerRepository → pets)",
       "reason": "Ground truth v1 labels only the aggregate table a repository names directly."
     },
     {

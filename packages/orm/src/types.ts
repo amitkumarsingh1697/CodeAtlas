@@ -117,6 +117,8 @@ export interface OrmModel {
   framework: OrmFramework;
   /** The class or model name. */
   model: string;
+  /** The name queries use for it, when it differs from the class name (JPA `@Entity(name = …)`). */
+  entityName?: string;
   line: number;
   endLine?: number;
   /** The table name as written in the source. */
@@ -332,6 +334,8 @@ export interface ResolvedMapping {
   /** The class in code. */
   owner: string;
   table: string;
+  /** The name queries use for the entity, when it is not the class name (JPA). */
+  entityName?: string;
   framework: OrmFramework;
   access: 'maps' | 'reads' | 'reads-writes';
   confidence: 'observed' | 'inferred';

@@ -2,7 +2,7 @@ export * from './types';
 export * from './naming';
 export { resolveOrm, tableKey } from './resolve';
 export { readPython, pythonFrameworks, djangoAppLabel } from './python';
-export { readJvm, parseAnnotation } from './jvm';
+export { readJvm, parseAnnotation, splitArgs, lit } from './jvm';
 export { readCsharp } from './csharp';
 export { readRuby } from './ruby';
 export { readPhp } from './php';

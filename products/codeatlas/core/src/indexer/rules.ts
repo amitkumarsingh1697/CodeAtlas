@@ -64,6 +64,18 @@ export const RULES = {
     description:
       'A repository or DAO typed by an entity reads and writes that entity table (for example Spring Data `Repository<T, ID>`).',
   },
+  'orm.jpa-query': {
+    adapter: 'orm',
+    labels: OI,
+    description:
+      'A method runs a JPQL or native SQL query written as a literal (`@Query`, `createQuery`, `createNativeQuery`); the entities or tables it names are read or written. Observed when the table name is written in the source, inferred when it is a naming default.',
+  },
+  'orm.jpa-named-query': {
+    adapter: 'orm',
+    labels: I,
+    description:
+      'A method runs a JPA named query (`createNamedQuery`, `@Query(name = …)`) matched by name to one `@NamedQuery` or `@NamedNativeQuery` in the repository.',
+  },
   'sql.object-nesting': {
     adapter: 'sql',
     labels: O,

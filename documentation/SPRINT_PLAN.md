@@ -238,12 +238,13 @@ Per ADR 0030 the report generator (REP-002 rendering, REP-006 HTML, REP-007 reda
 
 ## Commercial roadmap Sprint 4 (started): Java/Spring gate
 
-| ID     | Item                                  | Acceptance criteria                                                                                                       |
-| ------ | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| JX-001 | JAX-RS routes, sub-resource locators  | Root resources and locator chains across files; templates normalised; unreachable resources and `Object` locators as gaps |
-| T-11   | Route gaps kept on large repositories | Unresolved references capped per kind; dropped counts by kind in the coverage report and assessment                       |
+| ID     | Item                                  | Acceptance criteria                                                                                                                         |
+| ------ | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| JX-001 | JAX-RS routes, sub-resource locators  | Root resources and locator chains across files; templates normalised; unreachable resources and `Object` locators as gaps                   |
+| T-11   | Route gaps kept on large repositories | Unresolved references capped per kind; dropped counts by kind in the coverage report and assessment                                         |
+| JV-004 | JPA queries → tables                  | Literal JPQL and SQL linked from the running method through entity mappings; named queries matched by name (inferred); dynamic text as gaps |
 
-**Status:** JX-001 done 2026-11-15 (Keycloak: 485 routes, 408 handlers). Not yet benchmarked. T-11 done 2026-11-15: Keycloak stores all 103 route gaps (0 before). Still open: JV-002, JV-004, JV-005 and the Java capability sheet.
+**Status:** JX-001 done 2026-11-15 (Keycloak: 485 routes, 408 handlers). Not yet benchmarked. T-11 done 2026-11-15: Keycloak stores all 103 route gaps (0 before). JV-004 done 2026-11-15: Keycloak 60 of 102 tables now have a code reader or writer (0 before). Still open: JV-002, JV-005 and the Java capability sheet.
 
 ## Blocked or external track (not sprint-scheduled)
 

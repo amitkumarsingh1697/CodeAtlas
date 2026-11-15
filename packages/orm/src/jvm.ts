@@ -19,7 +19,7 @@ interface Annotation {
 }
 
 /** Splits `a = 1, b = @X(c = 2)` on top-level commas. */
-function splitArgs(s: string): string[] {
+export function splitArgs(s: string): string[] {
   const out: string[] = [];
   let depth = 0;
   let q = '';
@@ -344,6 +344,7 @@ function jpaModel(k: Klass): OrmModel | undefined {
   return {
     framework: 'jpa',
     model: k.name,
+    ...(entityName && entityName !== k.name ? { entityName } : {}),
     line: line(k.node),
     endLine: endLine(k.node),
     table: lit(tableAnn?.args.get('name') ?? tableAnn?.pos[0]),
