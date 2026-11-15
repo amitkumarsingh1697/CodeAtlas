@@ -6,14 +6,14 @@ This runbook is for an engineer at a client who runs CodeAtlas on their own mach
 
 ## 1. Before you start
 
-| Check                         | What to confirm                                                                                                                                                                                                                                                   |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Written authorisation         | The client has authorised analysis of the named repository (statement of work §6).                                                                                                                                                                                |
-| Machine                       | Linux or macOS that the client controls. Linux is the tested platform (CI and the network-denied check). macOS is used in development but has no CI run. Windows is not tested.                                                                                   |
-| Tools                         | Node.js 22.13 or later, pnpm 10, git.                                                                                                                                                                                                                             |
-| Supported stack               | TypeScript/JavaScript with PostgreSQL (see `documentation/product/TS_POSTGRES_CAPABILITY_SHEET.md`) or Java/Spring (`documentation/product/JAVA_CAPABILITY_SHEET.md`). Anything else is indexed for files, structure and git history only.                        |
-| Repository                    | A git checkout of the agreed revision. Note the commit; the assessment records it with the number of uncommitted files.                                                                                                                                           |
-| Files the client must exclude | CodeAtlas has **no exclusion option yet**. Files with credential-like names (`.env`, keys, keystores and similar) are listed but never read. Anything else the client wants left out must be removed from a copy of the checkout before indexing (see section 3). |
+| Check                         | What to confirm                                                                                                                                                                                                                            |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Written authorisation         | The client has authorised analysis of the named repository (statement of work §6).                                                                                                                                                         |
+| Machine                       | Linux or macOS that the client controls. Linux is the tested platform (CI and the network-denied check). macOS is used in development but has no CI run. Windows is not tested.                                                            |
+| Tools                         | Node.js 22.13 or later, pnpm 10, git.                                                                                                                                                                                                      |
+| Supported stack               | TypeScript/JavaScript with PostgreSQL (see `documentation/product/TS_POSTGRES_CAPABILITY_SHEET.md`) or Java/Spring (`documentation/product/JAVA_CAPABILITY_SHEET.md`). Anything else is indexed for files, structure and git history only. |
+| Repository                    | A git checkout of the agreed revision. Note the commit; the assessment records it with the number of uncommitted files.                                                                                                                    |
+| Files the client must exclude | Files with credential-like names (`.env`, keys, keystores and similar) are listed but never read. Anything else the client wants left out is excluded with `--exclude` (see section 3).                                                    |
 
 ## 2. Install (from source)
 
@@ -31,12 +31,7 @@ pnpm install --frozen-lockfile
 ## 3. Prepare the repository
 
 1. Check out the agreed revision.
-2. If files must be excluded, make a copy and delete them from it, then index the copy:
-   ```bash
-   git worktree add ../assessment-copy <commit>
-   rm -r ../assessment-copy/<path to exclude>
-   ```
-   CodeAtlas reports the copy's uncommitted file count, which shows that files were removed.
+2. If files must be excluded, pass one `--exclude` per pattern to each command, for example `--exclude src/payments/ --exclude '*.sql'`. Patterns work like `.gitignore`: a name without a slash matches at any depth, a path with a slash starts at the repository root, `*` stays within a folder and `**` crosses folders. Excluded files are never read and nothing about them is stored. The coverage section lists each pattern with the number of files it excluded, so the pattern text itself is visible there: choose patterns that do not name anything confidential.
 3. Folders named like build output or dependencies (`node_modules`, `dist`, `build`, `target` and similar) are skipped automatically and reported as excluded.
 
 ## 4. Run the analysis with the network off
@@ -47,8 +42,8 @@ All commands run from `products/codeatlas/service`. Pick a data folder for this 
 export CODEATLAS_HOME="$HOME/codeatlas-<client>-<date>"
 export AI_PROVIDER=disabled
 cd products/codeatlas/service
-node --import tsx src/cli.ts assessment /path/to/repository --out assessment.json --max-files all
-node --import tsx src/cli.ts brain /path/to/repository --out brain.html --json brain.json
+node --import tsx src/cli.ts assessment /path/to/repository --out assessment.json --max-files all [--exclude pattern]…
+node --import tsx src/cli.ts brain /path/to/repository --out brain.html --json brain.json [--exclude pattern]…
 ```
 
 - The network is not needed for these commands. To prove that, run them through the network-denied check, which works on Linux only: `scripts/egress-check.sh /path/to/repository` from the repository root. It passes only if nothing tried to connect (`documentation/security/DATA_FLOW.md` §2).
@@ -76,8 +71,7 @@ Before sharing:
 ## 6. Clean up
 
 ```bash
-rm -rf "$CODEATLAS_HOME"            # the index and every copy of source text
-git worktree remove --force ../assessment-copy   # if a copy was made; --force because files were deleted from it
+rm -rf "$CODEATLAS_HOME"   # the index and every copy of source text
 ```
 
 Keep or delete `assessment.json`, `brain.json` and `brain.html` as the statement of work says. Retention terms for the provider's copy are still open (`documentation/security/PRIVACY_AND_DATA_HANDLING.md`).
@@ -91,8 +85,8 @@ Keep or delete `assessment.json`, `brain.json` and `brain.html` as the statement
 | Coverage lower than expected        | Check `coverage.exclusions`, `coverage.limitations` and `coverage.fileLimitReached` in `assessment.json`.                                                                                      |
 | `egress-check.sh` exits 2           | The machine cannot create a network namespace. Run without the check, or on another Linux machine.                                                                                             |
 
-**Rehearsal:** sections 3 to 6 were run on 2026-11-15 on a worktree copy of this repository with one folder deleted: both commands exited 0, the data folder was 0700, the assessment recorded the commit and 33 uncommitted files, and `egress-check.sh` recorded 0 outbound attempts (530 files analysed). This was a rehearsal on our own code, not a client run.
+**Rehearsal:** sections 3 to 6 were run on 2026-11-15 on a worktree copy of this repository with one folder deleted: both commands exited 0, the data folder was 0700, the assessment recorded the commit and 33 uncommitted files, and `egress-check.sh` recorded 0 outbound attempts (530 files analysed). `--exclude` was then run on CodeAtlas core with two folder patterns: 72 files were excluded and none of their paths appeared in the assessment. Both were rehearsals on our own code, not client runs.
 
 **Support bundle.** For any problem, `node --import tsx src/cli.ts support-bundle --out support.json` writes versions, settings, the data folder's state and, per repository, counts and the last ten index-run outcomes. It holds no source text, repository names, paths, token, API keys or model endpoints, and error messages keep only their first line with paths and secret-looking values removed. Read it before sending it.
 
-Not yet available, and tracked separately: an installer (PKG-001) and an exclusion option.
+Not yet available, and tracked separately: an installer (PKG-001), and exclusions in the web UI (the command line has them).

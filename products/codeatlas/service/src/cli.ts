@@ -39,12 +39,15 @@ async function main(): Promise<void> {
       return;
     }
     case 'index': {
-      const { root, scip, maxFiles } = parseIndexArgs(args);
+      const { root, scip, maxFiles, exclude } = parseIndexArgs(args);
       const db = openDb(join(cfg.home, 'codeatlas.db'));
       const report = indexRepository(db, root, {
         onProgress: (m) => process.stderr.write(`… ${m}\n`),
         scip,
-        ...(maxFiles === undefined ? {} : { limits: { maxFiles } }),
+        limits: {
+          ...(maxFiles === undefined ? {} : { maxFiles }),
+          ...(exclude ? { exclude } : {}),
+        },
       });
       process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
       process.stderr.write(limitNotice(report.fileLimit));

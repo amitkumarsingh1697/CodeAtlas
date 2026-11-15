@@ -5,16 +5,17 @@ import { resolve } from 'node:path';
 import { takeFlag } from './brain-command';
 import { parseIndexArgs } from './index-command';
 
-export const ASSESSMENT_USAGE = 'assessment <path> [--out model.json] [--max-files n|all]';
+export const ASSESSMENT_USAGE =
+  'assessment <path> [--out model.json] [--max-files n|all] [--exclude pattern]…';
 
 export function writeAssessment(db: Db, argv: string[], print: (t: string) => void): string {
   const args = [...argv];
   const out = takeFlag(args, '--out');
-  const { root, scip, maxFiles } = parseIndexArgs(args);
+  const { root, scip, maxFiles, exclude } = parseIndexArgs(args);
   const report = indexRepository(db, root, {
     onProgress: (m) => process.stderr.write(`… ${m}\n`),
     scip,
-    ...(maxFiles === undefined ? {} : { limits: { maxFiles } }),
+    limits: { ...(maxFiles === undefined ? {} : { maxFiles }), ...(exclude ? { exclude } : {}) },
   });
   const model = buildAssessment(db, report.repoId);
   const file = resolve(out ?? `${model.scope.repository || 'repository'}-assessment.json`);

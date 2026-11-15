@@ -9,7 +9,8 @@ import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 export const SCIP_USAGE = '[--scip index.scip]… [--run-indexers]';
-export const BRAIN_USAGE = '[--out file.html] [--json model.json] [--max-files n]';
+export const BRAIN_USAGE =
+  '[--out file.html] [--json model.json] [--max-files n] [--exclude pattern]…';
 
 /**
  * `--scip <file>` (repeatable) reads an index an indexer already wrote; `--run-indexers` runs the
@@ -30,6 +31,20 @@ export function scipFlags(a: string[]): { files: string[]; run: boolean } {
     } else i++;
   }
   return { files, run };
+}
+
+/** Every `--exclude <pattern>`, removed from `a` (gitignore-style patterns, see excludeMatcher). */
+export function excludeFlags(a: string[]): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < a.length;) {
+    if (a[i] === '--exclude') {
+      const p = a[i + 1];
+      if (!p) throw new Error('--exclude needs a pattern, such as src/legacy/ or *.sql');
+      out.push(p);
+      a.splice(i, 2);
+    } else i++;
+  }
+  return out;
 }
 
 export function takeFlag(a: string[], name: string): string | undefined {
@@ -53,6 +68,7 @@ export function writeBrain(
   const json = takeFlag(args, '--json');
   const maxFiles = takeFlag(args, '--max-files');
   const scip = scipFlags(args);
+  const exclude = excludeFlags(args);
   const root = args[0];
   if (!root) throw new Error(`usage: brain <path> ${BRAIN_USAGE} ${SCIP_USAGE}`);
   // A brain covers the whole repository: no file-count limit unless one is asked for.
@@ -61,7 +77,7 @@ export function writeBrain(
   const report = indexRepository(db, root, {
     onProgress: (m) => process.stderr.write(`… ${m}\n`),
     scip,
-    limits: { maxFiles: limit },
+    limits: { maxFiles: limit, ...(exclude.length ? { exclude } : {}) },
   });
   for (const s of report.scip?.sources ?? [])
     process.stderr.write(

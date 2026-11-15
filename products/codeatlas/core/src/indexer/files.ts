@@ -80,6 +80,39 @@ export interface DiscoveryLimits {
   maxFileBytes: number;
   /** Lockfiles are often larger than source files and are only counted, so they get more room. */
   maxLockfileBytes: number;
+  /**
+   * Paths the user excluded (`--exclude`), as gitignore-style patterns. Matching files are not
+   * read, not recorded file by file, and counted per pattern; only the patterns appear in output.
+   */
+  exclude?: readonly string[];
+}
+
+const escapeRe = (s: string) => s.replace(/[.+^${}()|[\]\\]/gu, '\\$&');
+
+/**
+ * Gitignore-style matching for user exclusions. A pattern without a slash matches a name at any
+ * depth (`*.sql`, `fixtures`); one with a slash is anchored at the repository root
+ * (`src/legacy/`, `docs/*.md`). `*` and `?` stay within one folder, `**` crosses folders, and a
+ * pattern that names a folder also excludes everything in it.
+ */
+export function excludeMatcher(patterns: readonly string[]): (path: string) => boolean {
+  const res = patterns.map((raw) => {
+    let p = raw.trim().replace(/\\/gu, '/');
+    if (p.startsWith('./')) p = p.slice(2);
+    const anchored = p.startsWith('/') || p.replace(/\/$/u, '').includes('/');
+    p = p.replace(/^\/+/u, '').replace(/\/+$/u, '');
+    if (!p || /^[*/]+$/u.test(p) || p.split('/').some((s) => s === '..' || s === '.'))
+      throw new Error(`--exclude "${raw}" would exclude the whole repository or leave it`);
+    const body = p
+      .split('/')
+      .map((seg) =>
+        seg === '**' ? '(?:.*)' : escapeRe(seg).replace(/\*/gu, '[^/]*').replace(/\?/gu, '[^/]'),
+      )
+      .join('/')
+      .replace(/\(\?:\.\*\)\//gu, '(?:.*/)?');
+    return new RegExp(`${anchored ? '^' : '(?:^|/)'}${body}(?:/.*)?$`, 'u');
+  });
+  return (path) => res.some((r) => r.test(path));
 }
 
 /** Defaults for the local service. The brain command lifts the file count (see brain-command.ts). */
@@ -207,9 +240,18 @@ export function discoverFiles(root: string, limits: DiscoveryLimits = LIMITS): D
     record(path, c, status, 'not read', skipReasonText(reason, limits), bytes);
   };
   const byName = (path: string) => classify({ path, head: null });
+  const patterns = limits.exclude ?? [];
+  const excluded = excludeMatcher(patterns);
+  const perPattern = new Map<string, number>(patterns.map((p) => [p, 0]));
 
   for (const path of paths) {
     if (records.has(path)) continue;
+    if (patterns.length && excluded(path)) {
+      // Not read and not recorded: the user asked for this path to stay out of the index.
+      const first = patterns.find((p) => excludeMatcher([p])(path))!;
+      perPattern.set(first, perPattern.get(first)! + 1);
+      continue;
+    }
     const segs = path.split('/');
     if (submodules.has(path)) {
       skip(path, { ...byName(path), language: 'Git submodule', category: 'data' }, 'submodule');
@@ -308,6 +350,8 @@ export function discoverFiles(root: string, limits: DiscoveryLimits = LIMITS): D
     });
     record(path, c, 'text', 'Generic text indexer', undefined, size);
   }
+  for (const [p, n] of perPattern)
+    unlisted.push({ path: p, reason: `excluded by the user: ${n} file${n === 1 ? '' : 's'}` });
   return { files, skipped, usedGit, records, texts, unlisted };
 }
 
