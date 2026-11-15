@@ -9,6 +9,8 @@ import { addSchema, parsePrismaSchema, parseSqlSchema } from './schema';
 import { addOrm, readOrmFiles, type OrmStats } from './extract/orm';
 import { addJpaQueries } from './extract/jpa-query';
 import { addSpringBeans, type SpringBeanStats } from './frameworks/spring-beans';
+import { addBuildModuleLinks, buildModuleNodes, type BuildModuleStats } from './build-module-links';
+import { readBuildModel } from './build-modules';
 import {
   addSqlObjects,
   analyseSql,
@@ -156,6 +158,8 @@ export interface CoverageReport {
   orm: OrmStats;
   /** Spring beans, their injection points, and how many were linked or left as gaps (JV-002). */
   springBeans?: SpringBeanStats;
+  /** Maven and Gradle modules, their declared dependencies, and whether imports follow them (JV-001). */
+  buildModules?: BuildModuleStats;
 }
 
 export interface IndexOptions {
@@ -343,9 +347,22 @@ function buildAndPersist(
   const packages = readPackages(disc.files, texts);
   const pkgDirs = packages.map((p) => p.dir);
   const repoName = basename(repo.root);
+  // Maven and Gradle modules own their folders too; a package.json in the same folder wins.
+  const buildModel = readBuildModel(disc.files, texts);
+  const buildNodes = buildModuleNodes(
+    buildModel,
+    new Set(packages.map((p) => p.name)),
+    new Set(pkgDirs),
+  );
+  const modDirs = [...pkgDirs, ...buildNodes.map((b) => b.dir)];
   const moduleOf = (p: string): string => {
-    const d = nearest(p, pkgDirs);
-    return d === undefined ? repoName : (packages.find((x) => x.dir === d)?.name ?? repoName);
+    const d = nearest(p, modDirs);
+    if (d === undefined) return repoName;
+    return (
+      packages.find((x) => x.dir === d)?.name ??
+      buildNodes.find((b) => b.dir === d)?.key ??
+      repoName
+    );
   };
 
   const graph = new GraphBuilder();
@@ -358,7 +375,21 @@ function buildAndPersist(
       module: p.name,
       data: { dir: p.dir },
     });
-  if (!packages.length)
+  for (const b of buildNodes)
+    graph.addNode({
+      kind: 'module',
+      key: b.key,
+      name: b.module.name,
+      filePath: b.module.file || undefined,
+      module: b.key,
+      data: {
+        dir: b.dir,
+        build: b.module.build,
+        ...(b.module.coords ? { coords: b.module.coords } : {}),
+        ...(b.module.gradlePath ? { gradlePath: b.module.gradlePath } : {}),
+      },
+    });
+  if (!packages.length && !buildNodes.length)
     graph.addNode({
       kind: 'module',
       key: repoName,
@@ -525,6 +556,10 @@ function buildAndPersist(
   );
   // Spring bean wiring: which bean each bean is given (JV-002).
   const springBeans = addSpringBeans(graph, disc.files, texts);
+  // Declared module dependencies, and whether cross-module imports follow them (JV-001).
+  const buildModules = buildNodes.length
+    ? addBuildModuleLinks(graph, buildModel, buildNodes)
+    : undefined;
 
   // Entry points declared in package.json (observed: they are declared).
   for (const p of packages) {
@@ -809,6 +844,7 @@ function buildAndPersist(
     },
     orm,
     springBeans,
+    ...(buildModules ? { buildModules } : {}),
     manifests: findManifests([
       ...disc.files.map((f) => f.path),
       ...disc.skipped
