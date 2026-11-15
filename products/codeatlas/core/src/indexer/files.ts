@@ -44,6 +44,7 @@ export type SkipReason =
   | 'secret'
   | 'binary'
   | 'too_large'
+  | 'too_deep'
   | 'generated'
   | 'limit'
   | 'ignored_dir'
@@ -88,6 +89,13 @@ export const LIMITS: DiscoveryLimits = {
   maxLockfileBytes: 16 * 1024 * 1024,
 };
 
+/**
+ * Deepest bracket nesting a file may have and still be parsed. The TypeScript 5.9 parser
+ * overflows the default Node stack between 500 and 1,000 nested brackets, and the checker and
+ * CodeAtlas's own tree walks recurse too, so a hostile file could stop the whole run (PKG-003).
+ */
+export const MAX_NESTING = 256;
+
 const size = (bytes: number) =>
   bytes >= 1024 * 1024 ? `${bytes / (1024 * 1024)} MiB` : `${bytes / 1024} KiB`;
 
@@ -109,6 +117,7 @@ export const SKIP_REASON_TEXT: Record<SkipReason, string> = {
   secret: 'may contain credentials; never read',
   binary: 'binary content',
   too_large: `larger than the ${size(LIMITS.maxFileBytes)} per-file limit`,
+  too_deep: `brackets nested deeper than ${MAX_NESTING} levels; parsers would exhaust the stack`,
   generated: 'generated',
   limit: `beyond the ${LIMITS.maxFiles.toLocaleString('en-US')}-file limit`,
   ignored_dir: 'in a build-output or dependency folder',
@@ -117,6 +126,21 @@ export const SKIP_REASON_TEXT: Record<SkipReason, string> = {
   unreadable: 'could not be read',
   lfs_pointer: 'Git LFS pointer; the real content is not in the clone',
 };
+
+/**
+ * Whether `text` nests `(`, `[` or `{` deeper than `limit`. Brackets inside strings and comments
+ * count too, so the result can only err towards caution.
+ */
+export function nestsDeeperThan(text: string, limit: number = MAX_NESTING): boolean {
+  let depth = 0;
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charCodeAt(i);
+    if (c === 40 || c === 91 || c === 123) {
+      if (++depth > limit) return true;
+    } else if ((c === 41 || c === 93 || c === 125) && depth > 0) depth--;
+  }
+  return false;
+}
 
 /** Adapter routing for a classified file. */
 export function fileLangOf(path: string, c: Classification): FileLang {
@@ -266,6 +290,10 @@ export function discoverFiles(root: string, limits: DiscoveryLimits = LIMITS): D
       continue;
     }
     const text = decodeText(buf);
+    if (nestsDeeperThan(text)) {
+      skip(path, c, 'too_deep', 'excluded', size);
+      continue;
+    }
     texts.set(path, text);
     const lang = fileLangOf(path, c);
     files.push({

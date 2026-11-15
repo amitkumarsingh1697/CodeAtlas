@@ -28,6 +28,7 @@ else
   echo "egress-check: cannot create a network namespace (needs unshare -rn or passwordless sudo)" >&2
   exit 2
 fi
+echo "egress-check: network namespace via ${AS[*]:-} ${NETNS[*]}" >&2
 
 cat >"$WORK/inner.sh" <<'INNER'
 set -euo pipefail

@@ -259,8 +259,9 @@ Per ADR 0030 the report generator (REP-002 rendering, REP-006 HTML, REP-007 reda
 
 ## Commercial roadmap Sprint 5 (started): packaging, egress proof and security
 
-| ID      | Item                 | Acceptance criteria                                                                                                                              |
-| ------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| PKG-004 | Network-denied check | Index, assessment and brain run with the network denied in CI; any outbound attempt fails the job; `DATA_FLOW.md` and a customer data-flow sheet |
+| ID      | Item                     | Acceptance criteria                                                                                                                                                        |
+| ------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PKG-004 | Network-denied check     | Index, assessment and brain run with the network denied in CI; any outbound attempt fails the job; `DATA_FLOW.md` and a customer data-flow sheet                           |
+| PKG-003 | Hostile-repository tests | The doc 06 §5 exercises run against one hostile repository; nothing outside the checkout is read, nothing is run, and malformed or deeply nested files do not stop the run |
 
-**Status:** PKG-004 done 2026-11-15: `scripts/egress-check.sh` in CI job `egress`; CodeAtlas core and Immich indexed offline with 0 outbound attempts. The paid report does not exist yet (ADR 0030), so the assessment model stands in for it. Still open: PKG-001 to PKG-003, PKG-005 to PKG-007, LIC-001.
+**Status:** PKG-004 done 2026-11-15: `scripts/egress-check.sh` in CI job `egress`; CodeAtlas core and Immich indexed offline with 0 outbound attempts. The paid report does not exist yet (ADR 0030), so the assessment model stands in for it. PKG-003 done 2026-11-15: `hostile-repo.test.ts` found one real defect, a file nested 3,000 brackets deep stopped the whole index (TypeScript parser stack overflow), fixed by excluding files nested deeper than 256 levels. Still open: PKG-001, PKG-002, PKG-005 to PKG-007, LIC-001.
