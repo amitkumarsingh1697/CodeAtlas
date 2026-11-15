@@ -145,7 +145,7 @@ export const RULES = {
     adapter: 'schema',
     labels: OI,
     description:
-      'A Kysely query-builder call names a table (`selectFrom`, `insertInto`, `updateTable`, `deleteFrom`, joins); observed when the receiver type resolves to kysely.',
+      'A Kysely query-builder call names a table (`selectFrom`, `insertInto`, `updateTable`, `deleteFrom`, joins, `deleteFrom(…).using`, `updateTable(…).from`); a name bound by `with` earlier in the chain is the CTE, not the table; observed when the receiver type resolves to kysely.',
   },
   'schema.sql-string': {
     adapter: 'schema',

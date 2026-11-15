@@ -156,4 +156,73 @@ describe('Kysely query-builder table links (TS-004)', () => {
       ['writes_table', 'observed'],
     ]);
   });
+
+  it('reads CTE names as CTEs, even when a CTE shadows a table, and reads delete using and update from', () => {
+    const CTES = [
+      "import { Kysely } from 'kysely';",
+      '',
+      'export class AssetRepository {',
+      '  constructor(private db: Kysely<any>) {}',
+      '  update(id: string) {',
+      '    return this.db',
+      "      .with('asset', (qb) => qb.updateTable('asset').set({ id }).returningAll())",
+      "      .selectFrom('asset')",
+      '      .selectAll();',
+      '  }',
+      '  create() {',
+      '    return this.db',
+      "      .with('album', (db) => db.insertInto('album').values({ id: '1' }).returningAll())",
+      "      .with('album_asset', (db) =>",
+      "        db.insertInto('album_asset').expression((eb) => eb.selectFrom('album').select('album.id')),",
+      '      )',
+      "      .selectFrom('album')",
+      '      .selectAll();',
+      '  }',
+      '  buckets() {',
+      "    return this.db.with('asset', (qb) => qb.selectFrom('asset').selectAll()).selectFrom('asset').selectAll();",
+      '  }',
+      '  materialized() {',
+      "    return this.db.with((cte) => cte('album').materialized(), (db) => db.selectFrom('asset')).selectFrom('album');",
+      '  }',
+      '  tree() {',
+      "    return this.db.withRecursive('album(id)', (db) => db.selectFrom('album').unionAll(db.selectFrom('album'))).selectFrom('album');",
+      '  }',
+      '  cleanup() {',
+      "    return this.db.deleteFrom('audit').using('asset').whereRef('audit.id', '=', 'asset.id');",
+      '  }',
+      '  relink() {',
+      "    return this.db.updateTable('album_asset').from(['album', 'asset']).set({ x: 1 });",
+      '  }',
+      '  index() {',
+      "    return this.db.schema.createIndex('idx').on('asset').using('gist');",
+      '  }',
+      '}',
+      '',
+    ].join('\n');
+    const { db, repoId, root } = index({ ...base, 'src/asset.repository.ts': CTES });
+    roots.push(root);
+    const R = 'src/asset.repository.ts#AssetRepository';
+    const mine = (name: string) =>
+      linksTo(db, repoId, name)
+        .filter((l) => l.from.startsWith(R))
+        .map((l) => [l.kind, l.from.slice(R.length + 1), l.line]);
+    // The CTE body names the real table; the query after it reads the CTE, not the table.
+    expect(mine('asset')).toEqual([
+      ['reads_table', 'buckets', 21],
+      ['reads_table', 'cleanup', 30],
+      ['reads_table', 'materialized', 24],
+      ['reads_table', 'relink', 33],
+      ['writes_table', 'update', 7],
+    ]);
+    // `withRecursive` names its own body too, so `tree` reads no table.
+    expect(mine('album')).toEqual([
+      ['writes_table', 'create', 13],
+      ['reads_table', 'relink', 33],
+    ]);
+    expect(mine('album_asset')).toEqual([
+      ['writes_table', 'create', 15],
+      ['writes_table', 'relink', 33],
+    ]);
+    expect(mine('audit')).toEqual([['writes_table', 'cleanup', 30]]);
+  });
 });
