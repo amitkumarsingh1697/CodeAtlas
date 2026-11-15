@@ -498,6 +498,28 @@ const DRIZZLE_READ = new Set([
   'crossJoin',
 ]);
 const DRIZZLE_WRITE = new Set(['insert', 'update', 'delete']);
+/**
+ * Kysely builder methods whose first argument names a table, checked against kysely 0.28.8 and 0.29.9
+ * (`QueryCreator` in dist/esm/query-creator.d.ts and the `SelectQueryBuilder` joins).
+ */
+const KYSELY_READ = new Set(['selectFrom', 'innerJoin', 'leftJoin', 'rightJoin', 'fullJoin']);
+const KYSELY_WRITE = new Set([
+  'insertInto',
+  'updateTable',
+  'deleteFrom',
+  'replaceInto',
+  'mergeInto',
+]);
+/** Methods whose table argument may be a list (`TableExpressionOrList`). */
+const KYSELY_LISTS = new Set(['selectFrom', 'updateTable', 'deleteFrom']);
+/** `'asset as a'` → `asset`; `'public.asset'` keeps its schema. */
+function kyselyTableName(t: string): string | null {
+  const name = t
+    .trim()
+    .split(/\s+as\s+/iu)[0]!
+    .trim();
+  return /^[A-Za-z_][\w$]*(\.[A-Za-z_][\w$]*)?$/u.test(name) ? name : null;
+}
 const SQL_START = /^\s*(SELECT|INSERT|UPDATE|DELETE|WITH|REPLACE|MERGE)\b/i;
 
 function lineOf(sf: ts.SourceFile, pos: number): number {
@@ -664,6 +686,10 @@ export class SchemaDetector {
       const callee = node.expression;
       if (!ts.isPropertyAccessExpression(callee)) return;
       const verb = callee.name.text;
+      if ((KYSELY_READ.has(verb) || KYSELY_WRITE.has(verb)) && this.importsKysely(sf)) {
+        this.kyselyCall(node, verb, sf, path, checker, ownerOf);
+        return;
+      }
       const write = DRIZZLE_WRITE.has(verb);
       if (!write && !DRIZZLE_READ.has(verb)) return;
       const arg = node.arguments[0];
@@ -712,6 +738,63 @@ export class SchemaDetector {
     }
   }
 
+  private readonly kyselyFiles = new WeakMap<ts.SourceFile, boolean>();
+
+  /** Kysely calls are read only in files that import `kysely` (directly or a `*kysely*` package). */
+  private importsKysely(sf: ts.SourceFile): boolean {
+    let v = this.kyselyFiles.get(sf);
+    if (v === undefined) {
+      v = sf.statements.some(
+        (st) =>
+          ts.isImportDeclaration(st) &&
+          ts.isStringLiteral(st.moduleSpecifier) &&
+          /(^|[/-])kysely([/-]|$)/u.test(st.moduleSpecifier.text),
+      );
+      this.kyselyFiles.set(sf, v);
+    }
+    return v;
+  }
+
+  /**
+   * A Kysely query-builder call naming a table (`db.selectFrom('asset')`, `.insertInto('album')`,
+   * `.innerJoin('album_asset', …)`). Observed when the checker resolves the receiver to a type
+   * declared by the kysely package; inferred when it cannot (for example, dependencies not installed).
+   */
+  private kyselyCall(
+    node: ts.CallExpression,
+    verb: string,
+    sf: ts.SourceFile,
+    path: string,
+    checker: ts.TypeChecker,
+    ownerOf: () => NodeRef,
+  ): void {
+    const arg = node.arguments[0];
+    if (!arg) return;
+    const names = (
+      ts.isArrayLiteralExpression(arg) && KYSELY_LISTS.has(verb) ? [...arg.elements] : [arg]
+    )
+      .map((e) => (ts.isStringLiteral(e) || ts.isNoSubstitutionTemplateLiteral(e) ? e.text : null))
+      .map((t) => t && kyselyTableName(t));
+    const receiver = (node.expression as ts.PropertyAccessExpression).expression;
+    const decls = checker.getTypeAtLocation(receiver).getSymbol()?.getDeclarations() ?? [];
+    const typed = decls.some((d) =>
+      /[/\\]node_modules[/\\]kysely[/\\]/u.test(d.getSourceFile().fileName),
+    );
+    const write = KYSELY_WRITE.has(verb);
+    for (const name of names)
+      if (name)
+        this.useEdge(
+          'schema.kysely-query',
+          write ? 'writes_table' : 'reads_table',
+          name,
+          ownerOf(),
+          typed ? 'observed' : 'inferred',
+          path,
+          lineOf(sf, (node.expression as ts.PropertyAccessExpression).name.getStart(sf)),
+          `Kysely ${verb}('${name}')${typed ? '' : ' (receiver type not resolved; matched by import and method name)'}`,
+        );
+  }
+
   /** A Prisma client call (`prisma.user.findMany()`): inferred read or write of model `user`. */
   prismaCall(node: ts.CallExpression, sf: ts.SourceFile, path: string, owner: NodeRef): void {
     const callee = node.expression;
@@ -735,7 +818,8 @@ export class SchemaDetector {
   }
 
   private useEdge(
-    method: 'schema.drizzle-query' | 'schema.sql-string' | 'schema.prisma-client',
+    method:
+      'schema.drizzle-query' | 'schema.sql-string' | 'schema.prisma-client' | 'schema.kysely-query',
     kind: 'reads_table' | 'writes_table',
     table: string,
     owner: NodeRef,

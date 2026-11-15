@@ -105,6 +105,12 @@ export const RULES = {
     labels: I,
     description: 'A Prisma client call (`prisma.user.findMany()`) is matched to a model by name.',
   },
+  'schema.kysely-query': {
+    adapter: 'schema',
+    labels: OI,
+    description:
+      'A Kysely query-builder call names a table (`selectFrom`, `insertInto`, `updateTable`, `deleteFrom`, joins); observed when the receiver type resolves to kysely.',
+  },
   'schema.sql-string': {
     adapter: 'schema',
     labels: I,
