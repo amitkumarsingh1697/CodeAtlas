@@ -663,9 +663,10 @@ function buildAndPersist(
       commits: h.commits,
       churn: h.churn,
       lastChange: h.lastChange,
+      // Author email addresses are personal data the views never show, so they are not stored
+      // (data minimisation, documentation/security/PRIVACY_AND_DATA_HANDLING.md). The name is kept.
       authors: h.authors.slice(0, 5).map((a) => ({
         name: a.name,
-        email: a.email,
         commits: a.commits,
         share: Math.round((a.lines / total) * 100) / 100,
       })),

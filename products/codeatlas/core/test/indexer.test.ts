@@ -311,6 +311,20 @@ describe('queries and views', () => {
     expect(own.modules[0]?.busFactor).toBe(1);
   });
 
+  it('stores git author names but not their email addresses', () => {
+    const file = nodeByKey(db, repoId, 'file', 'src/handlers.ts');
+    const authors = file?.data.authors as Record<string, unknown>[] | undefined;
+    expect(authors?.length).toBeGreaterThan(0);
+    for (const a of authors ?? []) {
+      expect(a).not.toHaveProperty('email');
+      expect(typeof a.name).toBe('string');
+    }
+    const raw = db.prepare('SELECT data FROM nodes WHERE repo_id = ?').all(repoId) as {
+      data: string;
+    }[];
+    expect(raw.map((r) => r.data).join('\n')).not.toContain('asha@example.com');
+  });
+
   it('knowledge view lists docs and undocumented hotspots', () => {
     const k = knowledgeView(db, repoId);
     expect(k.docs[0]).toMatchObject({ path: 'docs/README.md', title: 'Fixture App' });

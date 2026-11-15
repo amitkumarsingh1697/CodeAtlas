@@ -8,6 +8,13 @@ All notable changes to this repository. Format: [Keep a Changelog](https://keepa
 
 - Extracted from the NEXORA monorepo on 2026-11-14 with the git history of the CodeAtlas, ArchLens and shared-package paths. CVForge, its database setup and its screenshots were removed; root configuration, CI, docker compose, README, CLAUDE.md, CONTRIBUTING and SECURITY now cover CodeAtlas and ArchLens only. The ArchLens bundle was rebuilt, because the NEXORA build had picked up `source-map-support` through a CVForge dependency hoisted into the workspace.
 
+### Legal and licensing (2026-11-15)
+
+- Legal and licensing review, not legal advice: `docs/legal/LEGAL_REVIEW.md` (LR-01 to LR-13).
+- Root `NOTICE`; the ArchLens bundle ships `THIRD-PARTY-LICENSES.txt` with the full licence of every bundled package, the libpg_query and PostgreSQL notices for `libpg-query.wasm`, and the source of the MPL-2.0 and LGPL-2.1 grammars.
+- Git author email addresses are no longer stored in the index (names are kept).
+- Privacy and data handling rewritten for CodeAtlas and ArchLens from the code; CONTRIBUTING asks for a DCO sign-off; ADR 0030 gains licence rules for the paid module.
+
 ### Added
 
 - Monorepo foundation: pnpm workspace, strict TypeScript, ESLint, Prettier, vitest; shared `ai`, `logging`, `validation` packages.

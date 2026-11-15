@@ -68,7 +68,20 @@ describe('ArchLens brain bundle', () => {
     ).toBe(sha(join(fresh, 'brain.mjs')));
     expect(sha(join(skill, 'GRAMMARS.json'))).toBe(sha(join(fresh, 'GRAMMARS.json')));
     expect(sha(join(skill, 'runtime.pack.gz'))).toBe(sha(join(fresh, 'runtime.pack.gz')));
+    expect(sha(join(skill, 'THIRD-PARTY-LICENSES.txt'))).toBe(
+      sha(join(fresh, 'THIRD-PARTY-LICENSES.txt')),
+    );
   }, 60_000);
+
+  it('ships the full licence of every bundled package and the source of copyleft grammars', () => {
+    const notices = readFileSync(join(skill, 'THIRD-PARTY-LICENSES.txt'), 'utf8');
+    for (const pkg of ['typescript', 'web-tree-sitter', 'libpg-query', 'yaml', 'smol-toml'])
+      expect(notices).toMatch(new RegExp(`^==== ${pkg} `, 'm'));
+    const grammars = JSON.parse(readFileSync(join(skill, 'GRAMMARS.json'), 'utf8'))
+      .grammars as Record<string, { license: string; repository: string; version: string }>;
+    for (const g of Object.values(grammars).filter((x) => /^(MPL|LGPL|GPL)/.test(x.license)))
+      expect(notices).toContain(`${g.repository} at ${g.version}`);
+  });
 
   it('keeps the skill under the 200-file upload limit of the Claude app', () => {
     const count = (d: string): number =>
