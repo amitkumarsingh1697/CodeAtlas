@@ -383,10 +383,17 @@ function readGradleBuilds(
 }
 
 /** Every module a module reaches through declared dependencies and parent POMs (itself excluded). */
-export function dependencyClosure(model: BuildModel): Map<string, Set<string>> {
+/** A Maven `test` scope or a Gradle `test…` configuration (testImplementation, testFixturesApi…). */
+export const isTestScope = (scope: string): boolean => /^test/iu.test(scope);
+
+export function dependencyClosure(
+  model: BuildModel,
+  opts: { mainOnly?: boolean } = {},
+): Map<string, Set<string>> {
   const direct = new Map<string, Set<string>>();
   for (const d of model.dependencies)
-    direct.set(d.from, new Set([...(direct.get(d.from) ?? []), d.to]));
+    if (!opts.mainOnly || !isTestScope(d.scope))
+      direct.set(d.from, new Set([...(direct.get(d.from) ?? []), d.to]));
   // A child POM inherits its parent's dependencies.
   const own = (dir: string, seen = new Set<string>()): Set<string> => {
     if (seen.has(dir)) return new Set();

@@ -128,3 +128,27 @@ export function addBuildModuleLinks(
       .slice(0, 20),
   };
 }
+
+/**
+ * How near one file is to another in the build (for choosing among beans): 0 when both are in the
+ * same build module, 1 when the first file's module declares a main (not test-scope) dependency on
+ * the second's (directly, transitively or through a parent POM), 2 otherwise.
+ */
+export function buildNearness(
+  model: BuildModel,
+  nodes: BuildModuleNode[],
+  moduleOf: (path: string) => string,
+): (a: string, b: string) => 0 | 1 | 2 {
+  // Beans run with main code, so test-scope dependencies (a test utility that pulls in every
+  // persistence module) do not make two modules neighbours.
+  const closure = dependencyClosure(model, { mainOnly: true });
+  const dirOf = new Map(nodes.map((n) => [n.key, n.dir]));
+  return (a, b) => {
+    const ma = moduleOf(a);
+    const mb = moduleOf(b);
+    if (ma === mb) return 0;
+    const da = dirOf.get(ma);
+    const db = dirOf.get(mb);
+    return da !== undefined && db !== undefined && closure.get(da)?.has(db) ? 1 : 2;
+  };
+}

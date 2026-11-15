@@ -1,6 +1,6 @@
 # Adjudication guide (ACC-001)
 
-**Status:** draft, 2026-11-15. Needs founder approval, and decision D-9 (who reviews the labels) is open. Until then every ground-truth file is `claude-labelled` at best.
+**Status:** draft, 2026-11-15. Decision D-9 (2026-11-15) settles who reviews: Claude labels, and the founder checks a random 10% sample of each file. A file stays `claude-labelled` until that check is done.
 
 ## 1. What a label is
 
@@ -39,6 +39,7 @@ Each ground-truth file names, per type, the folders whose relationships of that 
 ## 5. Adjudication
 
 1. The labeller records `labelledBy`, the date and the method.
-2. A reviewer who did not write the labels checks them (the sample size and who reviews are decision D-9). Disagreements are settled against the source and recorded in `outOfScope` or a label `note`.
-3. Only after review is `status` set to `spot-checked` (sample) or `adjudicated` (every label).
-4. A change to a rule in section 2 means re-checking every label of that type.
+2. A reviewer who did not write the labels checks them. Under decision D-9 the founder reviews a random sample of 10% of each type's labels, rounded up, drawn with `scripts/review-sample.ts <file> <seed>` (the same seed gives the same sample). Disagreements are settled against the source and recorded in `outOfScope` or a label `note`.
+3. Only after review is `status` set to `spot-checked` (sample) or `adjudicated` (every label), with `reviewedBy`, `reviewedOn` and, for a sample, `review: { checked, disagreements, seed }`.
+4. Figures may be quoted outside the company from an `adjudicated` file, or from a `spot-checked` file whose review covers at least 10% of its labels (`isPublishable`). The scorer prints a warning above every other result.
+5. A change to a rule in section 2 means re-checking every label of that type.

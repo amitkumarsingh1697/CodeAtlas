@@ -154,3 +154,87 @@ describe('Spring bean wiring (JV-002)', () => {
     });
   });
 });
+
+describe('Spring beans across build modules (JV-001)', () => {
+  // Two persistence modules each define a QueueDAO bean and an equally named retry template;
+  // only one of them runs in a deployment. `core` depends on neither, and the default it can see
+  // in `api` may be replaced by either, so it stays ambiguous.
+  const dao = (mod: string, cls: string) =>
+    j(
+      `package ${mod};`,
+      'import org.springframework.stereotype.Component;',
+      'import api.QueueDAO;',
+      '@Component',
+      `public class ${cls} implements QueueDAO {}`,
+    );
+  const config = (mod: string) =>
+    j(
+      `package ${mod};`,
+      'import org.springframework.context.annotation.*;',
+      'import org.springframework.beans.factory.annotation.Qualifier;',
+      'import api.QueueDAO;',
+      '@Configuration',
+      `public class ${mod.toUpperCase()}Config {`,
+      '  @Bean',
+      '  public Retry retryTemplate() { return new Retry(); }',
+      '  @Bean',
+      '  public Sweeper sweeper(QueueDAO queueDAO, @Qualifier("retryTemplate") Retry retry) { return null; }',
+      '  @Bean',
+      '  public Sweeper wrapped(Sweeper inner) { return inner; }',
+      '}',
+    );
+  const { db, repoId } = index({
+    'settings.gradle': "include 'api', 'core', 'mysql', 'redis'\n",
+    'api/build.gradle': '',
+    'core/build.gradle': "dependencies { implementation project(':api') }\n",
+    // A test-scope dependency does not put redis's beans next to mysql's in a deployment.
+    'mysql/build.gradle':
+      "dependencies {\n  implementation project(':api')\n  testImplementation project(':redis')\n}\n",
+    'redis/build.gradle': "dependencies { implementation project(':api') }\n",
+    'api/src/main/java/api/QueueDAO.java': j('package api;', 'public interface QueueDAO {}'),
+    'api/src/main/java/api/Retry.java': j('package api;', 'public class Retry {}'),
+    'api/src/main/java/api/Sweeper.java': j('package api;', 'public class Sweeper {}'),
+    // A default in the shared module, which mysql and redis (built on it) can replace.
+    'api/src/main/java/api/NoopQueueDAO.java': dao('api', 'NoopQueueDAO'),
+    'mysql/src/main/java/mysql/MysqlQueueDAO.java': dao('mysql', 'MysqlQueueDAO'),
+    'redis/src/main/java/redis/RedisQueueDAO.java': dao('redis', 'RedisQueueDAO'),
+    'mysql/src/main/java/mysql/MYSQLConfig.java': config('mysql'),
+    'redis/src/main/java/redis/REDISConfig.java': config('redis'),
+    'core/src/main/java/core/Service.java': j(
+      'package core;',
+      'import org.springframework.stereotype.Service;',
+      'import api.QueueDAO;',
+      '@Service',
+      'public class Service { Service(QueueDAO queueDAO) {} }',
+    ),
+    // A Gradle test fixture is test support, not a bean of the application.
+    'mysql/src/testFixtures/java/mysql/FixtureQueueDAO.java': dao('mysql', 'FixtureQueueDAO'),
+  });
+
+  it('prefers a bean of the consumer’s own module, then of its declared dependencies', () => {
+    const rows = db
+      .prepare(
+        `SELECT s.key AS src, d.key AS dst, e.detail FROM edges e JOIN nodes s ON s.id = e.src JOIN nodes d ON d.id = e.dst
+          WHERE e.repo_id = ? AND e.kind = 'injects'`,
+      )
+      .all(repoId) as { src: string; dst: string; detail: string }[];
+    expect(
+      rows.map((r) => `${r.src.replace(/^.*#/u, '')} -> ${r.dst.replace(/^.*#/u, '')}`).sort(),
+    ).toEqual([
+      // `wrapped` is not given itself; it is given the other Sweeper of its module.
+      'MYSQLConfig.sweeper -> MYSQLConfig.retryTemplate',
+      'MYSQLConfig.sweeper -> MysqlQueueDAO',
+      'MYSQLConfig.wrapped -> MYSQLConfig.sweeper',
+      'REDISConfig.sweeper -> REDISConfig.retryTemplate',
+      'REDISConfig.sweeper -> RedisQueueDAO',
+      'REDISConfig.wrapped -> REDISConfig.sweeper',
+    ]);
+    expect(rows.every((r) => r.detail.includes('nearest module'))).toBe(true);
+    const gaps = db
+      .prepare("SELECT text, reason FROM unresolved WHERE repo_id = ? AND kind = 'injection'")
+      .all(repoId) as { text: string; reason: string }[];
+    expect(gaps.map((g) => `${g.text} | ${g.reason}`)).toEqual([
+      'Service constructor queueDAO: QueueDAO | more than one bean of this type, and none is primary or qualified (3 candidates)',
+    ]);
+  });
+});

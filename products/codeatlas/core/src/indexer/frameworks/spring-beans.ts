@@ -276,6 +276,8 @@ export interface Injection {
   consumer: { cls: BeanClass; method?: BeanMethod };
   point: InjectionPoint;
   providers: Provider[];
+  /** The choice among several beans fell to the one nearest the consumer in the build. */
+  nearest?: boolean;
 }
 
 export interface InjectionGap {
@@ -287,8 +289,24 @@ export interface InjectionGap {
 
 const decap = (s: string) => (/^[A-Z]{2}/u.test(s) ? s : s.charAt(0).toLowerCase() + s.slice(1));
 
-/** Resolves every injection point against the beans of the repository. */
-export function resolveSpringBeans(classes: BeanClass[]): {
+/**
+ * How near a provider's file is to a consumer's in the build: 0 in the same build module, 1 in a
+ * module it declares a dependency on (directly, transitively or through its parent), 2 elsewhere.
+ */
+export type BeanNearness = (consumerPath: string, providerPath: string) => 0 | 1 | 2;
+
+/**
+ * Resolves every injection point against the beans of the repository. With `near`, a point that
+ * several beans could fill (and that neither @Primary nor the name settles) takes the beans of the
+ * consumer's own build module, else of its declared dependencies: two modules that each define the
+ * bean (MySQL and Redis persistence, say) are alternatives, and the one deployed with the consumer
+ * is the one that defines it next to it. It does not narrow when a competing bean's module depends
+ * on the chosen bean's module, since that bean can replace a default in the same deployment.
+ */
+export function resolveSpringBeans(
+  classes: BeanClass[],
+  near?: BeanNearness,
+): {
   injections: Injection[];
   gaps: InjectionGap[];
 } {
@@ -348,13 +366,43 @@ export function resolveSpringBeans(classes: BeanClass[]): {
 
   const injections: Injection[] = [];
   const gaps: InjectionGap[] = [];
+  /** The candidates in the first non-empty tier: the consumer's module, then its dependencies. */
+  const nearestOf = (cls: BeanClass, cands: Provider[]): Provider[] => {
+    if (!near || cands.length < 2) return cands;
+    for (const t of [0, 1] as const) {
+      const hit = cands.filter((p) => near(cls.path, p.cls.path) === t);
+      if (!hit.length) continue;
+      // A competing bean from a module built on the chosen bean's module is an override or an
+      // alternative to a default (es7 persistence replacing core's no-op index): leave it open.
+      const overridden = cands.some(
+        (o) => !hit.includes(o) && hit.some((h) => near(o.cls.path, h.cls.path) === 1),
+      );
+      return overridden ? cands : hit;
+    }
+    return cands;
+  };
+  /** @Primary, else the field or parameter name; Spring's order for one bean among several. */
+  const pick = (cands: Provider[], point: InjectionPoint): Provider[] => {
+    const primary = cands.filter((p) => p.primary);
+    if (primary.length === 1) return primary;
+    const byParam = cands.filter((p) => p.names.includes(point.name));
+    return byParam.length === 1 ? byParam : cands;
+  };
   const resolve = (cls: BeanClass, point: InjectionPoint, method?: BeanMethod) => {
     let cands = providers.filter((p) => provides(p, point.type));
     // A bean is not injected into itself (a decorator taking the interface it implements).
-    cands = cands.filter((p) => !(p.kind === 'class' && p.cls === cls && !method));
+    // Nor is a @Bean method given its own result (an adapter taking the type it returns).
+    cands = cands.filter(
+      (p) => !(p.kind === 'class' && p.cls === cls && !method) && !(method && p.method === method),
+    );
     if (!cands.length) return; // supplied by Spring, a library, or configuration
+    let nearest = false;
     if (point.qualifier) {
-      const q = cands.filter((p) => p.names.includes(point.qualifier!));
+      let q = cands.filter((p) => p.names.includes(point.qualifier!));
+      if (q.length > 1) {
+        q = nearestOf(cls, q);
+        nearest = q.length === 1;
+      }
       if (q.length !== 1) {
         gaps.push({
           cls,
@@ -366,11 +414,13 @@ export function resolveSpringBeans(classes: BeanClass[]): {
       }
       cands = q;
     } else if (!point.many && cands.length > 1) {
-      const primary = cands.filter((p) => p.primary);
       // Spring also matches a field or parameter name to a bean name.
-      const byParam = cands.filter((p) => p.names.includes(point.name));
-      if (primary.length === 1) cands = primary;
-      else if (byParam.length === 1) cands = byParam;
+      let one = pick(cands, point);
+      if (one.length > 1) {
+        one = pick(nearestOf(cls, cands), point);
+        nearest = one.length === 1;
+      }
+      if (one.length === 1) cands = one;
       else {
         gaps.push({
           cls,
@@ -381,7 +431,12 @@ export function resolveSpringBeans(classes: BeanClass[]): {
         return;
       }
     }
-    injections.push({ consumer: { cls, ...(method ? { method } : {}) }, point, providers: cands });
+    injections.push({
+      consumer: { cls, ...(method ? { method } : {}) },
+      point,
+      providers: cands,
+      ...(nearest ? { nearest } : {}),
+    });
   };
   for (const c of classes) {
     if (!c.stereotype || c.stereotype === 'spring-data') continue;
@@ -395,6 +450,8 @@ export interface SpringBeanStats {
   beans: number;
   points: number;
   linked: number;
+  /** Of the linked points, those settled by the nearest build module (JV-001). */
+  byModule: number;
   gaps: number;
 }
 
@@ -403,6 +460,7 @@ export function addSpringBeans(
   graph: GraphBuilder,
   files: { path: string; language: string }[],
   texts: Map<string, string>,
+  near?: BeanNearness,
 ): SpringBeanStats {
   const classes: BeanClass[] = [];
   for (const f of files) {
@@ -410,7 +468,7 @@ export function addSpringBeans(
     const text = texts.get(f.path);
     if (text !== undefined) classes.push(...readSpringBeans(f.path, text));
   }
-  const stats: SpringBeanStats = { beans: 0, points: 0, linked: 0, gaps: 0 };
+  const stats: SpringBeanStats = { beans: 0, points: 0, linked: 0, byModule: 0, gaps: 0 };
   for (const c of classes) {
     if (c.stereotype) stats.beans++;
     stats.beans += c.beanMethods.length;
@@ -418,7 +476,7 @@ export function addSpringBeans(
       stats.points += c.points.length + c.beanMethods.reduce((n, m) => n + m.points.length, 0);
   }
   if (!stats.beans) return stats;
-  const { injections, gaps } = resolveSpringBeans(classes);
+  const { injections, gaps } = resolveSpringBeans(classes, near);
 
   const byFile = new Map<string, NodeRec[]>();
   for (const n of graph.nodes.values())
@@ -450,10 +508,11 @@ export function addSpringBeans(
         confidence: 'inferred',
         evidencePath: inj.consumer.cls.path,
         evidenceLine: inj.point.line,
-        detail: `${inj.consumer.method ? `@Bean ${inj.consumer.method.name}` : inj.consumer.cls.name} is given ${p.method ? `@Bean ${p.method.name}` : p.cls.name} (${inj.point.via} ${inj.point.name}: ${inj.point.many ? 'every ' : ''}${inj.point.type})`,
+        detail: `${inj.consumer.method ? `@Bean ${inj.consumer.method.name}` : inj.consumer.cls.name} is given ${p.method ? `@Bean ${p.method.name}` : p.cls.name} (${inj.point.via} ${inj.point.name}: ${inj.point.many ? 'every ' : ''}${inj.point.type})${inj.nearest ? ', the bean of the nearest module' : ''}`,
       });
     }
     stats.linked++;
+    if (inj.nearest) stats.byModule++;
   }
   for (const g of gaps) {
     stats.gaps++;

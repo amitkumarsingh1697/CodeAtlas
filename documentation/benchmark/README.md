@@ -2,12 +2,12 @@
 
 This folder holds the CodeAtlas accuracy benchmark (roadmap ACC-001 to ACC-004, package doc 07 §3).
 
-| File                                           | What it is                                                                                                                                      |
-| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| [ADJUDICATION_GUIDE.md](ADJUDICATION_GUIDE.md) | How a relationship is labelled, matched and adjudicated (ACC-001). **Draft** until the founder approves it and decision D-9 names the reviewer. |
-| [CORPUS.md](CORPUS.md)                         | Pinned repositories, commits and licences (ACC-002)                                                                                             |
-| `ground-truth/*.json`                          | One labelled file per repository, validated by `groundTruthSchema` (`products/codeatlas/core/src/benchmark/ground-truth.ts`)                    |
-| [BENCHMARK_HISTORY.md](BENCHMARK_HISTORY.md)   | One row per scored run (ACC-004)                                                                                                                |
+| File                                           | What it is                                                                                                                                         |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [ADJUDICATION_GUIDE.md](ADJUDICATION_GUIDE.md) | How a relationship is labelled, matched and adjudicated (ACC-001). **Draft**; decision D-9 (2026-11-15): the founder spot-checks 10% of each file. |
+| [CORPUS.md](CORPUS.md)                         | Pinned repositories, commits and licences (ACC-002)                                                                                                |
+| `ground-truth/*.json`                          | One labelled file per repository, validated by `groundTruthSchema` (`products/codeatlas/core/src/benchmark/ground-truth.ts`)                       |
+| [BENCHMARK_HISTORY.md](BENCHMARK_HISTORY.md)   | One row per scored run (ACC-004)                                                                                                                   |
 
 ## Running it
 
@@ -26,4 +26,4 @@ CI runs the scorer's unit tests and validates every ground-truth file (`core/tes
 
 ## Rule for quoting figures
 
-Only figures from a ground-truth file whose `labelling.status` is `adjudicated` may be used outside the company. The scorer prints a warning above every other result.
+Only figures from a ground-truth file that is `adjudicated`, or `spot-checked` by a named reviewer on at least 10% of its labels (decision D-9), may be used outside the company. The scorer prints a warning above every other result. Draw a review sample with `pnpm --filter @nexora/codeatlas-core exec tsx scripts/review-sample.ts <file> <seed>`.

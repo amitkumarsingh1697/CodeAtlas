@@ -9,7 +9,12 @@ import { addSchema, parsePrismaSchema, parseSqlSchema } from './schema';
 import { addOrm, readOrmFiles, type OrmStats } from './extract/orm';
 import { addJpaQueries } from './extract/jpa-query';
 import { addSpringBeans, type SpringBeanStats } from './frameworks/spring-beans';
-import { addBuildModuleLinks, buildModuleNodes, type BuildModuleStats } from './build-module-links';
+import {
+  addBuildModuleLinks,
+  buildModuleNodes,
+  buildNearness,
+  type BuildModuleStats,
+} from './build-module-links';
 import { readBuildModel } from './build-modules';
 import {
   addSqlObjects,
@@ -555,7 +560,13 @@ function buildAndPersist(
     ormFiles.flatMap((f) => f.models),
   );
   // Spring bean wiring: which bean each bean is given (JV-002).
-  const springBeans = addSpringBeans(graph, disc.files, texts);
+  // In a multi-module build, a bean that several modules define is taken from the nearest one.
+  const springBeans = addSpringBeans(
+    graph,
+    disc.files,
+    texts,
+    buildNodes.length ? buildNearness(buildModel, buildNodes, moduleOf) : undefined,
+  );
   // Declared module dependencies, and whether cross-module imports follow them (JV-001).
   const buildModules = buildNodes.length
     ? addBuildModuleLinks(graph, buildModel, buildNodes)

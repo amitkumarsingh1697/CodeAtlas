@@ -5,6 +5,7 @@ import {
   benchmarkMarkdown,
   groundTruthSchema,
   normaliseKey,
+  reviewSample,
   scoreBenchmark,
   type GroundTruth,
   type Prediction,
@@ -132,6 +133,62 @@ describe('benchmark scoring (ACC-004)', () => {
       '0.1.0',
     );
     expect(adjudicated).not.toContain('must not be quoted externally');
+  });
+
+  it('lets a spot-checked file be quoted once a reviewer checked at least 10% of its labels (D-9)', () => {
+    const many: GroundTruth = {
+      ...truth,
+      relationships: Array.from({ length: 25 }, (_, i) => ({
+        type: i < 20 ? ('handled_by' as const) : ('maps_to' as const),
+        from: i < 20 ? `GET /r${i}` : `src/E${i}.java#E${i}`,
+        to: i < 20 ? `src/A.java#A.r${i}` : `table:e${i}`,
+        evidence: { path: 'src/A.java', line: i + 1 },
+      })),
+    };
+    const md = (labelling: Partial<GroundTruth['labelling']>) =>
+      benchmarkMarkdown(
+        scoreBenchmark({ ...many, labelling: { ...many.labelling, ...labelling } }, []),
+        '0.1.0',
+      );
+    const reviewed = { reviewedBy: 'Amit', reviewedOn: '2026-11-16' };
+    // 10% of 25 is 3 labels (rounded up).
+    const ok = md({
+      status: 'spot-checked',
+      ...reviewed,
+      review: { checked: 3, disagreements: 1, seed: 's' },
+    });
+    expect(ok).not.toContain('must not be quoted externally');
+    expect(ok).toContain(
+      '3 of 25 labels checked by Amit on 2026-11-16 (1 corrected; sample seed `s`)',
+    );
+    expect(
+      md({
+        status: 'spot-checked',
+        ...reviewed,
+        review: { checked: 2, disagreements: 0, seed: 's' },
+      }),
+    ).toContain('must not be quoted externally');
+    expect(
+      md({ status: 'spot-checked', review: { checked: 3, disagreements: 0, seed: 's' } }),
+    ).toContain('must not be quoted externally');
+  });
+
+  it('draws a reproducible review sample of at least 10% of each type', () => {
+    const many: GroundTruth = {
+      ...truth,
+      relationships: Array.from({ length: 25 }, (_, i) => ({
+        type: i < 20 ? ('handled_by' as const) : ('maps_to' as const),
+        from: `f${i}`,
+        to: `t${i}`,
+        evidence: { path: 'src/A.java', line: i + 1 },
+      })),
+    };
+    const a = reviewSample(many, 'seed-1');
+    expect(a).toEqual(reviewSample(many, 'seed-1'));
+    expect(a.filter((r) => r.type === 'handled_by')).toHaveLength(2);
+    expect(a.filter((r) => r.type === 'maps_to')).toHaveLength(1);
+    expect(new Set(a.map((r) => r.from)).size).toBe(3);
+    expect(reviewSample(many, 'seed-2').map((r) => r.from)).not.toEqual(a.map((r) => r.from));
   });
 
   it('rejects ground truth without a full commit hash or with an absolute path', () => {
