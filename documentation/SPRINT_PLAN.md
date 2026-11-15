@@ -228,6 +228,14 @@ Per ADR 0030 the report generator (REP-002 rendering, REP-006 HTML, REP-007 reda
 
 **Status:** done 2026-11-15 for the tooling and the PetClinic file. Figures stay engineering-only until labels are reviewed (D-9).
 
+## Commercial roadmap Sprint 3 (started): TypeScript/PostgreSQL gate
+
+| ID     | Item                               | Acceptance criteria                                                                                                                                                                                       |
+| ------ | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TS-004 | Kysely query-builder → table links | `selectFrom`, joins, `insertInto`, `updateTable`, `deleteFrom`, `replaceInto`, `mergeInto` with literal table names, in files that import kysely; observed only when the receiver type resolves to kysely |
+
+**Status:** TS-004 Kysely part done 2026-11-15 (Immich: 61 of 85 tables now have a code reader or writer, 34 without the rule). Still open: TS-001, TS-003, TS-005, the rest of TS-004 and the capability sheet (CAP-001).
+
 ## Blocked or external track (not sprint-scheduled)
 
 | Item                                                                  | Blocker                                       | Owner                                            |
