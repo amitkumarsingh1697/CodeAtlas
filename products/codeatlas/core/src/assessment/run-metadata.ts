@@ -34,11 +34,16 @@ export function runMetadata(input: {
     incremental: input.incremental,
     scipFiles: input.scipFiles,
     runIndexers: input.runIndexers,
+    // Only present when used, so a run without exclusions keeps the same hash as before.
+    ...(input.limits.exclude?.length ? { excludePatterns: input.limits.exclude.length } : {}),
   };
+  // The patterns themselves only enter the hash: they can name parts of the code the client
+  // wants kept private.
+  const hashed = { ...scanPolicy, exclude: [...(input.limits.exclude ?? [])].sort() };
   return {
     engineVersion: ENGINE_VERSION,
     schemaVersion: SCHEMA_VERSION,
-    scanPolicyHash: sha256(JSON.stringify(scanPolicy)),
+    scanPolicyHash: sha256(JSON.stringify(input.limits.exclude?.length ? hashed : scanPolicy)),
     scanPolicy,
     ruleCatalogueHash: ruleCatalogueHash(),
     typescriptVersion: ts.version,

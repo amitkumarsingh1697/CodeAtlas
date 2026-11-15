@@ -31,6 +31,8 @@ export const runMetadataSchema = z.strictObject({
     incremental: z.boolean(),
     scipFiles: z.number().int(),
     runIndexers: z.boolean(),
+    /** Number of user exclusion patterns (absent in runs made before they existed). */
+    excludePatterns: z.number().int().min(0).optional(),
   }),
   /** SHA-256 of the rule catalogue (rule ids, adapters and labels), so rule changes are visible. */
   ruleCatalogueHash: z.string().regex(/^[0-9a-f]{64}$/),

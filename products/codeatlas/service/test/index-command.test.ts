@@ -30,6 +30,15 @@ describe('parseIndexArgs', () => {
     expect(() => parseIndexArgs(['/repo', '--max-files'])).toThrow(/needs a value/);
     expect(() => parseIndexArgs([])).toThrow(/usage/);
   });
+
+  it('collects every --exclude pattern, in any position', () => {
+    expect(parseIndexArgs(['--exclude', 'src/legacy/', '/repo', '--exclude', '*.sql'])).toEqual({
+      root: '/repo',
+      scip: { files: [], run: false },
+      exclude: ['src/legacy/', '*.sql'],
+    });
+    expect(() => parseIndexArgs(['/repo', '--exclude'])).toThrow(/needs a pattern/);
+  });
 });
 
 describe('limitNotice', () => {
