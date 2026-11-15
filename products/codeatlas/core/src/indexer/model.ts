@@ -1,3 +1,4 @@
+import type { SqlSchemaParse } from './schema';
 import type { RuleId } from './rules';
 
 export type Confidence = 'observed' | 'inferred' | 'unknown';
@@ -71,7 +72,17 @@ export type GraphOp =
   | { t: 'n'; n: NodeRec }
   | { t: 'e'; e: EdgeRec }
   | { t: 'u'; u: UnresolvedRec }
-  | { t: 'd'; ref: NodeRef; data: Record<string, unknown> };
+  | { t: 'd'; ref: NodeRef; data: Record<string, unknown> }
+  | { t: 's'; s: SqlSchemaRec };
+
+/**
+ * SQL schema read from one statement batch (a SQL file, or one SQL string in a migration), kept
+ * until every source is read so migrations can be replayed in order (`replaySqlSchema`).
+ */
+export interface SqlSchemaRec {
+  path: string;
+  parsed: SqlSchemaParse;
+}
 
 /** Accumulates the graph, de-duplicating nodes and edges. */
 export class GraphBuilder {
@@ -90,6 +101,8 @@ export class GraphBuilder {
   private readonly unresolvedPerKind = new Map<string, number>();
   /** When set, every change is also appended here (copied), so it can be replayed later. */
   recorder: GraphOp[] | null = null;
+  /** SQL schema batches in the order they were read; consumed by `replaySqlSchema`. */
+  readonly sqlSchema: SqlSchemaRec[] = [];
 
   static id(ref: NodeRef): string {
     return `${ref.kind}:${ref.key}`;
@@ -150,11 +163,18 @@ export class GraphBuilder {
     if (n) n.data = { ...n.data, ...definedOnly(data) };
   }
 
+  /** Queue one SQL schema batch for the ordered replay. */
+  addSqlSchema(rec: SqlSchemaRec): void {
+    this.recorder?.push({ t: 's', s: structuredClone(rec) });
+    this.sqlSchema.push(structuredClone(rec));
+  }
+
   /** Apply a recorded change. */
   replay(op: GraphOp): void {
     if (op.t === 'n') this.addNode(structuredClone(op.n));
     else if (op.t === 'e') this.addEdge(op.e);
     else if (op.t === 'u') this.addUnresolved(op.u);
+    else if (op.t === 's') this.addSqlSchema(op.s);
     else this.mergeData(op.ref, op.data);
   }
 

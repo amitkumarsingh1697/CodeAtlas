@@ -173,14 +173,36 @@ export function parseSqlColumn(def: string): ColumnDef | null {
 }
 
 /** Tables in SQL text. `lineBase` is the line of the first character (for SQL inside code). */
-export function parseSqlSchema(
-  sqlText: string,
-  lineBase = 1,
-): { tables: TableDef[]; foreignKeys: ForeignKey[] } {
+/**
+ * One schema change, in statement order (`pos` is the offset in the batch), so migrations can be
+ * replayed: tables created, columns and foreign keys added, tables and columns renamed or dropped.
+ */
+export type SchemaOp = { pos: number; line: number } & (
+  | { op: 'create'; table: TableDef }
+  | { op: 'add-column'; table: string; column: ColumnDef }
+  | { op: 'fk'; fk: ForeignKey }
+  | { op: 'rename-table'; table: string; to: string }
+  | { op: 'rename-column'; table: string; column: string; to: string }
+  | { op: 'drop-table'; table: string }
+  | { op: 'drop-column'; table: string; column: string }
+);
+
+export interface SqlSchemaParse {
+  tables: TableDef[];
+  foreignKeys: ForeignKey[];
+  ops: SchemaOp[];
+  /** DDL whose table name is a template substitution (built at run time), by line. */
+  dynamic: { line: number; text: string }[];
+}
+
+const bare = (n: string) => unquote(n.split('.').pop()!);
+
+export function parseSqlSchema(sqlText: string, lineBase = 1): SqlSchemaParse {
   const sql = stripSqlComments(sqlText);
   const lineAt = (pos: number) => lineBase + (sql.slice(0, pos).match(/\n/g)?.length ?? 0);
   const tables: TableDef[] = [];
   const foreignKeys: ForeignKey[] = [];
+  const ops: SchemaOp[] = [];
   const create = new RegExp(
     `\\bCREATE\\s+(?:(?:GLOBAL\\s+|LOCAL\\s+)?(?:TEMP|TEMPORARY)\\s+|UNLOGGED\\s+)?TABLE\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?(${NAME})\\s*\\(`,
     'gi',
@@ -213,7 +235,9 @@ export function parseSqlSchema(
         from.forEach((f, k) => {
           const col = table.columns.find((x) => x.name === f);
           if (col) col.references = { table: target, column: to[k] };
-          foreignKeys.push({ table: name, column: f, refTable: target, refColumn: to[k], line });
+          const fk = { table: name, column: f, refTable: target, refColumn: to[k], line };
+          foreignKeys.push(fk);
+          ops.push({ op: 'fk', fk, pos: m!.index + 1, line });
         });
       } else if ((c = /^UNIQUE\s*(?:KEY|INDEX)?\s*\S*?\s*\(([^)]*)\)/i.exec(body))) {
         const cols = names(c[1]!);
@@ -233,17 +257,21 @@ export function parseSqlSchema(
         if (!col) continue;
         col.line = line;
         table.columns.push(col);
-        if (col.references)
-          foreignKeys.push({
+        if (col.references) {
+          const fk = {
             table: name,
             column: col.name,
             refTable: col.references.table,
             refColumn: col.references.column,
             line,
-          });
+          };
+          foreignKeys.push(fk);
+          ops.push({ op: 'fk', fk, pos: m.index + 1, line });
+        }
       }
     }
     tables.push(table);
+    ops.push({ op: 'create', table, pos: m.index, line: table.line });
     create.lastIndex = b.end;
   }
 
@@ -255,9 +283,35 @@ export function parseSqlSchema(
   for (let m; (m = alter.exec(sql));) {
     const name = unquote(m[1]!.split('.').pop()!);
     const line = lineAt(m.index);
-    for (const { part } of splitTop(m[2]!)) {
+    for (const { part, offset } of splitTop(m[2]!)) {
       const act = part.trim();
+      const pos = m.index + m[0].length - m[2]!.length + offset;
       let c;
+      if ((c = new RegExp(`^RENAME\\s+TO\\s+(${NAME})`, 'i').exec(act))) {
+        ops.push({ op: 'rename-table', table: name, to: bare(c[1]!), pos, line });
+        continue;
+      }
+      if (
+        !/^RENAME\s+CONSTRAINT\b/i.test(act) &&
+        (c = new RegExp(`^RENAME\\s+(?:COLUMN\\s+)?(${NAME})\\s+TO\\s+(${NAME})`, 'i').exec(act))
+      ) {
+        ops.push({
+          op: 'rename-column',
+          table: name,
+          column: unquote(c[1]!),
+          to: unquote(c[2]!),
+          pos,
+          line,
+        });
+        continue;
+      }
+      if (
+        !/^DROP\s+(CONSTRAINT|PRIMARY|FOREIGN|INDEX|KEY|DEFAULT|NOT)\b/i.test(act) &&
+        (c = new RegExp(`^DROP\\s+(?:COLUMN\\s+)?(?:IF\\s+EXISTS\\s+)?(${NAME})`, 'i').exec(act))
+      ) {
+        ops.push({ op: 'drop-column', table: name, column: unquote(c[1]!), pos, line });
+        continue;
+      }
       if (
         (c = new RegExp(
           `^ADD\\s+(?:CONSTRAINT\\s+\\S+\\s+)?FOREIGN\\s+KEY\\s*\\(([^)]*)\\)\\s*REFERENCES\\s+(${NAME})\\s*(?:\\(([^)]*)\\))?`,
@@ -265,15 +319,17 @@ export function parseSqlSchema(
         ).exec(act))
       ) {
         const to = c[3] ? names(c[3]) : [];
-        names(c[1]!).forEach((f, k) =>
-          foreignKeys.push({
+        names(c[1]!).forEach((f, k) => {
+          const fk = {
             table: name,
             column: f,
             refTable: unquote(c![2]!.split('.').pop()!),
             refColumn: to[k],
             line,
-          }),
-        );
+          };
+          foreignKeys.push(fk);
+          ops.push({ op: 'fk', fk, pos, line });
+        });
       } else if ((c = /^ADD\s+(?:COLUMN\s+)?(?:IF\s+NOT\s+EXISTS\s+)?(.+)$/is.exec(act))) {
         if (/^(CONSTRAINT|PRIMARY|UNIQUE|CHECK|INDEX)\b/i.test(c[1]!)) continue;
         const col = parseSqlColumn(c[1]!);
@@ -285,18 +341,45 @@ export function parseSqlSchema(
           tables.push(t);
         }
         if (!t.columns.some((x) => x.name === col.name)) t.columns.push(col);
-        if (col.references)
-          foreignKeys.push({
+        ops.push({ op: 'add-column', table: name, column: { ...col }, pos, line });
+        if (col.references) {
+          const fk = {
             table: name,
             column: col.name,
             refTable: col.references.table,
             refColumn: col.references.column,
             line,
-          });
+          };
+          foreignKeys.push(fk);
+          ops.push({ op: 'fk', fk, pos, line });
+        }
       }
     }
   }
-  return { tables, foreignKeys };
+
+  // DROP TABLE [IF EXISTS] a, b [CASCADE]
+  const drop = new RegExp(
+    `\\bDROP\\s+TABLE\\s+(?:IF\\s+EXISTS\\s+)?(${NAME}(?:\\s*,\\s*${NAME})*)`,
+    'gi',
+  );
+  for (let m; (m = drop.exec(sql));)
+    for (const n of m[1]!.split(/\s*,\s*/))
+      ops.push({ op: 'drop-table', table: bare(n), pos: m.index, line: lineAt(m.index) });
+
+  // A template substitution (` ? ` in the text the TypeScript reader passes) where a table name
+  // belongs: the statement is built at run time and cannot be replayed.
+  const dynamic: SqlSchemaParse['dynamic'] = [];
+  const dyn =
+    /\b(?:(?:CREATE\s+(?:\w+\s+)?|ALTER\s+|DROP\s+)TABLE\s+(?:IF\s+(?:NOT\s+)?EXISTS\s+)?(?:ONLY\s+)?["`]?\s*\?|RENAME\s+TO\s+["`]?\s*\?)/gi;
+  for (let m; (m = dyn.exec(sql));) {
+    const line = lineAt(m.index);
+    if (!dynamic.some((d) => d.line === line))
+      dynamic.push({
+        line,
+        text: sql.slice(m.index).split(';')[0]!.replace(/\s+/g, ' ').trim().slice(0, 120),
+      });
+  }
+  return { tables, foreignKeys, ops, dynamic };
 }
 
 export interface ForeignKey {
@@ -484,6 +567,167 @@ export function addSchema(
   }
 }
 
+export interface SchemaReplayStats {
+  /** SQL statement batches read (SQL files and SQL strings in code). */
+  batches: number;
+  renamedTables: number;
+  renamedColumns: number;
+  droppedTables: number;
+  droppedColumns: number;
+  /** Renames and drops of a table no earlier batch created (made elsewhere, or not read). */
+  unknownTargets: number;
+  /** DDL whose table name is built at run time, recorded as `query` gaps. */
+  dynamic: number;
+}
+
+/**
+ * Replays the queued SQL schema batches (`GraphBuilder.addSqlSchema`) in migration order and adds
+ * the tables they leave to the graph. Order: by path, comparing numbers as numbers (`V2` before
+ * `V10`, timestamped files by time), then in the order each file's statements were read. A
+ * renamed table keeps its creating statement as its definition and records each rename in
+ * `renamedFrom`; dropped tables and columns are removed. Call once every SQL source is read.
+ */
+export function replaySqlSchema(graph: GraphBuilder): SchemaReplayStats {
+  const stats: SchemaReplayStats = {
+    batches: graph.sqlSchema.length,
+    renamedTables: 0,
+    renamedColumns: 0,
+    droppedTables: 0,
+    droppedColumns: 0,
+    unknownTargets: 0,
+    dynamic: 0,
+  };
+  const recs = graph.sqlSchema.map((r, i) => ({ r, i }));
+  recs.sort((a, b) =>
+    a.r.path === b.r.path ? a.i - b.i : a.r.path.localeCompare(b.r.path, 'en', { numeric: true }),
+  );
+  interface Entry {
+    def: TableDef;
+    path: string;
+    renamedFrom: { name: string; path: string; line: number }[];
+    /** Only ALTER TABLE … ADD named it: its CREATE TABLE (or the rename to it) was not read. */
+    partial?: boolean;
+  }
+  const state = new Map<string, Entry>();
+  let fks: ForeignKey[] = [];
+  const colOf = (e: Entry, name: string) =>
+    e.def.columns.find((c) => c.name === name) ??
+    e.def.columns.find((c) => c.name.toLowerCase() === name.toLowerCase());
+  const merge = (into: Entry, from: TableDef) => {
+    for (const c of from.columns) if (!colOf(into, c.name)) into.def.columns.push({ ...c });
+  };
+  for (const { r } of recs) {
+    const ops = [...r.parsed.ops].sort((a, b) => a.pos - b.pos);
+    for (const o of ops) {
+      if (o.op === 'create') {
+        const k = tableKey(o.table.name);
+        const prev = state.get(k);
+        if (prev) {
+          merge(prev, o.table);
+          prev.partial = false;
+        } else
+          state.set(k, {
+            def: { ...o.table, columns: o.table.columns.map((c) => ({ ...c })) },
+            path: r.path,
+            renamedFrom: [],
+          });
+      } else if (o.op === 'add-column') {
+        const k = tableKey(o.table);
+        let e = state.get(k);
+        if (!e) {
+          e = {
+            def: { name: o.table, columns: [], line: o.line, source: 'sql' },
+            path: r.path,
+            renamedFrom: [],
+            partial: true,
+          };
+          state.set(k, e);
+        }
+        if (!colOf(e, o.column.name)) e.def.columns.push({ ...o.column });
+      } else if (o.op === 'fk') fks.push({ ...o.fk });
+      else if (o.op === 'rename-table') {
+        const k = tableKey(o.table);
+        const e = state.get(k);
+        if (!e) {
+          stats.unknownTargets++;
+          continue;
+        }
+        const nk = tableKey(o.to);
+        state.delete(k);
+        e.renamedFrom.push({ name: e.def.name, path: r.path, line: o.line });
+        e.def = { ...e.def, name: o.to };
+        const there = state.get(nk);
+        if (there) {
+          merge(e, there.def);
+          e.renamedFrom.push(...there.renamedFrom);
+        }
+        e.partial = false;
+        state.set(nk, e);
+        for (const f of fks) {
+          if (tableKey(f.table) === k) f.table = o.to;
+          if (tableKey(f.refTable) === k) f.refTable = o.to;
+        }
+        stats.renamedTables++;
+      } else if (o.op === 'rename-column') {
+        const k = tableKey(o.table);
+        const e = state.get(k);
+        const c = e && colOf(e, o.column);
+        if (!c) {
+          stats.unknownTargets++;
+          continue;
+        }
+        for (const f of fks) {
+          if (tableKey(f.table) === k && f.column === c.name) f.column = o.to;
+          if (tableKey(f.refTable) === k && f.refColumn === c.name) f.refColumn = o.to;
+        }
+        c.name = o.to;
+        stats.renamedColumns++;
+      } else if (o.op === 'drop-table') {
+        const k = tableKey(o.table);
+        if (!state.delete(k)) {
+          stats.unknownTargets++;
+          continue;
+        }
+        fks = fks.filter((f) => tableKey(f.table) !== k);
+        stats.droppedTables++;
+      } else if (o.op === 'drop-column') {
+        const k = tableKey(o.table);
+        const e = state.get(k);
+        const c = e && colOf(e, o.column);
+        if (!e || !c) {
+          stats.unknownTargets++;
+          continue;
+        }
+        e.def.columns = e.def.columns.filter((x) => x !== c);
+        fks = fks.filter((f) => !(tableKey(f.table) === k && f.column === c.name));
+        stats.droppedColumns++;
+      }
+    }
+    for (const d of r.parsed.dynamic) {
+      stats.dynamic++;
+      graph.addUnresolved({
+        filePath: r.path,
+        line: d.line,
+        kind: 'query',
+        text: d.text,
+        reason: 'schema change whose table name is built at run time; not replayed',
+      });
+    }
+  }
+  for (const [k, e] of state) {
+    addSchema(graph, e.path, {
+      tables: [e.def],
+      foreignKeys: fks.filter((f) => tableKey(f.table) === k),
+    });
+    if (e.renamedFrom.length) graph.mergeData(tableRef(e.def), { renamedFrom: e.renamedFrom });
+    if (e.partial)
+      graph.mergeData(tableRef(e.def), {
+        partial: 'columns added by ALTER TABLE; no CREATE TABLE was read for this name',
+      });
+  }
+  return stats;
+}
+
 // ---------------------------------------------------------------------------------------
 // TypeScript: Drizzle tables, Drizzle queries, SQL strings
 
@@ -542,6 +786,27 @@ function num(o: ts.ObjectLiteralExpression | undefined, key: string): number | u
   return undefined;
 }
 
+/**
+ * Whether `node` is inside a migration's `down` function or method (Kysely, Knex and TypeORM
+ * migrations export `up` and `down`), in a file whose path names migrations.
+ */
+function inDownMigration(node: ts.Node, path: string): boolean {
+  if (!/migrat/i.test(path)) return false;
+  for (let n: ts.Node | undefined = node.parent; n; n = n.parent) {
+    const name =
+      ts.isFunctionDeclaration(n) || ts.isMethodDeclaration(n)
+        ? n.name?.getText()
+        : (ts.isArrowFunction(n) || ts.isFunctionExpression(n)) &&
+            n.parent &&
+            (ts.isVariableDeclaration(n.parent) || ts.isPropertyAssignment(n.parent))
+          ? n.parent.name.getText()
+          : undefined;
+    if (name === 'down') return true;
+    if (name !== undefined) return false;
+  }
+  return false;
+}
+
 /** `pgTable('users', …)` → 'users', when `call` is a Drizzle table definition. */
 function drizzleTableName(call: ts.Expression | undefined): string | undefined {
   if (!call || !ts.isCallExpression(call)) return undefined;
@@ -551,7 +816,12 @@ function drizzleTableName(call: ts.Expression | undefined): string | undefined {
     : ts.isPropertyAccessExpression(callee)
       ? callee.name.text
       : '';
-  if (!DRIZZLE_TABLE_FN.test(fn) && !(fn === 'table' && ts.isPropertyAccessExpression(callee)))
+  // `pgSchema('s').table('users', { … })`; a one-argument `x.table('t')` is something else, such
+  // as Kysely's `eb.table('album')`, which names a row of the query.
+  if (
+    !DRIZZLE_TABLE_FN.test(fn) &&
+    !(fn === 'table' && ts.isPropertyAccessExpression(callee) && call.arguments.length >= 2)
+  )
     return undefined;
   return str(call.arguments[0]);
 }
@@ -719,8 +989,11 @@ export class SchemaDetector {
         : node.text;
       if (text.length < 12) return;
       const line = lineOf(sf, node.getStart(sf));
-      if (/\bCREATE\s+(?:\w+\s+)?TABLE\b/i.test(text)) {
-        addSchema(this.graph, path, parseSqlSchema(text, line));
+      // A migration's down() undoes its up(): its SQL is not the schema, nor the code's queries.
+      if (inDownMigration(node, path)) return;
+      if (/\b(?:CREATE\s+(?:\w+\s+)?|ALTER\s+|DROP\s+)TABLE\b/i.test(text)) {
+        if (!isTestSupportPath(path))
+          this.graph.addSqlSchema({ path, parsed: parseSqlSchema(text, line) });
         return;
       }
       if (!SQL_START.test(text)) return;
