@@ -9,6 +9,8 @@ import { loadServiceConfig } from './config';
 import { relaunchWithLargerHeap } from './heap';
 import { createService, ensurePrivateHome, listen } from './server';
 import { allRegistrars } from './routes';
+import { supportBundle } from './support-bundle';
+import { writeFileSync } from 'node:fs';
 
 const [cmd, ...args] = process.argv.slice(2);
 
@@ -59,6 +61,18 @@ async function main(): Promise<void> {
       writeAssessment(db, args, (t) => process.stdout.write(t));
       return;
     }
+    case 'support-bundle': {
+      // PKG-007: versions, settings and counts for a support request; no source, paths or secrets.
+      const at = args.indexOf('--out');
+      const text = `${JSON.stringify(supportBundle(cfg), null, 2)}\n`;
+      if (at >= 0 && args[at + 1]) {
+        writeFileSync(args[at + 1]!, text, { mode: 0o600 });
+        process.stdout.write(
+          `Wrote ${args[at + 1]}. Read it before sending it: it holds no source code, paths or secrets.\n`,
+        );
+      } else process.stdout.write(text);
+      return;
+    }
     case 'search': {
       const [repoId, ...q] = args;
       const db = openDb(join(cfg.home, 'codeatlas.db'));
@@ -68,7 +82,7 @@ async function main(): Promise<void> {
     }
     default:
       process.stdout.write(
-        `usage: codeatlas <serve|${INDEX_USAGE}|${ASSESSMENT_USAGE}|brain <path> ${BRAIN_USAGE}|search <repoId> <query>>\n  brain also takes ${SCIP_USAGE}\n`,
+        `usage: codeatlas <serve|${INDEX_USAGE}|${ASSESSMENT_USAGE}|brain <path> ${BRAIN_USAGE}|search <repoId> <query>|support-bundle [--out file.json]>\n  brain also takes ${SCIP_USAGE}\n`,
       );
       process.exitCode = cmd ? 1 : 0;
   }
