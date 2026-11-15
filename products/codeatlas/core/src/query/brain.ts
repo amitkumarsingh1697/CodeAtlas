@@ -230,8 +230,10 @@ function uiPackageOf(path: string, packages: Map<string, string>): string | unde
 /** Where an ORM table is defined, by which model, and how its name was found. */
 function tableDetails(data: Record<string, unknown>): { details?: BrainDetail[] } {
   const by = Array.isArray(data.definedBy) ? (data.definedBy as Record<string, unknown>[]) : [];
-  if (!by.length) return {};
   const details: BrainDetail[] = [];
+  if (typeof data.undeclared === 'string')
+    details.push({ label: 'Not declared', value: data.undeclared });
+  if (!by.length) return details.length ? { details } : {};
   if (data.tableKind === 'collection')
     details.push({ label: 'Kind', value: 'document collection' });
   if (data.tableKind === 'join-table')

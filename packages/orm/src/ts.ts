@@ -29,6 +29,7 @@ const HINTS: [OrmFramework, RegExp][] = [
     /\.schema\s*\.\s*(createTable|alterTable|table|createTableIfNotExists|dropTable|dropTableIfExists|renameTable)\s*\(/,
   ],
   ['objection', /from\s+['"]objection['"]|require\(['"]objection['"]\)/],
+  ['sql-tools', /from\s+['"]@immich\/sql-tools['"]/],
 ];
 
 const lineOf = (sf: ts.SourceFile, n: ts.Node) =>
@@ -300,6 +301,238 @@ function decoratedEntities(sf: ts.SourceFile, fw: 'typeorm' | 'mikro-orm', out: 
     ts.forEachChild(n, visitBases);
   };
   visitBases(sf);
+}
+
+// ------------------------------------------------------------------- @immich/sql-tools
+
+/** A literal option value written in a decorator call. */
+type OptVal = { str?: string; bool?: boolean; isNull?: boolean; text: string };
+type Opts = Map<string, OptVal>;
+
+/**
+ * A column decorator: either one of the package's own, or one a repository builds on them. The
+ * options written before `...options` are defaults the caller may override; those after it, or in
+ * a call that does not pass the caller's options on, are fixed.
+ */
+export interface SqlToolsDecorator {
+  /** The decorator this one calls. */
+  calls: string;
+  defaults: Opts;
+  fixed: Opts;
+  /** The caller's options reach the decorator it calls. */
+  passes: boolean;
+}
+
+const opt = (o: Record<string, string | boolean>): Opts =>
+  new Map(
+    Object.entries(o).map(([k, v]) => [
+      k,
+      typeof v === 'boolean' ? { bool: v, text: String(v) } : { str: v, text: `'${v}'` },
+    ]),
+  );
+/**
+ * The package's own column decorators, as `@immich/sql-tools` 0.7.0 defines them
+ * (dist/index.js: src/decorators/*.decorator.ts; research R49).
+ */
+const SQL_TOOLS_BUILTIN: Record<string, SqlToolsDecorator> = {
+  PrimaryColumn: {
+    calls: 'Column',
+    defaults: new Map(),
+    fixed: opt({ primary: true }),
+    passes: true,
+  },
+  GeneratedColumn: {
+    calls: 'Column',
+    defaults: opt({ strategy: 'uuid' }),
+    fixed: new Map(),
+    passes: true,
+  },
+  PrimaryGeneratedColumn: {
+    calls: 'GeneratedColumn',
+    defaults: new Map(),
+    fixed: opt({ primary: true }),
+    passes: true,
+  },
+  CreateDateColumn: {
+    calls: 'Column',
+    defaults: opt({ type: 'timestamp with time zone', default: 'now()' }),
+    fixed: new Map(),
+    passes: true,
+  },
+  UpdateDateColumn: {
+    calls: 'Column',
+    defaults: opt({ type: 'timestamp with time zone', default: 'now()' }),
+    fixed: new Map(),
+    passes: true,
+  },
+  DeleteDateColumn: {
+    calls: 'Column',
+    defaults: opt({ type: 'timestamp with time zone', nullable: true }),
+    fixed: new Map(),
+    passes: true,
+  },
+};
+
+function literalOpts(
+  e: ts.Expression | undefined,
+  sf: ts.SourceFile,
+): { before: Opts; after: Opts; spread: boolean } {
+  const before: Opts = new Map();
+  const after: Opts = new Map();
+  let spread = false;
+  // `Column('name')`: a string is the column name.
+  const s = strOf(e);
+  if (s !== undefined) {
+    after.set('name', { str: s, text: `'${s}'` });
+    return { before, after, spread };
+  }
+  if (!e || !ts.isObjectLiteralExpression(e))
+    return { before, after, spread: !!e && ts.isIdentifier(e) };
+  for (const p of e.properties) {
+    if (ts.isSpreadAssignment(p)) {
+      spread = true;
+      continue;
+    }
+    if (!ts.isPropertyAssignment(p) || !(ts.isIdentifier(p.name) || ts.isStringLiteral(p.name)))
+      continue;
+    const v = p.initializer;
+    const val: OptVal = {
+      text: v.getText(sf),
+      ...(strOf(v) !== undefined ? { str: strOf(v) } : {}),
+      ...(boolOf(v) !== undefined ? { bool: boolOf(v) } : {}),
+      ...(v.kind === ts.SyntaxKind.NullKeyword ? { isNull: true } : {}),
+    };
+    (spread ? after : before).set(p.name.text, val);
+  }
+  // With no spread every written option is fixed.
+  return spread ? { before, after, spread } : { before: new Map(), after: before, spread };
+}
+
+/**
+ * Column decorators built on `@immich/sql-tools` in these sources: `const X = (o) => Column({...})`
+ * or `function X(o) { return Column(o) }`, chained through each other. Syntax only.
+ */
+export function sqlToolsDecorators(sources: Iterable<string>): Map<string, SqlToolsDecorator> {
+  const out = new Map<string, SqlToolsDecorator>();
+  for (const src of sources) {
+    const sf = ts.createSourceFile('x.ts', src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+    const add = (name: string, body: ts.Node | undefined) => {
+      let call: ts.Expression | undefined;
+      if (body && ts.isBlock(body)) call = body.statements.find(ts.isReturnStatement)?.expression;
+      else if (body && ts.isExpression(body)) call = body;
+      while (call && ts.isParenthesizedExpression(call)) call = call.expression;
+      if (!call || !ts.isCallExpression(call) || !ts.isIdentifier(call.expression)) return;
+      const callee = call.expression.text;
+      if (callee === name || callee === 'ForeignKeyColumn') return;
+      const o = literalOpts(call.arguments[0], sf);
+      out.set(name, { calls: callee, defaults: o.before, fixed: o.after, passes: o.spread });
+    };
+    for (const st of sf.statements) {
+      if (ts.isVariableStatement(st))
+        for (const d of st.declarationList.declarations) {
+          if (!ts.isIdentifier(d.name) || !d.initializer) continue;
+          const f = d.initializer;
+          if (ts.isArrowFunction(f) || ts.isFunctionExpression(f)) add(d.name.text, f.body);
+        }
+      else if (ts.isFunctionDeclaration(st) && st.name) add(st.name.text, st.body);
+    }
+  }
+  return out;
+}
+
+/**
+ * The options a property's column decorator ends with at `Column`, or undefined when the decorator
+ * does not reach `Column` through decorators that are known.
+ */
+function sqlToolsColumnOpts(
+  name: string,
+  written: Opts,
+  repo: Map<string, SqlToolsDecorator> | undefined,
+): Opts | undefined {
+  let cur = name;
+  let o = written;
+  for (let i = 0; i < 10; i++) {
+    if (cur === 'Column') return o;
+    const d = SQL_TOOLS_BUILTIN[cur] ?? repo?.get(cur);
+    if (!d) return undefined;
+    o = new Map([...d.defaults, ...(d.passes ? o : []), ...d.fixed]);
+    cur = d.calls;
+  }
+  return undefined;
+}
+
+/** `@Table` classes of `@immich/sql-tools`: each is a table; its decorated properties are columns. */
+function sqlToolsTables(
+  sf: ts.SourceFile,
+  out: OrmFile,
+  repo: Map<string, SqlToolsDecorator> | undefined,
+): void {
+  const visit = (n: ts.Node) => {
+    if (ts.isClassDeclaration(n) && n.name) {
+      const td = deco(decorators(n), 'Table');
+      if (td) table(n, n.name.text, td);
+    }
+    ts.forEachChild(n, visit);
+  };
+  const table = (c: ts.ClassDeclaration, name: string, td: Deco) => {
+    const fields: OrmField[] = [];
+    for (const m of c.members) {
+      if (!ts.isPropertyDeclaration(m) || !m.name || !ts.isIdentifier(m.name)) continue;
+      const pn = m.name.text;
+      for (const d of decorators(m)) {
+        const fkey = d.name === 'ForeignKeyColumn';
+        const written = literalOpts(d.args[fkey ? 1 : 0], sf);
+        const given = new Map([...written.before, ...written.after]);
+        const o = fkey ? given : sqlToolsColumnOpts(d.name, given, repo);
+        if (!o) continue;
+        const strategy = o.get('strategy')?.str;
+        const def = o.get('default');
+        const f: OrmField = {
+          field: pn,
+          column: o.get('name')?.str ?? pn,
+          type: fkey
+            ? 'ForeignKeyColumn'
+            : strategy === 'identity'
+              ? 'integer'
+              : strategy?.startsWith('uuid')
+                ? 'uuid'
+                : o.has('enum')
+                  ? 'enum'
+                  : (o.get('type')?.str ?? 'character varying') +
+                    (o.get('array')?.bool ? '[]' : ''),
+          nullable: def?.isNull ? true : (o.get('nullable')?.bool ?? false),
+          line: lineOf(sf, m),
+        };
+        if (o.get('primary')?.bool) f.primaryKey = true;
+        if (o.get('unique')?.bool) f.unique = true;
+        if (def && !def.isNull) f.default = def.text;
+        const len = o.get('length');
+        if (len && /^\d+$/.test(len.text)) f.length = Number(len.text);
+        if (fkey) {
+          const target = targetOf(d.args[0]);
+          if (target) f.ref = { model: target };
+        }
+        fields.push(f);
+        break;
+      }
+    }
+    const written = literalOpts(td.args[0], sf);
+    out.models.push({
+      framework: 'sql-tools',
+      model: name,
+      line: lineOf(sf, c),
+      endLine: sf.getLineAndCharacterOfPosition(c.end).line + 1,
+      table: written.after.get('name')?.str ?? written.before.get('name')?.str,
+      defaultTable: name.replaceAll(/([a-z])([A-Z])/g, '$1_$2').toLowerCase(),
+      rule: '@immich/sql-tools default (DefaultNamingStrategy): the class name in snake_case',
+      bases: [],
+      root: true,
+      role: 'entity',
+      inherit: 'single',
+      fields,
+    });
+  };
+  visit(sf);
 }
 
 // --------------------------------------------------------------------------- Sequelize
@@ -620,7 +853,11 @@ function inDown(n: ts.Node): boolean {
   return false;
 }
 
-export function readTs(path: string, source: string): OrmFile | null {
+export function readTs(
+  path: string,
+  source: string,
+  sqlTools?: Map<string, SqlToolsDecorator>,
+): OrmFile | null {
   const fws = HINTS.filter(([, re]) => re.test(source)).map(([f]) => f);
   if (!fws.length) return null;
   const kind = /\.tsx$/.test(path)
@@ -642,6 +879,7 @@ export function readTs(path: string, source: string): OrmFile | null {
   };
   if (fws.includes('typeorm')) decoratedEntities(sf, 'typeorm', out);
   if (fws.includes('mikro-orm')) decoratedEntities(sf, 'mikro-orm', out);
+  if (fws.includes('sql-tools')) sqlToolsTables(sf, out, sqlTools);
   const schemas = new Map<
     string,
     { fields: OrmField[]; collection?: string; timestamps: boolean; line: number }

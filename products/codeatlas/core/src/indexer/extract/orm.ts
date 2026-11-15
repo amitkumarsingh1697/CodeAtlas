@@ -34,6 +34,8 @@ export interface OrmStats {
   mappings: number;
   foreignKeys: number;
   unresolved: number;
+  /** Tables migrations leave that a declared code schema (@immich/sql-tools) does not have. */
+  undeclared?: number;
   /** JPA queries (JV-004): sites read, sites linked to a table, sites recorded as gaps. */
   jpaQueries?: JpaQueryStats;
 }
@@ -120,6 +122,8 @@ function classNode(
 export function addOrm(
   graph: GraphBuilder,
   files: OrmFile[],
+  /** Migration DDL statements whose table name is built at run time (not replayed). */
+  dynamicDdl = 0,
 ): { stats: OrmStats; schema: OrmSchema } {
   const known = new Set<string>();
   const knownColumns = new Map<string, Set<string>>();
@@ -269,6 +273,30 @@ export function addOrm(
       };
       graph.addEdge({ kind: 'reads_table', ...edge });
       if (op === 'deletes') graph.addEdge({ kind: 'writes_table', ...edge });
+    }
+  }
+  // With @immich/sql-tools the classes are the schema and migrations are generated from them, so a
+  // table only the migrations leave is not current, or was renamed or dropped by DDL not replayed.
+  // It is kept, and says so, rather than dropped: the migrations do create it.
+  const declared = new Set(
+    schema.tables.filter((t) => t.framework === 'sql-tools').map((t) => tableKey(t.name)),
+  );
+  if (declared.size) {
+    stats.undeclared = 0;
+    for (const n of [...graph.nodes.values()]) {
+      if (n.kind !== 'table' || declared.has(n.key.replace(/^table:/, ''))) continue;
+      if (n.data?.source !== 'sql' || isTestSupportPath(n.filePath ?? '')) continue;
+      graph.mergeData(
+        { kind: 'table', key: n.key },
+        {
+          undeclared: `not among the tables this repository declares with @immich/sql-tools${
+            dynamicDdl
+              ? `; ${dynamicDdl} migration statement${dynamicDdl === 1 ? '' : 's'} whose table name is built at run time may have renamed or dropped it`
+              : ''
+          }`,
+        },
+      );
+      stats.undeclared++;
     }
   }
   for (const u of schema.unresolved.slice(0, 500))

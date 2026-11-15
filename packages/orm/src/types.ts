@@ -30,6 +30,7 @@ export type OrmFramework =
   | 'mongoose'
   | 'knex'
   | 'objection'
+  | 'sql-tools'
   | 'liquibase';
 
 export const FRAMEWORK_LABEL: Record<OrmFramework, string> = {
@@ -55,6 +56,7 @@ export const FRAMEWORK_LABEL: Record<OrmFramework, string> = {
   mongoose: 'Mongoose',
   knex: 'Knex',
   objection: 'Objection.js',
+  'sql-tools': '@immich/sql-tools',
   liquibase: 'Liquibase',
 };
 

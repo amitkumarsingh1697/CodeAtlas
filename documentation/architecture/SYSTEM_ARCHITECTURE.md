@@ -11,7 +11,7 @@ packages/validation  shared zod helpers and AppError codes
 packages/languages   language and file-type registry (GitHub Linguist 9.7.0 data plus overlays), file inventory and analyser descriptions
 packages/syntax      web-tree-sitter 0.27.1 with 71 grammars built from pinned commits, and per-language extraction rules
 packages/sql         PostgreSQL parser (libpg-query 18.2.2) and a statement reader for MySQL, SQL Server, Oracle, Db2 and SQLite
-packages/orm         ORM models and migrations of 23 frameworks into one schema model
+packages/orm         ORM models and migrations of 24 frameworks into one schema model
 packages/scip        SCIP index reader for compiler-checked references
 packages/brain       3D architecture brain (three.js 0.186.1): model, layout, viewer and the single-file HTML template
 ```

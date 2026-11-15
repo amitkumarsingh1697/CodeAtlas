@@ -562,7 +562,7 @@ function buildAndPersist(
   // TypeORM, Liquibase…), resolved across files once every SQL and Prisma table is known.
   progress('Reading ORM models and migrations');
   const ormFiles = readOrmFiles(disc.files, texts);
-  const ormResult = addOrm(graph, ormFiles);
+  const ormResult = addOrm(graph, ormFiles, schemaReplay.dynamic);
   const orm = ormResult.stats;
   // JPQL and native queries in Java and Kotlin, linked through the entity mappings just resolved
   // (and the entities' associations, for path joins and entity graphs).
