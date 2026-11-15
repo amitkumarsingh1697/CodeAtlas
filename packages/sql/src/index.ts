@@ -23,6 +23,7 @@ import {
 export * from './types';
 export { detectDialect } from './dialect';
 export { tokenize } from './lex';
+export { bodyRefs, type BodyRefs } from './refs';
 export { splitStatements } from './split';
 export { PG_PARSER } from './pg';
 

@@ -7,6 +7,7 @@ import { tx } from '../store/db';
 import { indexMarkdown } from './docs';
 import { addSchema, parsePrismaSchema, parseSqlSchema } from './schema';
 import { addOrm, readOrmFiles, type OrmStats } from './extract/orm';
+import { addJpaQueries } from './extract/jpa-query';
 import {
   addSqlObjects,
   analyseSql,
@@ -507,7 +508,10 @@ function buildAndPersist(
   // ORM models and migrations (Django, SQLAlchemy, JPA, EF Core, Rails, Laravel, GORM,
   // TypeORM, Liquibase…), resolved across files once every SQL and Prisma table is known.
   progress('Reading ORM models and migrations');
-  const orm = addOrm(graph, readOrmFiles(disc.files, texts)).stats;
+  const ormResult = addOrm(graph, readOrmFiles(disc.files, texts));
+  const orm = ormResult.stats;
+  // JPQL and native queries in Java and Kotlin, linked through the entity mappings just resolved.
+  orm.jpaQueries = addJpaQueries(graph, disc.files, texts, ormResult.schema.mappings);
 
   // Entry points declared in package.json (observed: they are declared).
   for (const p of packages) {

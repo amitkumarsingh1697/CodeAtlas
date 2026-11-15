@@ -159,7 +159,7 @@ describe('benchmark scoring (ACC-004)', () => {
     }
   });
 
-  it('the PetClinic ground truth holds 17 routes, 6 entity tables and 3 repositories', () => {
+  it('the PetClinic ground truth holds 17 routes, 6 entity tables, 3 repositories and 1 query', () => {
     const gt = groundTruthSchema.parse(
       JSON.parse(readFileSync(join(GT_DIR, 'spring-petclinic.json'), 'utf8')),
     );
@@ -169,6 +169,6 @@ describe('benchmark scoring (ACC-004)', () => {
       count('maps_to'),
       count('reads_table'),
       count('writes_table'),
-    ]).toEqual([17, 6, 3, 2]);
+    ]).toEqual([17, 6, 4, 2]);
   });
 });

@@ -700,6 +700,7 @@ export function resolveOrm(
             line: e.m.line,
             owner: e.m.model,
             table: tn.name,
+            ...(e.m.entityName ? { entityName: e.m.entityName } : {}),
             framework: e.m.framework,
             access: 'maps',
             confidence: tn.naming === 'explicit' ? 'observed' : 'inferred',
