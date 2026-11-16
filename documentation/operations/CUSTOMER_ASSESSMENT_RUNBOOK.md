@@ -17,7 +17,7 @@ This runbook is for an engineer at a client who runs CodeAtlas on their own mach
 
 ## 2. Install (from source)
 
-There is no installer yet (PKG-001). Install from the source repository:
+Once a release is approved, install from the archive (`INSTALL.md` in the archive; no Node.js, pnpm or network needed) and use `codeatlas` in place of `node --import tsx src/cli.ts` below. Until then, install from the source repository:
 
 ```bash
 git clone https://github.com/amitkumarsingh1697/CodeAtlas.git codeatlas
@@ -89,4 +89,4 @@ Keep or delete `assessment.json`, `brain.json` and `brain.html` as the statement
 
 **Support bundle.** For any problem, `node --import tsx src/cli.ts support-bundle --out support.json` writes versions, settings, the data folder's state and, per repository, counts and the last ten index-run outcomes. It holds no source text, repository names, paths, token, API keys or model endpoints, and error messages keep only their first line with paths and secret-looking values removed. Read it before sending it.
 
-Not yet available, and tracked separately: an installer (PKG-001), and exclusions in the web UI (the command line has them).
+Not yet available, and tracked separately: a published release of the archive (built and tested in CI, waiting on approval), and exclusions in the web UI (the command line has them).

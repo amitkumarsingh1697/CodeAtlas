@@ -64,3 +64,26 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Network-denied index, assessment and brain
         run: scripts/egress-check.sh
+  package:
+    # PKG-001 (ADR 0028): build the installable archive on each tested platform and install it into
+    # an empty folder with an empty environment. The archive is not uploaded or published: a
+    # release needs the founder's approval.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @nexora/codeatlas-web build
+      - name: Build the archive
+        run: node scripts/package.mjs
+      - name: Install and use it in an empty environment
+        run: scripts/package-smoke.sh dist/package/codeatlas-*.tar.gz
