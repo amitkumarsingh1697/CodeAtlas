@@ -19,7 +19,7 @@ Options considered: an npm package (`npx codeatlas`; needs a public npm publish,
    - the launcher `bin/codeatlas`, which sets `CODEATLAS_PACKAGED=1` (allowed roots default to the home folder, PKG-002);
    - `LICENSE`, `NOTICE`, `THIRD_PARTY_NOTICES.md`, Node.js's licence, a CycloneDX SBOM and `INSTALL.md`.
 2. A `SHA256SUMS` file is written beside each archive.
-3. CI builds and installs the archive on Linux x64 (`ubuntu-24.04`) and macOS arm64 (`macos-14`) on every change (`scripts/package-smoke.sh`). Linux arm64 and macOS x64 have pinned runtimes but are not tested, so they are not offered.
+3. CI builds and installs the archive on Linux x64 (`ubuntu-24.04`) on every change (`scripts/package-smoke.sh`). A `macos-14` job was planned, but GitHub never assigned it a runner (cancelled twice within a second, 2026-11-16 and 2026-11-17), so it was removed. Linux arm64, macOS arm64 and macOS x64 have pinned runtimes but are not tested, so they are not offered until they are.
 4. Nothing is uploaded or published. A release, signing and where archives are hosted are separate founder decisions.
 
 ## Consequences

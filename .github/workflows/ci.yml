@@ -71,7 +71,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-14]
+        # macos-14 was dropped 2026-11-17: its runner was never assigned to this repository (job
+        # cancelled within a second, twice). Add it back once macOS runners are available.
+        os: [ubuntu-24.04]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 25
     steps:

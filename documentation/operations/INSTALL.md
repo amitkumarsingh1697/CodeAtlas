@@ -2,7 +2,7 @@
 
 This file is shipped inside each CodeAtlas archive. The archive holds everything CodeAtlas needs: its own Node.js runtime, the service, and the web UI. It does not install anything outside the folder you extract it to, and it does not need Node.js, pnpm or network access on your machine.
 
-Archives exist for Linux (x64, arm64) and macOS (Apple silicon, Intel). They are built and tested in CI on Linux x64 and macOS arm64. The other two targets are built from the same script but have not been tested.
+Archives exist for Linux (x64, arm64) and macOS (Apple silicon, Intel). Only Linux x64 is tested: CI builds and installs it on every change. The other three targets are built from the same script but have not been tested; macOS in particular has no CI run yet.
 
 ## Install
 
