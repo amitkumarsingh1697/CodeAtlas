@@ -32,3 +32,6 @@ skills/archlens/scripts/brain/
 
 # Founder strategy package, kept exactly as supplied (docs/audit/DOCUMENTATION_RECONCILIATION.md)
 docs/strategy-and-delivery/
+
+# Client pitch deck: generated deliverables and their standalone generator
+docs/sales/client-pitch-deck/
