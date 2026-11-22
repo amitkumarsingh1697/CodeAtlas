@@ -1,0 +1,23 @@
+const { chromium } = require('playwright');
+(async()=>{
+ const TOKEN=process.argv[2]; const O='final/';
+ const b=await chromium.launch(); const p=await b.newPage({viewport:{width:1600,height:1000},deviceScaleFactor:2});
+ p.setDefaultTimeout(180000);
+ const go=async(u,w)=>{await p.goto('http://127.0.0.1:4317'+u); await p.waitForTimeout(w||2500);};
+ await go('/#token='+TOKEN,1500);
+ await go('/repos/1/brain',12000);
+ const inp=p.getByPlaceholder(/Recall anything/);
+ await inp.fill('getAlbumInfo'); await p.waitForTimeout(3000);
+ await p.evaluate(()=>{const s=[...document.querySelectorAll('strong')].find(e=>e.textContent==='AlbumController.getAlbumInfo'); (s.closest('button,li,a,[role=option]')||s).click();});
+ await p.waitForTimeout(15000);
+ await p.screenshot({path:O+'immich-brain-method.png'});
+ console.log('method ok');
+ await go('/repos/1/brain',12000);
+ await p.evaluate(()=>[...document.querySelectorAll('button')].find(e=>e.textContent.trim()==='Diagrams').click());
+ await p.waitForTimeout(8000);
+ await p.screenshot({path:O+'immich-er.png'});
+ await go('/repos/2/overview'); await p.screenshot({path:O+'petclinic-overview.png'});
+ await go('/repos/2/flows');
+ const t=await p.evaluate(()=>document.body.innerText); console.log(t.match(/(GET|POST) \/[^\n]*/g)?.slice(0,20));
+ await b.close();
+})();

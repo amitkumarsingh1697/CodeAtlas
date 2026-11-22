@@ -1,0 +1,20 @@
+{
+  "name": "codeatlas-client-pitch-deck",
+  "version": "1.0.0",
+  "description": "Generator for the CodeAtlas client pitch deck and its supporting documents.",
+  "main": "src/build-deck.js",
+  "scripts": {
+    "assets": "node src/make-assets.js",
+    "deck": "node src/build-deck.js && python3 src/post-process.py",
+    "docs": "node src/make-docs.js && python3 src/make-script-docx.py"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "pptxgenjs": "3.12.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-icons": "5.4.0",
+    "sharp": "0.33.5"
+  },
+  "private": true
+}
